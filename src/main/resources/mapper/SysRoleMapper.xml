@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jinlink.modules.system.mapper.SysRoleMapper">
+    <resultMap id="SysRoleOptiontVo" type="com.jinlink.modules.system.entity.vo.SysRoleOptionVo">
+        <id column="id" property="id"/>
+        <result column="role_name" property="roleName"/>
+        <result column="role_code" property="roleCode"/>
+    </resultMap>
+    <select id="getRoleAll" resultMap="SysRoleOptiontVo">
+        SELECT sr.id,sr.role_name,sr.role_code
+        FROM sys_role sr
+        WHERE sr.is_deleted = 0
+    </select>
+</mapper>

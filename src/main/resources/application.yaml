@@ -1,0 +1,102 @@
+server:
+  port: 8080
+
+# Spring 配置
+spring:
+  datasource:
+    url: jdbc:mysql://47.113.197.48:3306/jinlink_boot?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+    username: root
+    password: sr2539195984
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      #连接超时时间（毫秒），等待从连接池获取连接的最大时间。
+      connection-timeout: 10000
+      #空闲连接超时时间（毫秒），一个连接在连接池中保持空闲而不被关闭的最大时间。
+      idle-timeout: 30000
+      #连接的最大生命周期（毫秒），连接在连接池中存活的最长时间，超过该时间后连接将被关闭。
+      max-lifetime: 1800000
+      #连接池中维护的最小空闲连接数。
+      minimum-idle: 20
+      #连接池允许的最大连接数。
+      maximum-pool-size: 20
+      #连接验证超时时间（毫秒），用于配置从连接池获取连接时验证连接是否有效的超时时间。
+      validation-timeout: 3000
+      #初始化失败超时时间（毫秒），在放弃初始化连接池之前的超时时间。
+      initialization-fail-timeout: 60
+      #连接泄漏检测阈值（毫秒），如果连接在池中持有时间超过该值且未关闭，则记录一条警告日志。设置为0表示禁用泄漏检测。
+      leak-detection-threshold: 0
+      #连接测试查询，用于验证从连接池获取的连接是否仍然有效。注意，对于MySQL 8.x，通常不需要这个查询，因为HikariCP会自动使用JDBC 4.0的isValid()方法。
+      connection-test-query: SELECT 1
+  data:
+    redis:
+      # Redis数据库索引（默认为0）
+      database: 1
+      # Redis服务器地址
+      host: 47.113.197.48
+      # Redis服务器连接端口
+      port: 6379
+      # Redis服务器连接密码（默认为空）
+      password: sr2539195984
+      # 连接超时时间
+      timeout: 10s
+      lettuce:
+        pool:
+          # 连接池最大连接数
+          max-active: 200
+          # 连接池最大阻塞等待时间（使用负值表示没有限制）
+          max-wait: 100ms
+          # 连接池中的最大空闲连接
+          max-idle: 10
+          # 连接池中的最小空闲连接
+          min-idle: 0
+          enabled: true
+
+# Sa-Token 配置
+sa-token:
+  # token 名称（同时也是 cookie 名称）
+  token-name: satoken
+  # token 有效期（单位：秒） 默认30天，-1 代表永久有效
+  timeout: 2592000
+  # token 最低活跃频率（单位：秒），如果 token 超过此时间没有访问系统就会被冻结，默认-1 代表不限制，永不冻结
+  active-timeout: -1
+  # 是否允许同一账号多地同时登录 （为 true 时允许一起登录, 为 false 时新登录挤掉旧登录）
+  is-concurrent: true
+  # 在多人登录同一账号时，是否共用一个 token （为 true 时所有登录共用一个 token, 为 false 时每次登录新建一个 token）
+  is-share: true
+  # token 风格（默认可取值：uuid、simple-uuid、random-32、random-64、random-128、tik）
+  token-style: uuid
+  # 是否输出操作日志
+  is-log: false
+  # 是否开启打印模式
+  is-print: false
+
+# Knife4J 配置
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: 'system'
+      paths-to-match: '/**'
+      packages-to-scan: com.jinlink.controller.system
+
+# knife4j的增强配置,不需要增强可以不配
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+
+# MybatisFlex的配置项
+mybatis-flex:
+  mapper-locations: classpath*:mapper/*.xml
+  check-config-location: true
+  global-config:
+    print-banner: false
+  type-handlers-package: com.jinlink.modules
+logging:
+  level:
+    default: debug
