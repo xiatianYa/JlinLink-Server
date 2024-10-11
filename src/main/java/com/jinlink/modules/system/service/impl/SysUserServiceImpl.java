@@ -15,6 +15,7 @@ import com.jinlink.modules.system.entity.dto.SysUserSearchDTO;
 import com.jinlink.modules.system.entity.vo.SysUserVo;
 import com.jinlink.modules.system.mapper.SysRoleMapper;
 import com.jinlink.modules.system.mapper.SysUserRoleMapper;
+import com.mybatisflex.core.logicdelete.LogicDeleteManager;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
@@ -126,7 +127,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             //删除当前用户角色
             QueryWrapper userRoleDeleteQuery = new QueryWrapper();
             userRoleDeleteQuery.eq("user_id",sysUser.getId());
-            sysUserRoleMapper.deleteByQuery(userRoleDeleteQuery);
+            LogicDeleteManager.execWithoutLogicDelete(()->
+                    sysUserRoleMapper.deleteByQuery(userRoleDeleteQuery)
+            );
             //遍历角色 添加新角色
             userRoles.forEach(item->{
                 //查询出角色

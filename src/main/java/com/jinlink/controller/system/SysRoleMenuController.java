@@ -1,22 +1,17 @@
 package com.jinlink.controller.system;
 
+import com.jinlink.common.api.Result;
+import com.jinlink.modules.system.entity.dto.SysRoleMenuUpdateDTO;
 import com.mybatisflex.core.paginate.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 import com.jinlink.modules.system.entity.SysRoleMenu;
 import com.jinlink.modules.system.service.SysRoleMenuService;
-import org.springframework.web.bind.annotation.RestController;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -83,6 +78,17 @@ public class SysRoleMenuController {
     }
 
     /**
+     * 查询用户角色菜单列表。
+     *
+     * @return 所有数据
+     */
+    @GetMapping("getRoleByRoleId/{roleId}")
+    @Operation(operationId = "4",summary = "查询权限菜单列表")
+    public Result<List<Long>> getRoleMenuByRoleId(@Parameter(description = "权限Id", required = true)@PathVariable Long roleId) {
+        return sysRoleMenuService.getRoleMenuByRoleId(roleId);
+    }
+
+    /**
      * 根据角色菜单管理主键获取详细信息。
      *
      * @param id 角色菜单管理主键
@@ -106,4 +112,15 @@ public class SysRoleMenuController {
         return sysRoleMenuService.page(page);
     }
 
+    /**
+     * 根据主键更新角色菜单管理。
+     *
+     * @param sysRoleMenuUpdateDTO 角色菜单管理
+     * @return {@code true} 更新成功，{@code false} 更新失败
+     */
+    @PutMapping("updateRoleMenu")
+    @Operation(operationId = "3",summary = "修改角色的菜单权限")
+    public Result<Boolean> updateRoleMenu(@Parameter(description = "角色菜单修改对象", required = true)@RequestBody SysRoleMenuUpdateDTO sysRoleMenuUpdateDTO) {
+        return sysRoleMenuService.updateRoleMenu(sysRoleMenuUpdateDTO);
+    }
 }

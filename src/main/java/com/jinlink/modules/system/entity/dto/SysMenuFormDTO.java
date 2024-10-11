@@ -66,12 +66,18 @@ public class SysMenuFormDTO extends BaseEntity {
     /**
      * 缓存页面(Y:是,N:否)
      */
-    private String keepAlive;
+    private Boolean keepAlive;
 
     /**
      * 是否隐藏(Y:是,N:否)
      */
-    private String hide;
+
+    private Boolean hide;
+
+    /**
+     * 是否为常量路由(Y:是,N:否)
+     */
+    private Boolean constant;
 
     /**
      * 外部链接
@@ -86,7 +92,7 @@ public class SysMenuFormDTO extends BaseEntity {
     /**
      * 支持多标签(Y:是,N:否)
      */
-    private String multiTab;
+    private Boolean multiTab;
 
     /**
      * 固定在页签中的序号

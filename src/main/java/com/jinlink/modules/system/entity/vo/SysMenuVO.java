@@ -1,6 +1,7 @@
 package com.jinlink.modules.system.entity.vo;
 
 import com.jinlink.common.domain.BaseVO;
+import com.jinlink.common.domain.KVPairs;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,6 +10,7 @@ import lombok.experimental.SuperBuilder;
 
 import java.io.Serial;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 菜单管理 VO 展示类
@@ -52,28 +54,31 @@ public class SysMenuVO extends BaseVO {
     private String component;
 
     @Schema(description = "缓存路由(Y:是,N:否)")
-    private String keepAlive;
+    private Boolean keepAlive;
 
     @Schema(description = "是否隐藏(Y:是,N:否)")
-    private String hide;
+    private Boolean hide;
+
+    @Schema(description = "是否为常量路由(Y:是,N:否)")
+    private Boolean constant;
 
     @Schema(description = "外部链接")
     private String href;
 
     @Schema(description = "内嵌链接 Iframe URL")
-    private String iframeUrl;
+    private String activeMenu;
 
     @Schema(description = "排序值")
     private Integer sort;
 
     @Schema(description = "支持多标签(Y:是,N:否)")
-    private String multiTab;
+    private Boolean multiTab;
 
     @Schema(description = "固定在页签中的序号")
     private Integer fixedIndexInTab;
 
     @Schema(description = "路由查询参数 JSON 字符串")
-    private String query;
+    private List<KVPairs> query;
 
     @Schema(description = "是否启用(0:禁用,1:启用)")
     private String status;

@@ -17,9 +17,9 @@ spring:
       #连接的最大生命周期（毫秒），连接在连接池中存活的最长时间，超过该时间后连接将被关闭。
       max-lifetime: 1800000
       #连接池中维护的最小空闲连接数。
-      minimum-idle: 20
+      minimum-idle: 50
       #连接池允许的最大连接数。
-      maximum-pool-size: 20
+      maximum-pool-size: 100
       #连接验证超时时间（毫秒），用于配置从连接池获取连接时验证连接是否有效的超时时间。
       validation-timeout: 3000
       #初始化失败超时时间（毫秒），在放弃初始化连接池之前的超时时间。

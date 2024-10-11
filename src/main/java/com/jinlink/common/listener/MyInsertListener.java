@@ -1,7 +1,6 @@
 package com.jinlink.common.listener;
 
 import cn.dev33.satoken.stp.StpUtil;
-import cn.hutool.core.util.IdUtil;
 import com.jinlink.common.domain.BaseEntity;
 import com.mybatisflex.annotation.InsertListener;
 

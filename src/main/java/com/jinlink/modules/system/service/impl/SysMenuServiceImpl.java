@@ -64,6 +64,11 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     public Result<String> updateMenu(SysMenuFormDTO sysMenuVo) {
         //拷贝属性到SysMenu
         SysMenu sysMenu = BeanUtil.copyProperties(sysMenuVo, SysMenu.class);
+        //转换属性
+        sysMenu.setKeepAlive(sysMenuVo.getKeepAlive()? "Y" : "N");
+        sysMenu.setHide(sysMenuVo.getHide()? "Y" : "N");
+        sysMenu.setMultiTab(sysMenuVo.getMultiTab() ? "Y" : "N");
+        sysMenu.setConstant(sysMenuVo.getConstant() ? "Y" : "N");
         sysMenu.setQuery(JSON.toJSONString(sysMenuVo.getQuery()));
         int isTrue = sysMenuMapper.update(sysMenu);
         if (ObjectUtil.isNotNull(isTrue)){
@@ -88,7 +93,6 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     /**
      * 删除菜单 及 子菜单
      * @param id
-     * @return
      */
     @Override
     public Result<Boolean> removeMenuById(Serializable id) {
@@ -202,7 +206,31 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         List<SysMenuVO> menuPageVOList =new ArrayList<>();
         parentMenuList.forEach(item -> {
             //拷贝到新列表中
-            menuPageVOList.add( BeanUtil.copyProperties(item, SysMenuVO.class));
+            SysMenuVO sysMenuVO = SysMenuVO.builder()
+                    .id(item.getId())
+                    .parentId(item.getParentId())
+                    .children(new ArrayList<>())
+                    .parentId(item.getParentId())
+                    .menuType(item.getMenuType())
+                    .menuName(item.getMenuName())
+                    .i18nKey(item.getI18nKey())
+                    .routeName(item.getRouteName())
+                    .routePath(item.getRoutePath())
+                    .icon(item.getIcon())
+                    .iconType(item.getIconType())
+                    .component(item.getComponent())
+                    .keepAlive(item.getKeepAlive().equals("Y"))
+                    .hide(item.getHide().equals("Y"))
+                    .constant(item.getConstant().equals("Y"))
+                    .href(item.getHref())
+                    .activeMenu(item.getActiveMenu())
+                    .sort(item.getSort())
+                    .multiTab(item.getMultiTab().equals("Y"))
+                    .fixedIndexInTab(item.getFixedIndexInTab())
+                    .query(JSON.parseObject(item.getQuery(), List.class))
+                    .status(item.getStatus())
+                    .build();
+            menuPageVOList.add(sysMenuVO);
         });
         sysMenus.forEach(item -> {
             // 递归获取子菜单
@@ -212,7 +240,31 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
                     if(ObjectUtil.isNull(menu.getChildren())) menu.setChildren(new ArrayList<>());
                     if(item.getParentId().equals(menu.getId())){
                         //拷贝到新列表中
-                        menu.getChildren().add(BeanUtil.copyProperties(item, SysMenuVO.class));
+                        SysMenuVO sysMenuVO = SysMenuVO.builder()
+                                .id(item.getId())
+                                .parentId(item.getParentId())
+                                .children(new ArrayList<>())
+                                .parentId(item.getParentId())
+                                .menuType(item.getMenuType())
+                                .menuName(item.getMenuName())
+                                .i18nKey(item.getI18nKey())
+                                .routeName(item.getRouteName())
+                                .routePath(item.getRoutePath())
+                                .icon(item.getIcon())
+                                .iconType(item.getIconType())
+                                .component(item.getComponent())
+                                .keepAlive(item.getKeepAlive().equals("Y"))
+                                .hide(item.getHide().equals("Y"))
+                                .constant(item.getConstant().equals("Y"))
+                                .href(item.getHref())
+                                .activeMenu(item.getActiveMenu())
+                                .sort(item.getSort())
+                                .multiTab(item.getMultiTab().equals("Y"))
+                                .fixedIndexInTab(item.getFixedIndexInTab())
+                                .query(JSON.parseObject(item.getQuery(), List.class))
+                                .status(item.getStatus())
+                                .build();
+                        menu.getChildren().add(sysMenuVO);
                     }
                 });
             }
