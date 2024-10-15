@@ -113,7 +113,7 @@ public class SysMenuController {
      * @return 分页对象
      */
     @GetMapping("page")
-    @Operation(operationId = "6",summary = "获取菜单列表(分页)")
+    @Operation(operationId = "7",summary = "获取菜单列表(分页)")
     public Page<SysMenu> page(Page<SysMenu> page) {
         return sysMenuService.page(page);
     }

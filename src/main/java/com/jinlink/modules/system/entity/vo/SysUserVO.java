@@ -18,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(name = "SysUserVO", description = "用户菜单 VO 对象")
-public class SysUserVo extends SysUser {
+public class SysUserVO extends SysUser {
     /**
      * 用户权限列表
      */

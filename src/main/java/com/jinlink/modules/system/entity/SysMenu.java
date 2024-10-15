@@ -85,7 +85,7 @@ public class SysMenu extends BaseEntity {
     /**
      * 是否隐藏(Y:是,N:否)
      */
-    private String hide;
+    private String hideInMenu;
 
     /**
      * 是否为常量路由(Y:是,N:否)

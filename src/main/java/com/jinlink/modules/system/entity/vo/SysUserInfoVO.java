@@ -13,7 +13,7 @@ import java.io.Serializable;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SysUserInfoVo implements Serializable {
+public class SysUserInfoVO implements Serializable {
 
     @Serial
     private static final long serialVersionUID = -6246685532247396266L;

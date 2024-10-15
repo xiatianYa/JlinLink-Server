@@ -5,7 +5,7 @@ import com.jinlink.common.api.Result;
 import com.jinlink.common.page.PageQuery;
 import com.jinlink.modules.system.entity.dto.SysRoleFormDTO;
 import com.jinlink.modules.system.entity.dto.SysRoleSearchDTO;
-import com.jinlink.modules.system.entity.vo.SysRoleOptionVo;
+import com.jinlink.modules.system.entity.vo.SysRoleOptionVO;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
@@ -39,7 +39,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     }
 
     @Override
-    public List<SysRoleOptionVo> getAllRoles() {
+    public List<SysRoleOptionVO> getAllRoles() {
         return sysRoleMapper.getRoleAll();
     }
 

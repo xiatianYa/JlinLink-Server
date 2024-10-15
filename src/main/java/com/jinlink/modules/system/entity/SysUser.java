@@ -20,7 +20,6 @@ import java.time.LocalDateTime;
  * @since 1.0.0
  */
 
-
 @Data
 @SuperBuilder
 @NoArgsConstructor

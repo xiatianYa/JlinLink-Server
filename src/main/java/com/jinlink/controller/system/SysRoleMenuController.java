@@ -83,7 +83,7 @@ public class SysRoleMenuController {
      * @return 所有数据
      */
     @GetMapping("getRoleByRoleId/{roleId}")
-    @Operation(operationId = "4",summary = "查询权限菜单列表")
+    @Operation(operationId = "5",summary = "查询权限菜单列表")
     public Result<List<Long>> getRoleMenuByRoleId(@Parameter(description = "权限Id", required = true)@PathVariable Long roleId) {
         return sysRoleMenuService.getRoleMenuByRoleId(roleId);
     }
@@ -95,7 +95,7 @@ public class SysRoleMenuController {
      * @return 角色菜单管理详情
      */
     @GetMapping("getInfo/{id}")
-    @Operation(operationId = "5",summary = "查询菜单角色详细")
+    @Operation(operationId = "6",summary = "查询菜单角色详细")
     public SysRoleMenu getInfo(@Parameter(description = "菜单角色ID", required = true)@PathVariable Serializable id) {
         return sysRoleMenuService.getById(id);
     }
@@ -107,7 +107,7 @@ public class SysRoleMenuController {
      * @return 分页对象
      */
     @GetMapping("page")
-    @Operation(operationId = "6",summary = "查询菜单角色(分页)")
+    @Operation(operationId = "7",summary = "查询菜单角色(分页)")
     public Page<SysRoleMenu> page(@Parameter(description = "菜单角色分页对象", required = true)Page<SysRoleMenu> page) {
         return sysRoleMenuService.page(page);
     }
@@ -119,7 +119,7 @@ public class SysRoleMenuController {
      * @return {@code true} 更新成功，{@code false} 更新失败
      */
     @PutMapping("updateRoleMenu")
-    @Operation(operationId = "3",summary = "修改角色的菜单权限")
+    @Operation(operationId = "8",summary = "修改角色的菜单权限")
     public Result<Boolean> updateRoleMenu(@Parameter(description = "角色菜单修改对象", required = true)@RequestBody SysRoleMenuUpdateDTO sysRoleMenuUpdateDTO) {
         return sysRoleMenuService.updateRoleMenu(sysRoleMenuUpdateDTO);
     }

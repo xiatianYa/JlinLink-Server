@@ -1,6 +1,6 @@
 package com.jinlink.modules.system.entity.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.jinlink.common.domain.BTPairs;
 import com.jinlink.common.domain.BaseEntity;
 import com.jinlink.common.domain.KVPairs;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * 用户新增/修改 表单对象
@@ -72,7 +71,7 @@ public class SysMenuFormDTO extends BaseEntity {
      * 是否隐藏(Y:是,N:否)
      */
 
-    private Boolean hide;
+    private Boolean hideInMenu;
 
     /**
      * 是否为常量路由(Y:是,N:否)
@@ -122,5 +121,5 @@ public class SysMenuFormDTO extends BaseEntity {
      * 按钮查询参数
      */
     @Schema(description = "按钮查询参数")
-    private List<KVPairs> buttons;
+    private List<BTPairs> buttons;
 }

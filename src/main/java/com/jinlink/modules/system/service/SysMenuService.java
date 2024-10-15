@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 菜单管理 服务层。
@@ -31,6 +32,7 @@ public interface SysMenuService extends IService<SysMenu> {
     @Transactional
     Result<String> updateMenu(SysMenuFormDTO sysMenu);
 
+    @Transactional
     Result<String> saveMenu(SysMenuFormDTO sysMenu);
 
     @Transactional
@@ -40,4 +42,6 @@ public interface SysMenuService extends IService<SysMenu> {
     Result<Boolean> removeMenuByIds(List<Long> ids);
 
     Result<SysUserRouteVO> getUserRoutes();
+
+    Result<List<Map<String, Object>>> getConstantRoutes();
 }

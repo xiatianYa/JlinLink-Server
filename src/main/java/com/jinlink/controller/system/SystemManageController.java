@@ -8,8 +8,8 @@ import com.jinlink.modules.system.entity.dto.SysRoleSearchDTO;
 import com.jinlink.modules.system.entity.dto.SysUserSearchDTO;
 import com.jinlink.modules.system.entity.vo.SysMenuTreeVO;
 import com.jinlink.modules.system.entity.vo.SysMenuVO;
-import com.jinlink.modules.system.entity.vo.SysRoleOptionVo;
-import com.jinlink.modules.system.entity.vo.SysUserVo;
+import com.jinlink.modules.system.entity.vo.SysRoleOptionVO;
+import com.jinlink.modules.system.entity.vo.SysUserVO;
 import com.jinlink.modules.system.service.SysMenuService;
 import com.jinlink.modules.system.service.SysRoleService;
 import com.jinlink.modules.system.service.SysUserService;
@@ -42,9 +42,9 @@ public class SystemManageController {
      */
     @GetMapping("getUserList")
     @Operation(operationId = "1",summary = "获取角色信息列表(分页)")
-    public Result<RPage<SysUserVo>> getUserList(@Parameter(description = "分页对象", required = true) PageQuery query,
-                                       @Parameter(description = "查询对象", required = true) SysUserSearchDTO sysUserSearchDTO) {
-        Page<SysUserVo> sysRolePage = sysUserService.listUserPage(query, sysUserSearchDTO);
+    public Result<RPage<SysUserVO>> getUserList(@Parameter(description = "分页对象", required = true) PageQuery query,
+                                                @Parameter(description = "查询对象", required = true) SysUserSearchDTO sysUserSearchDTO) {
+        Page<SysUserVO> sysRolePage = sysUserService.listUserPage(query, sysUserSearchDTO);
         return Result.success("请求成功",RPage.build(sysRolePage));
     }
 
@@ -82,7 +82,7 @@ public class SystemManageController {
      */
     @GetMapping("getAllRoles")
     @Operation(operationId = "5",summary = "获取所有路由")
-    public Result<List<SysRoleOptionVo>> getAllRoles() {
+    public Result<List<SysRoleOptionVO>> getAllRoles() {
         return Result.success("请求成功",sysRoleService.getAllRoles());
     }
 

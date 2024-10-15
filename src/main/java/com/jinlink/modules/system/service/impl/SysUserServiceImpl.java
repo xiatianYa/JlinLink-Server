@@ -12,7 +12,7 @@ import com.jinlink.modules.system.entity.SysUserRole;
 import com.jinlink.modules.system.entity.dto.LoginFormDTO;
 import com.jinlink.modules.system.entity.dto.SysUserFormDTO;
 import com.jinlink.modules.system.entity.dto.SysUserSearchDTO;
-import com.jinlink.modules.system.entity.vo.SysUserVo;
+import com.jinlink.modules.system.entity.vo.SysUserVO;
 import com.jinlink.modules.system.mapper.SysRoleMapper;
 import com.jinlink.modules.system.mapper.SysUserRoleMapper;
 import com.mybatisflex.core.logicdelete.LogicDeleteManager;
@@ -73,11 +73,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
 
     @Override
-    public Page<SysUserVo> listUserPage(PageQuery query, SysUserSearchDTO sysUserSearchDTO) {
+    public Page<SysUserVO> listUserPage(PageQuery query, SysUserSearchDTO sysUserSearchDTO) {
         //查询所有角色
         List<SysRole> sysRoles = sysRoleMapper.selectAll();
         //返回数据列表
-        List<SysUserVo> sysUserVos = new ArrayList<>();
+        List<SysUserVO> sysUserVOS = new ArrayList<>();
         //构建查询对象
         QueryWrapper sysUserQuery = new QueryWrapper();
         sysUserQuery.eq("user_name", sysUserSearchDTO.getUserName());
@@ -91,7 +91,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         //数据列表
         List<SysUser> records = paginate.getRecords();
         records.forEach(item->{
-            SysUserVo sysUserVo = BeanUtil.copyProperties(item, SysUserVo.class);
+            SysUserVO sysUserVo = BeanUtil.copyProperties(item, SysUserVO.class);
             sysUserVo.setUserRoles(new ArrayList<>());
             QueryWrapper sysUserRoleQuery = new QueryWrapper();
             sysUserRoleQuery.eq("user_id", item.getId());
@@ -104,9 +104,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                     }
                 }
             });
-            sysUserVos.add(sysUserVo);
+            sysUserVOS.add(sysUserVo);
         });
-        return new Page<>(sysUserVos, paginate.getPageNumber(), paginate.getPageSize(),sysUserVos.size());
+        return new Page<>(sysUserVOS, paginate.getPageNumber(), paginate.getPageSize(), sysUserVOS.size());
     }
 
     @Override

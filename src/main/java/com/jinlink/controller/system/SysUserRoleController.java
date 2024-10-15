@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.beans.factory.annotation.Autowired;
 import com.jinlink.modules.system.entity.SysUserRole;
 import com.jinlink.modules.system.service.SysUserRoleService;
 import org.springframework.web.bind.annotation.RestController;
@@ -79,7 +78,7 @@ public class SysUserRoleController {
      * @return {@code true} 更新成功，{@code false} 更新失败
      */
     @PutMapping("update")
-    @Operation(operationId = "3",summary = "修改用户角色")
+    @Operation(operationId = "4",summary = "修改用户角色")
     public boolean update(@Parameter(description = "修改用户角色对象", required = true)@RequestBody SysUserRole sysUserRole) {
         return sysUserRoleService.updateById(sysUserRole);
     }
@@ -90,7 +89,7 @@ public class SysUserRoleController {
      * @return 所有数据
      */
     @GetMapping("list")
-    @Operation(operationId = "4",summary = "查询所有用户角色列表")
+    @Operation(operationId = "5",summary = "查询所有用户角色列表")
     public List<SysUserRole> list() {
         return sysUserRoleService.list();
     }
@@ -102,7 +101,7 @@ public class SysUserRoleController {
      * @return 用户角色管理详情
      */
     @GetMapping("getInfo/{id}")
-    @Operation(operationId = "4",summary = "查询用户角色详细")
+    @Operation(operationId = "6",summary = "查询用户角色详细")
     public SysUserRole getInfo(@Parameter(description = "用户ID", required = true)@PathVariable Serializable id) {
         return sysUserRoleService.getById(id);
     }
@@ -114,7 +113,7 @@ public class SysUserRoleController {
      * @return 分页对象
      */
     @GetMapping("page")
-    @Operation(operationId = "4",summary = "查询用户角色(分页)")
+    @Operation(operationId = "7",summary = "查询用户角色(分页)")
     public Page<SysUserRole> page(@Parameter(description = "查询用户角色(分页)对象", required = true)Page<SysUserRole> page) {
         return sysUserRoleService.page(page);
     }

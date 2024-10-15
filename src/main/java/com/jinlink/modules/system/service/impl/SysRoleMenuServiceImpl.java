@@ -1,10 +1,7 @@
 package com.jinlink.modules.system.service.impl;
 
-import cn.dev33.satoken.stp.StpUtil;
 import com.jinlink.common.api.Result;
-import com.jinlink.modules.system.entity.SysUserRole;
 import com.jinlink.modules.system.entity.dto.SysRoleMenuUpdateDTO;
-import com.jinlink.modules.system.service.SysUserRoleService;
 import com.mybatisflex.core.logicdelete.LogicDeleteManager;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
@@ -12,7 +9,6 @@ import com.jinlink.modules.system.entity.SysRoleMenu;
 import com.jinlink.modules.system.mapper.SysRoleMenuMapper;
 import com.jinlink.modules.system.service.SysRoleMenuService;
 import jakarta.annotation.Resource;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

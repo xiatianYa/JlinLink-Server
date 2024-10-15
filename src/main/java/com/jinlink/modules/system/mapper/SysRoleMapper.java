@@ -1,6 +1,6 @@
 package com.jinlink.modules.system.mapper;
 
-import com.jinlink.modules.system.entity.vo.SysRoleOptionVo;
+import com.jinlink.modules.system.entity.vo.SysRoleOptionVO;
 import com.mybatisflex.core.BaseMapper;
 import com.jinlink.modules.system.entity.SysRole;
 import org.apache.ibatis.annotations.Mapper;
@@ -16,5 +16,5 @@ import java.util.List;
 @Mapper
 public interface SysRoleMapper extends BaseMapper<SysRole> {
 
-    List<SysRoleOptionVo> getRoleAll();
+    List<SysRoleOptionVO> getRoleAll();
 }
