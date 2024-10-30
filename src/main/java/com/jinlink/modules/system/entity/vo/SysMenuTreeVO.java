@@ -22,9 +22,6 @@ import java.util.List;
 @Schema(name = "SysMenuPageVO", description = "菜单管理列表 VO 对象")
 public class SysMenuTreeVO {
 
-    @Serial
-    private static final long serialVersionUID = -6337922157556940336L;
-
     @Schema(description = "ID")
     private Long id;
 

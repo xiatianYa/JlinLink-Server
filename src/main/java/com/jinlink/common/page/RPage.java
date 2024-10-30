@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * 分页返回对象
+ * 自定义分页返回对象
  */
 @Data
 @AllArgsConstructor

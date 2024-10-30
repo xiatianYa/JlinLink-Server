@@ -1,5 +1,7 @@
 package com.jinlink.controller.system;
 
+import cn.dev33.satoken.annotation.SaCheckOr;
+import cn.dev33.satoken.annotation.SaCheckRole;
 import com.jinlink.common.api.Result;
 import com.jinlink.modules.system.entity.dto.SysMenuFormDTO;
 import com.mybatisflex.core.paginate.Page;
@@ -31,6 +33,7 @@ import java.util.List;
 @Tag(name = "菜单管理")
 @RequiredArgsConstructor
 @RequestMapping("/sysMenu")
+@SaCheckOr(role = @SaCheckRole("R_SUPER"))
 public class SysMenuController {
     @NonNull
     private SysMenuService sysMenuService;
@@ -43,8 +46,8 @@ public class SysMenuController {
      */
     @PostMapping("save")
     @Operation(operationId = "1",summary = "添加菜单")
-    public Result<String> save(@RequestBody SysMenuFormDTO sysMenu) {
-        return sysMenuService.saveMenu(sysMenu);
+    public Result<Boolean> save(@RequestBody SysMenuFormDTO sysMenu) {
+        return Result.success("新增成功!",sysMenuService.saveMenu(sysMenu));
     }
 
     /**
@@ -56,7 +59,7 @@ public class SysMenuController {
     @DeleteMapping("remove/{id}")
     @Operation(operationId = "2",summary = "删除菜单")
     public Result<Boolean> remove(@PathVariable Serializable id) {
-        return sysMenuService.removeMenuById(id);
+        return Result.success("删除成功!",sysMenuService.removeMenuById(id));
     }
 
     /**
@@ -68,7 +71,7 @@ public class SysMenuController {
     @DeleteMapping("removeByIds")
     @Operation(operationId = "3",summary = "删除多个菜单")
     public Result<Boolean> removeByIds(@Parameter(description = "用户IDS", required = true)@RequestBody List<Long> ids) {
-        return sysMenuService.removeMenuByIds(ids) ;
+        return Result.success("删除成功",sysMenuService.removeMenuByIds(ids));
     }
 
     /**
@@ -79,8 +82,8 @@ public class SysMenuController {
      */
     @PutMapping("update")
     @Operation(operationId = "4",summary = "修改菜单")
-    public Result<String> update(@RequestBody SysMenuFormDTO sysMenu) {
-        return sysMenuService.updateMenu(sysMenu);
+    public Result<Boolean> update(@RequestBody SysMenuFormDTO sysMenu) {
+        return Result.success("修改成功!",sysMenuService.updateMenu(sysMenu));
     }
 
     /**

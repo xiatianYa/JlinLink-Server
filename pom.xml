@@ -36,6 +36,10 @@
         <knife4j.version>4.5.0</knife4j.version>
         <hikaricp.version>4.0.3</hikaricp.version>
         <gson.version>2.10.1</gson.version>
+        <commons-codec.version>1.15</commons-codec.version>
+        <logback.version>1.5.6</logback.version>
+        <quartz.version>2.3.2</quartz.version>
+        <oshi.version>6.6.1</oshi.version>
     </properties>
     <dependencies>
         <!-- SpringBoot -->
@@ -72,41 +76,23 @@
             <version>${mybatis.flex.version}</version>
             <scope>provided</scope>
         </dependency>
-        <!-- Mybatis-flex-codegen -->
+        <!-- Mybatis-flex-codegen 代码生成器 -->
         <dependency>
             <groupId>com.mybatis-flex</groupId>
             <artifactId>mybatis-flex-codegen</artifactId>
             <version>${mybatis.flex.codegen.version}</version>
         </dependency>
-        <!-- HikariCP -->
+        <!-- HikariCP 数据库连接池 -->
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>${hikaricp.version}</version>
-        </dependency>
-        <!-- FastJson2 -->
-        <dependency>
-            <groupId>com.alibaba.fastjson2</groupId>
-            <artifactId>fastjson2</artifactId>
-            <version>${fastjson2.version}</version>
-        </dependency>
-        <!-- Druid 连接池 -->
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>druid-spring-boot-starter</artifactId>
-            <version>${druid.version}</version>
         </dependency>
         <!-- Mysql-->
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
             <scope>${mysql.version}</scope>
-        </dependency>
-        <!-- LomBok 工具包-->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
         </dependency>
         <!-- Sa-Token 权限认证-->
         <dependency>
@@ -125,7 +111,20 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-pool2</artifactId>
         </dependency>
-        <!-- 胡图工具包 -->
+
+        <!-- commons-codec -->
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>${commons-codec.version}</version>
+        </dependency>
+        <!-- LomBok 工具包-->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <!-- hutool 工具包 -->
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
@@ -137,17 +136,29 @@
             <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
             <version>${knife4j.version}</version>
         </dependency>
-        <!-- commons-codec -->
+        <!-- FastJson2 -->
         <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>1.15</version>
+            <groupId>com.alibaba.fastjson2</groupId>
+            <artifactId>fastjson2</artifactId>
+            <version>${fastjson2.version}</version>
         </dependency>
-        <!-- Gson -->
+        <!-- logback 日志服务 -->
         <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>${gson.version}</version>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
+        </dependency>
+        <!-- quartz 定时任务 -->
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+            <version>${quartz.version}</version> <!-- 请根据实际情况选择合适的版本 -->
+        </dependency>
+        <!-- 系统监控 Core -->
+        <dependency>
+            <groupId>com.github.oshi</groupId>
+            <artifactId>oshi-core</artifactId>
+            <version>${oshi.version}</version>
         </dependency>
     </dependencies>
 

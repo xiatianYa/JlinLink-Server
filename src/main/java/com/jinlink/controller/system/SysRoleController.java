@@ -1,5 +1,7 @@
 package com.jinlink.controller.system;
 
+import cn.dev33.satoken.annotation.SaCheckOr;
+import cn.dev33.satoken.annotation.SaCheckRole;
 import com.jinlink.common.api.Result;
 import com.jinlink.modules.system.entity.dto.SysRoleFormDTO;
 import com.mybatisflex.core.paginate.Page;
@@ -31,6 +33,7 @@ import java.util.List;
 @Tag(name = "角色管理")
 @RequiredArgsConstructor
 @RequestMapping("/sysRole")
+@SaCheckOr(role = @SaCheckRole("R_SUPER"))
 public class SysRoleController {
 
     @NonNull
@@ -44,8 +47,8 @@ public class SysRoleController {
      */
     @PostMapping("save")
     @Operation(operationId = "1",summary = "添加角色")
-    public Result<String> save(@Parameter(description = "添加对象", required = true)@RequestBody SysRoleFormDTO sysRoleFormDTO) {
-        return sysRoleService.saveRole(sysRoleFormDTO);
+    public Result<Boolean> save(@Parameter(description = "添加对象", required = true)@RequestBody SysRoleFormDTO sysRoleFormDTO) {
+        return Result.success("添加成功!",sysRoleService.saveRole(sysRoleFormDTO));
     }
 
     /**
@@ -68,8 +71,8 @@ public class SysRoleController {
      */
     @DeleteMapping("removeByIds")
     @Operation(operationId = "3",summary = "删除多个角色")
-    public Result<String> removeByIds(@Parameter(description = "用户IDS", required = true)@RequestBody List<Long> ids) {
-        return sysRoleService.deleteByIds(ids);
+    public Result<Boolean> removeByIds(@Parameter(description = "用户IDS", required = true)@RequestBody List<Long> ids) {
+        return Result.success("删除成功!",sysRoleService.deleteByIds(ids));
     }
 
     /**
@@ -80,8 +83,8 @@ public class SysRoleController {
      */
     @PutMapping("update")
     @Operation(operationId = "4",summary = "修改用户")
-    public Result<String> update(@Parameter(description = "修改对象", required = true)@RequestBody SysRoleFormDTO sysRoleFormDTO) {
-        return sysRoleService.updateRole(sysRoleFormDTO);
+    public Result<Boolean> update(@Parameter(description = "修改对象", required = true)@RequestBody SysRoleFormDTO sysRoleFormDTO) {
+        return Result.success("修改成功!",sysRoleService.updateRole(sysRoleFormDTO));
     }
 
     /**

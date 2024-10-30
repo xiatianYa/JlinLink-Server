@@ -11,8 +11,6 @@ import java.time.LocalDateTime;
 
 /**
  * 通用的实体类
- * @Auth summer
- * @createTime 2024/09/26;
  */
 
 @Data

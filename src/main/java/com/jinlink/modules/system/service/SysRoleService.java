@@ -19,13 +19,28 @@ import java.util.List;
  */
 public interface SysRoleService extends IService<SysRole> {
 
+    /**
+     * 获取角色(分页)
+     */
     Page<SysRole> listRolePage(PageQuery query, SysRoleSearchDTO sysRoleSearchDTO);
 
+    /**
+     * 获取全部角色
+     */
     List<SysRoleOptionVO> getAllRoles();
 
-    Result<String> updateRole(SysRoleFormDTO sysRoleFormDTO);
+    /**
+     * 修改角色
+     */
+    Boolean updateRole(SysRoleFormDTO sysRoleFormDTO);
 
-    Result<String> saveRole(SysRoleFormDTO sysRoleFormDTO);
+    /**
+     * 新增角色
+     */
+    Boolean saveRole(SysRoleFormDTO sysRoleFormDTO);
 
-    Result<String> deleteByIds(List<Long> ids);
+    /**
+     * 删除角色多个
+     */
+    Boolean deleteByIds(List<Long> ids);
 }

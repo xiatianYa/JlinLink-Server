@@ -4,8 +4,6 @@ import com.mybatisflex.core.BaseMapper;
 import com.jinlink.modules.system.entity.SysMenu;
 import org.apache.ibatis.annotations.Mapper;
 
-import java.util.List;
-
 /**
  * 菜单管理 映射层。
  *
@@ -15,5 +13,4 @@ import java.util.List;
 @Mapper
 public interface SysMenuMapper extends BaseMapper<SysMenu> {
 
-    List<String> getAllPages();
 }

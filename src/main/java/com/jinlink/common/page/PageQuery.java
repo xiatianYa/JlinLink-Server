@@ -12,7 +12,7 @@ import java.io.Serial;
 import java.io.Serializable;
 
 /**
- * 分页查询对象
+ * 自定义分页查询对象
  */
 @Getter
 @Setter

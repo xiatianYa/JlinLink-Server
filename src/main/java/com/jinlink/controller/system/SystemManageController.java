@@ -1,5 +1,7 @@
 package com.jinlink.controller.system;
 
+import cn.dev33.satoken.annotation.SaCheckOr;
+import cn.dev33.satoken.annotation.SaCheckRole;
 import com.jinlink.common.api.Result;
 import com.jinlink.common.page.PageQuery;
 import com.jinlink.common.page.RPage;
@@ -29,6 +31,7 @@ import java.util.List;
 @Tag(name = "系统管理")
 @RequiredArgsConstructor
 @RequestMapping("/systemManage")
+@SaCheckOr(role = @SaCheckRole("R_SUPER"))
 public class SystemManageController {
     @NonNull
     private SysRoleService sysRoleService;
@@ -81,7 +84,7 @@ public class SystemManageController {
      * 获取所有角色
      */
     @GetMapping("getAllRoles")
-    @Operation(operationId = "5",summary = "获取所有路由")
+    @Operation(operationId = "5",summary = "获取所有角色")
     public Result<List<SysRoleOptionVO>> getAllRoles() {
         return Result.success("请求成功",sysRoleService.getAllRoles());
     }

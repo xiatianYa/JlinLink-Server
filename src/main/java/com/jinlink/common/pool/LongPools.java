@@ -2,8 +2,6 @@ package com.jinlink.common.pool;
 
 /**
  * long 常量池
- *
- * @Author summer
  */
 public final class LongPools {
 

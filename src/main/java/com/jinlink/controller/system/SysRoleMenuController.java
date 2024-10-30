@@ -1,5 +1,7 @@
 package com.jinlink.controller.system;
 
+import cn.dev33.satoken.annotation.SaCheckOr;
+import cn.dev33.satoken.annotation.SaCheckRole;
 import com.jinlink.common.api.Result;
 import com.jinlink.modules.system.entity.dto.SysRoleMenuUpdateDTO;
 import com.mybatisflex.core.paginate.Page;
@@ -25,6 +27,7 @@ import java.util.List;
 @Tag(name = "菜单角色关联管理")
 @RequiredArgsConstructor
 @RequestMapping("/sysRoleMenu")
+@SaCheckOr(role = @SaCheckRole("R_SUPER"))
 public class SysRoleMenuController {
 
     @NonNull
@@ -85,7 +88,7 @@ public class SysRoleMenuController {
     @GetMapping("getRoleByRoleId/{roleId}")
     @Operation(operationId = "5",summary = "查询权限菜单列表")
     public Result<List<Long>> getRoleMenuByRoleId(@Parameter(description = "权限Id", required = true)@PathVariable Long roleId) {
-        return sysRoleMenuService.getRoleMenuByRoleId(roleId);
+        return Result.success("操作成功!",sysRoleMenuService.getRoleMenuByRoleId(roleId));
     }
 
     /**
@@ -121,6 +124,6 @@ public class SysRoleMenuController {
     @PutMapping("updateRoleMenu")
     @Operation(operationId = "8",summary = "修改角色的菜单权限")
     public Result<Boolean> updateRoleMenu(@Parameter(description = "角色菜单修改对象", required = true)@RequestBody SysRoleMenuUpdateDTO sysRoleMenuUpdateDTO) {
-        return sysRoleMenuService.updateRoleMenu(sysRoleMenuUpdateDTO);
+        return Result.success("修改成功!",sysRoleMenuService.updateRoleMenu(sysRoleMenuUpdateDTO));
     }
 }

@@ -5,8 +5,6 @@ import lombok.Data;
 
 /**
  * 统一API响应结果对象
- * @Auth summer
- * @createTime 2024/09/26;
  */
 @Data
 public class Result<T> {

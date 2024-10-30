@@ -1,6 +1,5 @@
 package com.jinlink.modules.system.service.impl;
 
-import com.jinlink.common.api.Result;
 import com.jinlink.modules.system.entity.dto.SysRoleMenuUpdateDTO;
 import com.mybatisflex.core.logicdelete.LogicDeleteManager;
 import com.mybatisflex.core.query.QueryWrapper;
@@ -9,6 +8,7 @@ import com.jinlink.modules.system.entity.SysRoleMenu;
 import com.jinlink.modules.system.mapper.SysRoleMenuMapper;
 import com.jinlink.modules.system.service.SysRoleMenuService;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,13 +20,17 @@ import java.util.List;
  * @author Summer
  * @since 1.0.0
  */
+@Slf4j
 @Service
 public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRoleMenu> implements SysRoleMenuService {
     @Resource
     private SysRoleMenuMapper sysRoleMenuMapper;
 
+    /**
+     * 修改角色菜单
+     */
     @Override
-    public Result<Boolean> updateRoleMenu(SysRoleMenuUpdateDTO sysRoleMenuUpdateDTO) {
+    public Boolean updateRoleMenu(SysRoleMenuUpdateDTO sysRoleMenuUpdateDTO) {
         //先删除之前添加的菜单权限
         QueryWrapper userRoleDeleteQuery = new QueryWrapper();
         userRoleDeleteQuery.eq("role_id",sysRoleMenuUpdateDTO.getRoleId());
@@ -42,11 +46,14 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
                     .build();
             sysRoleMenuMapper.insert(sysRoleMenu);
         }
-        return Result.success("更新成功");
+        return true;
     }
 
+    /**
+     * 获取角色菜单根据角色ID
+     */
     @Override
-    public Result<List<Long>> getRoleMenuByRoleId(Long roleId) {
+    public List<Long> getRoleMenuByRoleId(Long roleId) {
         //通过角色获取菜单列表
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("role_id",roleId);
@@ -55,6 +62,6 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
         for (SysRoleMenu sysRoleMenu : sysRoleMenus) {
             if (!userMenus.contains(sysRoleMenu.getMenuId())) userMenus.add(sysRoleMenu.getMenuId());
         }
-        return Result.success("获取成功!",userMenus);
+        return userMenus;
     }
 }

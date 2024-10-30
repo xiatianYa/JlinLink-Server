@@ -5,7 +5,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
-import com.jinlink.common.api.Result;
+import com.jinlink.common.exception.JinLinkException;
 import com.jinlink.common.page.PageQuery;
 import com.jinlink.common.page.RPage;
 import com.jinlink.modules.system.entity.SysPermission;
@@ -24,6 +24,7 @@ import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.jinlink.modules.system.entity.SysMenu;
 import com.jinlink.modules.system.mapper.SysMenuMapper;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -35,6 +36,7 @@ import java.util.*;
  * @author Summer
  * @since 1.0.0
  */
+@Slf4j
 @Service
 public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> implements SysMenuService {
     @Resource
@@ -48,25 +50,37 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     @Resource
     private SysRolePermissionService sysRolePermissionService;
 
+    /**
+     * 获取所有菜单(分页)
+     */
     @Override
     public List<String> getAllPages() {
-        return sysMenuMapper.getAllPages();
+        return sysMenuMapper.selectAll().stream().map(SysMenu::getRouteName).toList();
     }
 
+    /**
+     * 获取菜单树
+     */
     @Override
     public List<SysMenuTreeVO> getMenuTree() {
         List<SysMenu> sysMenus = sysMenuMapper.selectAll();
         return initMenuChildren(sysMenus);
     }
 
+    /**
+     * 获取菜单列表(分页)
+     */
     @Override
     public RPage<SysMenuVO> getMenuList(PageQuery query) {
         Page<SysMenu> paginate = sysMenuMapper.paginate(query.getCurrent(), query.getSize(), new QueryWrapper());
         return iniSysMenuChildren(paginate);
     }
 
+    /**
+     * 修改菜单
+     */
     @Override
-    public Result<String> updateMenu(SysMenuFormDTO sysMenuVo) {
+    public Boolean updateMenu(SysMenuFormDTO sysMenuVo) {
         //拷贝属性到SysMenu
         SysMenu sysMenu = BeanUtil.copyProperties(sysMenuVo, SysMenu.class);
         //转换属性
@@ -116,14 +130,17 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         });
         int isTrue = sysMenuMapper.update(sysMenu);
         if (ObjectUtil.isNotNull(isTrue)){
-            return Result.success("更改成功!");
+            return true;
         }else {
-            return Result.failure("更改失败!");
+            throw new JinLinkException("更新失败!");
         }
     }
 
+    /**
+     * 新增菜单
+     */
     @Override
-    public Result<String> saveMenu(SysMenuFormDTO sysMenuVo) {
+    public Boolean saveMenu(SysMenuFormDTO sysMenuVo) {
         //拷贝属性到SysMenu
         SysMenu sysMenu = BeanUtil.copyProperties(sysMenuVo, SysMenu.class);
         //转换属性
@@ -146,9 +163,9 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         });
         int isTrue = sysMenuMapper.insert(sysMenu);
         if (ObjectUtil.isNotNull(isTrue)) {
-            return Result.success("新增成功!");
+            return true;
         }else{
-            return Result.failure("新增失败!");
+            throw new JinLinkException("新增失败!");
         }
     }
 
@@ -156,13 +173,15 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
      * 删除菜单 及 子菜单
      */
     @Override
-    public Result<Boolean> removeMenuById(Serializable id) {
+    public Boolean removeMenuById(Serializable id) {
         //先删除当前菜单
         LogicDeleteManager.execWithoutLogicDelete(()->
                 sysMenuMapper.deleteById(id)
         );
         //删除当前菜单下的子菜单
-        sysMenuMapper.deleteByQuery(new QueryWrapper().eq("parent_id", id));
+        LogicDeleteManager.execWithoutLogicDelete(()->
+        sysMenuMapper.deleteByQuery(new QueryWrapper().eq("parent_id", id))
+        );
 
         //删除角色菜单表关联
         LogicDeleteManager.execWithoutLogicDelete(()->
@@ -172,7 +191,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         //删除按钮表数据
         QueryWrapper deletePermissionWrapper = new QueryWrapper();
         deletePermissionWrapper.eq("menu_id",id);
-        List<Long> sysPermissionDeleteList = sysPermissionService.list(deletePermissionWrapper).stream().map(SysPermission::getId).toList();
+        List<Long> sysPermissionDeleteList = sysPermissionService
+                .list(deletePermissionWrapper).stream().map(SysPermission::getId).toList();
         LogicDeleteManager.execWithoutLogicDelete(()->
                 sysPermissionService.remove(deletePermissionWrapper)
         );
@@ -185,19 +205,23 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
                     sysRolePermissionService.remove(deleteRolePermissionWrapper)
             );
         }
-        return Result.success("删除成功!", true);
+        return true;
     }
 
     /**
      * 删除多个菜单 及其下 子菜单
      */
     @Override
-    public Result<Boolean> removeMenuByIds(List<Long> ids) {
+    public Boolean removeMenuByIds(List<Long> ids) {
         LogicDeleteManager.execWithoutLogicDelete(()->
                 sysMenuMapper.deleteBatchByIds(ids)
         );
+
         //删除当前菜单下的子菜单
-        sysMenuMapper.deleteByQuery(new QueryWrapper().in("parent_id", ids));
+        LogicDeleteManager.execWithoutLogicDelete(()->
+        sysMenuMapper.deleteByQuery(new QueryWrapper().in("parent_id", ids))
+        );
+
         //删除角色菜单表关联
         LogicDeleteManager.execWithoutLogicDelete(()->
                 sysRoleMenuService.remove(new QueryWrapper().in("menu_id",ids))
@@ -219,11 +243,14 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
                     sysRolePermissionService.remove(deleteRolePermissionWrapper)
             );
         }
-        return Result.success("删除成功!", true);
+        return true;
     }
 
+    /**
+     * 获取用户路由权限
+     */
     @Override
-    public Result<SysUserRouteVO> getUserRoutes() {
+    public SysUserRouteVO getUserRoutes() {
         List<SysUserRouteVO.Route> resultRoute = new ArrayList<>();
         //查询用户角色
         List<SysUserRole> sysUserRoles = sysUserRoleService
@@ -239,68 +266,34 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         //查询用户菜单信息
         for (SysRoleMenu sysRoleMenu : sysRoleMenus) {
             //父路由
-            SysMenu sysMenu = sysMenuMapper.selectOneByQuery(new QueryWrapper().eq("id", sysRoleMenu.getMenuId()).eq("parent_id",0));
+            SysMenu sysMenu = sysMenuMapper.selectOneByQuery(new QueryWrapper()
+                    .eq("id", sysRoleMenu.getMenuId())
+                    .eq("status",1)
+                    .eq("parent_id",0));
             if (ObjectUtil.isNull(sysMenu)) continue;
             //查询当前路由下的子路由
-            List<SysMenu> sysMenus = sysMenuMapper.selectListByQuery(new QueryWrapper().eq("parent_id", sysRoleMenu.getMenuId()));
-            SysUserRouteVO.Route route = SysUserRouteVO.Route.builder()
-                    .name(sysMenu.getRouteName())
-                    .path(sysMenu.getRoutePath())
-                    .component(sysMenu.getComponent())
-                    .children(new ArrayList<>())
-                    .meta(SysUserRouteVO.Meta.builder()
-                            .title(sysMenu.getRouteName())
-                            .i18nKey(sysMenu.getI18nKey())
-                            .keepAlive(sysMenu.getKeepAlive().equals("Y"))
-                            .constant(sysMenu.getConstant().equals("Y"))
-                            .icon(sysMenu.getIconType().equals("1") ? sysMenu.getIcon() : null)
-                            .localIcon(sysMenu.getIconType().equals("2") ? sysMenu.getIcon() : null)
-                            .order(sysMenu.getSort())
-                            .href(sysMenu.getHref())
-                            .hideInMenu(sysMenu.getHideInMenu().equals("Y"))
-                            .activeMenu(sysMenu.getActiveMenu())
-                            .multiTab(sysMenu.getMultiTab().equals("Y"))
-                            .fixedIndexInTab(sysMenu.getFixedIndexInTab())
-                            .query(JSON.parseObject(sysMenu.getQuery(), new TypeReference<>() {
-                            }))
-                            .build())
-                    .build();
+            List<SysMenu> sysMenus = sysMenuMapper.selectListByQuery(new QueryWrapper()
+                    .eq("status",1)
+                    .eq("parent_id", sysRoleMenu.getMenuId()));
+            SysUserRouteVO.Route route = SysUserRouteVOBuilder(sysMenu);
             //添加子路由
             for (SysMenu children : sysMenus) {
-                SysUserRouteVO.Route childrenRouter = SysUserRouteVO.Route.builder()
-                        .name(children.getRouteName())
-                        .path(children.getRoutePath())
-                        .component(children.getComponent())
-                        .meta(SysUserRouteVO.Meta.builder()
-                                .title(children.getRouteName())
-                                .i18nKey(children.getI18nKey())
-                                .keepAlive(children.getKeepAlive().equals("Y"))
-                                .constant(children.getConstant().equals("Y"))
-                                .icon(children.getIconType().equals("1") ? children.getIcon() : null)
-                                .localIcon(children.getIconType().equals("2") ? children.getIcon() : null)
-                                .order(children.getSort())
-                                .href(children.getHref())
-                                .hideInMenu(children.getHideInMenu().equals("Y"))
-                                .activeMenu(children.getActiveMenu())
-                                .multiTab(children.getMultiTab().equals("Y"))
-                                .fixedIndexInTab(children.getFixedIndexInTab())
-                                .query(JSON.parseObject(sysMenu.getQuery(), new TypeReference<>() {
-                                }))
-                                .build())
-                        .build();
+                SysUserRouteVO.Route childrenRouter = SysUserRouteVOBuilder(children);
                 route.getChildren().add(childrenRouter);
             }
             resultRoute.add(route);
         }
-        SysUserRouteVO routers = SysUserRouteVO.builder()
+        return SysUserRouteVO.builder()
                 .home("home")
                 .routes(resultRoute)
                 .build();
-        return Result.success("请求成功",routers);
     }
 
+    /**
+     * 获取常量路由
+     */
     @Override
-    public Result<List<Map<String, Object>>> getConstantRoutes() {
+    public List<Map<String, Object>> getConstantRoutes() {
         List<Map<String, Object>> routes = new ArrayList<>();
         // 添加login路由
         Map<String, Object> loginRoute = new HashMap<>();
@@ -329,9 +322,12 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             route.put("meta", meta);
             routes.add(route);
         }
-        return Result.success("操作成功!",routes);
+        return routes;
     }
 
+    /**
+     * 初始化子菜单分页
+     */
     private RPage<SysMenuVO> iniSysMenuChildren(Page<SysMenu> paginate) {
         List<SysMenu> sysMenus = paginate.getRecords();
         // 根据 parentId 获取菜单列表
@@ -358,6 +354,9 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         return RPage.build(new Page<>(menuPageVOList, paginate.getPageNumber(), paginate.getPageSize(),menuPageVOList.size()));
     }
 
+    /**
+     * 初始化子菜单
+     */
     private  List<SysMenuTreeVO> initMenuChildren(List<SysMenu> sysMenus) {
         // 根据 parentId 获取菜单列表
         List<SysMenu> parentMenuList = sysMenus.stream()
@@ -388,6 +387,10 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         menuPageVOList.sort(Comparator.comparing(SysMenuTreeVO::getSort, Comparator.nullsLast(Comparator.naturalOrder())));
         return menuPageVOList;
     }
+
+    /**
+     * 构建sysMenuVO
+     */
     public SysMenuVO sysMenuVOBuilder(SysMenu sysMenu){
         QueryWrapper permissionWrapper = new QueryWrapper();
         permissionWrapper.eq("menu_id", sysMenu.getId());
@@ -418,13 +421,41 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
                 .constant(sysMenu.getConstant().equals("Y"))
                 .href(sysMenu.getHref())
                 .activeMenu(sysMenu.getActiveMenu())
-                .sort(sysMenu.getSort())
+                .order(sysMenu.getOrder())
                 .multiTab(sysMenu.getMultiTab().equals("Y"))
                 .fixedIndexInTab(sysMenu.getFixedIndexInTab())
                 .buttons(buVoList)
                 .query(JSON.parseObject(sysMenu.getQuery(), new TypeReference<>() {
                 }))
                 .status(sysMenu.getStatus())
+                .build();
+    }
+
+    /**
+     * 构建SysUserRouteVO.Route
+     */
+    public SysUserRouteVO.Route SysUserRouteVOBuilder(SysMenu sysMenu){
+        return SysUserRouteVO.Route.builder()
+                .name(sysMenu.getRouteName())
+                .path(sysMenu.getRoutePath())
+                .component(sysMenu.getComponent())
+                .children(new ArrayList<>())
+                .meta(SysUserRouteVO.Meta.builder()
+                        .title(sysMenu.getRouteName())
+                        .i18nKey(sysMenu.getI18nKey())
+                        .keepAlive(sysMenu.getKeepAlive().equals("Y"))
+                        .constant(sysMenu.getConstant().equals("Y"))
+                        .icon(sysMenu.getIconType().equals("1") ? sysMenu.getIcon() : null)
+                        .localIcon(sysMenu.getIconType().equals("2") ? sysMenu.getIcon() : null)
+                        .order(sysMenu.getOrder())
+                        .href(sysMenu.getHref())
+                        .hideInMenu(sysMenu.getHideInMenu().equals("Y"))
+                        .activeMenu(sysMenu.getActiveMenu())
+                        .multiTab(sysMenu.getMultiTab().equals("Y"))
+                        .fixedIndexInTab(sysMenu.getFixedIndexInTab())
+                        .query(JSON.parseObject(sysMenu.getQuery(), new TypeReference<>() {
+                        }))
+                        .build())
                 .build();
     }
 }

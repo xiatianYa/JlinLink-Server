@@ -6,6 +6,9 @@ import com.mybatisflex.annotation.InsertListener;
 
 import java.time.LocalDateTime;
 
+/**
+ * MybatisFlex自定义字段注入
+ */
 public class MyInsertListener implements InsertListener {
     @Override
     public void onInsert(Object entity) {

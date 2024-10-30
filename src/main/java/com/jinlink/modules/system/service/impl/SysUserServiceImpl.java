@@ -3,7 +3,6 @@ package com.jinlink.modules.system.service.impl;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
-import com.jinlink.common.api.Result;
 import com.jinlink.common.exception.JinLinkException;
 import com.jinlink.common.page.PageQuery;
 import com.jinlink.common.pool.StringPools;
@@ -23,6 +22,7 @@ import com.jinlink.modules.system.entity.SysUser;
 import com.jinlink.modules.system.mapper.SysUserMapper;
 import com.jinlink.modules.system.service.SysUserService;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
@@ -38,6 +38,7 @@ import java.util.Map;
  * @author Summer
  * @since 1.0.0
  */
+@Slf4j
 @Service
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements SysUserService {
     @Resource
@@ -47,6 +48,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Resource
     private SysUserRoleMapper sysUserRoleMapper;
 
+    /**
+     * 用户登录
+     */
     @Override
     public Map<String, String> userNameLogin(LoginFormDTO loginFormDTO) {
         SysUser userForUserName = sysUserMapper.getUserByUserName(loginFormDTO.getUserName());
@@ -72,6 +76,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         return Map.of("token", StpUtil.getTokenValue(),"refreshToken", StpUtil.getTokenValue());
     }
 
+    /**
+     * 用户分页
+     */
     @Override
     public Page<SysUserVO> listUserPage(PageQuery query, SysUserSearchDTO sysUserSearchDTO) {
         //查询所有角色
@@ -109,17 +116,23 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         return new Page<>(sysUserVOS, paginate.getPageNumber(), paginate.getPageSize(), sysUserVOS.size());
     }
 
+    /**
+     * 删除多个用户
+     */
     @Override
-    public Result<Boolean> removeByIds(List<Long> ids) {
+    public Boolean removeByIds(List<Long> ids) {
         int isTrue = sysUserMapper.deleteBatchByIds(ids);
         if (isTrue == 0) {
-            return Result.failure("操作失败");
+            throw new JinLinkException("删除失败!");
         }
-        return Result.success("操作成功", true);
+        return true;
     }
 
+    /**
+     * 修改用户
+     */
     @Override
-    public Result<String> updateUser(SysUserFormDTO sysUser) {
+    public Boolean updateUser(SysUserFormDTO sysUser) {
         int isTrue = sysUserMapper.update(sysUser);
         if (ObjectUtil.isNotNull(isTrue)){
             //更新用户权限列表
@@ -144,18 +157,21 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                     sysUserRoleMapper.insert(sysUserRole);
                 }
             });
-            return Result.success("更新成功");
+            return true;
         }else{
-            return Result.failure("更新失败");
+            throw new JinLinkException("修改失败!");
         }
     }
 
+    /**
+     * 新增用户
+     */
     @Override
-    public Result<String> saveUser(SysUserFormDTO sysUser) {
+    public Boolean saveUser(SysUserFormDTO sysUser) {
         //查询当前用户是否已存在
         SysUser userForUserName = sysUserMapper.getUserByUserName(sysUser.getUserName());
         if (ObjectUtil.isNotNull(userForUserName)) {
-            return Result.failure("用户已存在");
+            throw new JinLinkException("用户已存在!");
         }else{
             sysUserMapper.insert(sysUser);
             //添加用户权限
@@ -172,7 +188,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 sysUserRole.setRoleId(sysRole.getId());
                 sysUserRoleMapper.insert(sysUserRole);
             });
-            return Result.success("新增成功");
+            return true;
         }
     }
 }

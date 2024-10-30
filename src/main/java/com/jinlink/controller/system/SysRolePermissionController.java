@@ -114,7 +114,7 @@ public class SysRolePermissionController {
     @GetMapping("getPermissionByRoleId/{roleId}")
     @Operation(operationId = "7",summary = "查询角色拥有的按钮权限列表")
     public Result<List<Long>> getPermissionByRoleId(@Parameter(description = "按钮权限角色ID", required = true)@PathVariable Long roleId) {
-        return sysRolePermissionService.getPermissionByRoleId(roleId);
+        return Result.success("操作成功!",sysRolePermissionService.getPermissionByRoleId(roleId));
     }
 
     /**
@@ -126,6 +126,6 @@ public class SysRolePermissionController {
     @PutMapping("updateByRoleId")
     @Operation(operationId = "8",summary = "修改按钮权限角色(多个)")
     public Result<Boolean> updateByRoleId(@Parameter(description = "修改对象", required = true)@RequestBody SysRolePermissionFormDTO sysRolePermissionFormDTO) {
-        return sysRolePermissionService.updateByRoleId(sysRolePermissionFormDTO);
+        return Result.success("修改成功!",sysRolePermissionService.updateByRoleId(sysRolePermissionFormDTO));
     }
 }

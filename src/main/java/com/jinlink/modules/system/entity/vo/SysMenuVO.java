@@ -69,7 +69,7 @@ public class SysMenuVO extends BaseVO {
     private String activeMenu;
 
     @Schema(description = "排序值")
-    private Integer sort;
+    private Integer order;
 
     @Schema(description = "支持多标签(Y:是,N:否)")
     private Boolean multiTab;

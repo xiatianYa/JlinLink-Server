@@ -86,7 +86,7 @@ public class SysMenuFormDTO extends BaseEntity {
     /**
      * 排序值
      */
-    private Integer sort;
+    private Integer order;
 
     /**
      * 支持多标签(Y:是,N:否)

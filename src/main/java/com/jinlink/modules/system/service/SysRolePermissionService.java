@@ -18,8 +18,19 @@ import java.util.List;
 @Service
 public interface SysRolePermissionService extends IService<SysRolePermission> {
 
-    Result<List<Long>> getPermissionByRoleId(Long roleId);
-    @Transactional
+    /**
+     * 获取按钮根据角色ID
+     */
+    List<Long> getPermissionByRoleId(Long roleId);
 
-    Result<Boolean> updateByRoleId(SysRolePermissionFormDTO sysRolePermissionFormDTO);
+    /**
+     * 修改角色按钮
+     */
+    @Transactional
+    Boolean updateByRoleId(SysRolePermissionFormDTO sysRolePermissionFormDTO);
+
+    /**
+     * 获取用户按钮列表
+     */
+    String[] getUserPermissions(Long id);
 }

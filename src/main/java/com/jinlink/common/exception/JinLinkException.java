@@ -7,8 +7,6 @@ import java.io.Serial;
 
 /**
  * 自定义业务异常
- *
- * @Author summer
  */
 @Getter
 @Setter

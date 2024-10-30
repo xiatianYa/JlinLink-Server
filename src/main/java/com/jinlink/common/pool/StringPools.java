@@ -2,8 +2,6 @@ package com.jinlink.common.pool;
 
 /**
  * 通用字符串常量
- *
- * @Author summer
  */
 public final class StringPools {
 

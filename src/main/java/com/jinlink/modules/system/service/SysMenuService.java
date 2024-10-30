@@ -23,25 +23,52 @@ import java.util.Map;
  */
 public interface SysMenuService extends IService<SysMenu> {
 
+    /**
+     * 获取全部菜单(分页)
+     */
     List<String> getAllPages();
 
+    /**
+     * 获取菜单树
+     */
     List<SysMenuTreeVO> getMenuTree();
 
+    /**
+     * 获取菜单列表(分页)
+     */
     RPage<SysMenuVO> getMenuList(PageQuery query);
 
+    /**
+     * 修改菜单
+     */
     @Transactional
-    Result<String> updateMenu(SysMenuFormDTO sysMenu);
+    Boolean updateMenu(SysMenuFormDTO sysMenu);
 
+    /**
+     * 新增菜单
+     */
     @Transactional
-    Result<String> saveMenu(SysMenuFormDTO sysMenu);
+    Boolean saveMenu(SysMenuFormDTO sysMenu);
 
+    /**
+     * 删除菜单单个
+     */
     @Transactional
-    Result<Boolean> removeMenuById(Serializable id);
+    Boolean removeMenuById(Serializable id);
 
+    /**
+     * 删除菜单多个
+     */
     @Transactional
-    Result<Boolean> removeMenuByIds(List<Long> ids);
+    Boolean removeMenuByIds(List<Long> ids);
 
-    Result<SysUserRouteVO> getUserRoutes();
+    /**
+     * 获取用户路由
+     */
+    SysUserRouteVO getUserRoutes();
 
-    Result<List<Map<String, Object>>> getConstantRoutes();
+    /**
+     * 获取常量路由
+     */
+    List<Map<String, Object>> getConstantRoutes();
 }

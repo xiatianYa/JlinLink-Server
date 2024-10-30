@@ -1,5 +1,7 @@
 package com.jinlink.controller.system;
 
+import cn.dev33.satoken.annotation.SaCheckOr;
+import cn.dev33.satoken.annotation.SaCheckRole;
 import com.jinlink.common.api.Result;
 import com.jinlink.modules.system.entity.dto.SysUserFormDTO;
 import com.mybatisflex.core.paginate.Page;
@@ -31,6 +33,7 @@ import java.util.List;
 @Tag(name = "用户管理")
 @RequiredArgsConstructor
 @RequestMapping("/sysUser")
+@SaCheckOr(role = @SaCheckRole("R_SUPER"))
 public class SysUserController {
 
     @NonNull
@@ -44,8 +47,8 @@ public class SysUserController {
      */
     @PostMapping("save")
     @Operation(operationId = "1",summary = "添加用户")
-    public Result<String> save(@Parameter(description = "添加对象", required = true)@RequestBody SysUserFormDTO sysUser) {
-        return sysUserService.saveUser(sysUser);
+    public Result<Boolean> save(@Parameter(description = "添加对象", required = true)@RequestBody SysUserFormDTO sysUser) {
+        return Result.success("新增成功",sysUserService.saveUser(sysUser));
     }
 
     /**
@@ -57,7 +60,7 @@ public class SysUserController {
     @DeleteMapping("removeByIds")
     @Operation(operationId = "2",summary = "删除多个用户")
     public Result<Boolean> removeByIds(@Parameter(description = "用户IDS", required = true)@RequestBody List<Long> ids) {
-        return sysUserService.removeByIds(ids) ;
+        return Result.success("删除成功!",sysUserService.removeByIds(ids)) ;
     }
 
     /**
@@ -80,8 +83,8 @@ public class SysUserController {
      */
     @PutMapping("update")
     @Operation(operationId = "4",summary = "修改用户对象")
-    public Result<String> update(@Parameter(description = "修改对象", required = true)@RequestBody SysUserFormDTO sysUser) {
-        return sysUserService.updateUser(sysUser);
+    public Result<Boolean> update(@Parameter(description = "修改对象", required = true)@RequestBody SysUserFormDTO sysUser) {
+        return Result.success("更新成功!",sysUserService.updateUser(sysUser));
     }
 
     /**

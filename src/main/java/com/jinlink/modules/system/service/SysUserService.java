@@ -22,16 +22,31 @@ import java.util.Map;
  */
 public interface SysUserService extends IService<SysUser> {
 
+    /**
+     * 用户登录
+     */
     Map<String, String> userNameLogin(LoginFormDTO loginFormDTO);
 
+    /**
+     * 获取全部用户(分页)
+     */
     Page<SysUserVO> listUserPage(PageQuery query, SysUserSearchDTO sysUserSearchDTO);
 
+    /**
+     * 删除用户多个
+     */
     @Transactional
-    Result<Boolean> removeByIds(List<Long> ids);
+    Boolean removeByIds(List<Long> ids);
 
+    /**
+     * 修改用户
+     */
     @Transactional
-    Result<String> updateUser(SysUserFormDTO sysUser);
+    Boolean updateUser(SysUserFormDTO sysUser);
 
+    /**
+     * 新增用户
+     */
     @Transactional
-    Result<String> saveUser(SysUserFormDTO sysUser);
+    Boolean saveUser(SysUserFormDTO sysUser);
 }

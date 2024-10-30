@@ -1,5 +1,6 @@
 package com.jinlink.controller.system;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import com.jinlink.common.api.Result;
 import com.jinlink.modules.system.entity.dto.LoginFormDTO;
 import com.jinlink.modules.system.entity.vo.SysUserInfoVO;
@@ -13,8 +14,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+/**
+ * 权限管理 控制层。
+ *
+ * @author Summer
+ * @since 1.0.0
+ */
 @RestController
-@Tag(name = "Auth")
+@Tag(name = "权限管理")
 @RequiredArgsConstructor
 @RequestMapping("/auth")
 public class AuthenticationController {
@@ -29,12 +36,14 @@ public class AuthenticationController {
 
     @GetMapping("/getUserInfo")
     @Operation(operationId = "2",summary = "获取用户权限信息")
+    @SaCheckLogin
     public Result<SysUserInfoVO> getUserInfo(){
         return Result.success("请求成功",authenticationFacade.getUserInfo());
     }
 
     @PostMapping("/refreshToken")
     @Operation(operationId = "3",summary = "刷新Token过期时间")
+    @SaCheckLogin
     public Result<String> refreshToken(){
         return Result.success("请求成功",null);
     }

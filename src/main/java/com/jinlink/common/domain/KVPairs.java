@@ -11,7 +11,6 @@ import java.io.Serializable;
 /**
  * 键值对
  */
-
 @Data
 @Builder
 @AllArgsConstructor

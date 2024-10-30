@@ -18,9 +18,9 @@ import java.util.List;
  */
 @Service
 public interface SysRoleMenuService extends IService<SysRoleMenu> {
+
     @Transactional
+    Boolean updateRoleMenu(SysRoleMenuUpdateDTO sysRoleMenuUpdateDTO);
 
-    Result<Boolean> updateRoleMenu(SysRoleMenuUpdateDTO sysRoleMenuUpdateDTO);
-
-    Result<List<Long>> getRoleMenuByRoleId(Long roleId);
+    List<Long> getRoleMenuByRoleId(Long roleId);
 }

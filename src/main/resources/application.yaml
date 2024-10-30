@@ -10,24 +10,19 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
-      #连接超时时间（毫秒），等待从连接池获取连接的最大时间。
-      connection-timeout: 10000
-      #空闲连接超时时间（毫秒），一个连接在连接池中保持空闲而不被关闭的最大时间。
-      idle-timeout: 30000
-      #连接的最大生命周期（毫秒），连接在连接池中存活的最长时间，超过该时间后连接将被关闭。
+      pool-name: DatehikariCP
+      #最小空闲连接数
+      minimum-idle: 5
+      #空闲链接最大存活时间，默认600000（10分钟）
+      idle-timeout: 1800000
+      #最大连接数
+      maximum-pool-size: 10
+      #从连接池返回的链接自动提交
+      auto-commit: true
+      #链接最大存活时间，0表示永久存活，默认1800000（30分钟）
       max-lifetime: 1800000
-      #连接池中维护的最小空闲连接数。
-      minimum-idle: 50
-      #连接池允许的最大连接数。
-      maximum-pool-size: 100
-      #连接验证超时时间（毫秒），用于配置从连接池获取连接时验证连接是否有效的超时时间。
-      validation-timeout: 3000
-      #初始化失败超时时间（毫秒），在放弃初始化连接池之前的超时时间。
-      initialization-fail-timeout: 60
-      #连接泄漏检测阈值（毫秒），如果连接在池中持有时间超过该值且未关闭，则记录一条警告日志。设置为0表示禁用泄漏检测。
-      leak-detection-threshold: 0
-      #连接测试查询，用于验证从连接池获取的连接是否仍然有效。注意，对于MySQL 8.x，通常不需要这个查询，因为HikariCP会自动使用JDBC 4.0的isValid()方法。
-      connection-test-query: SELECT 1
+      #连接超时时间，默认（30秒）
+      connection-timeout: 30000
   data:
     redis:
       # Redis数据库索引（默认为0）
@@ -39,18 +34,48 @@ spring:
       # Redis服务器连接密码（默认为空）
       password: sr2539195984
       # 连接超时时间
-      timeout: 10s
-      lettuce:
-        pool:
-          # 连接池最大连接数
-          max-active: 200
-          # 连接池最大阻塞等待时间（使用负值表示没有限制）
-          max-wait: 100ms
-          # 连接池中的最大空闲连接
-          max-idle: 10
-          # 连接池中的最小空闲连接
-          min-idle: 0
-          enabled: true
+      timeout: 5s
+  quartz:
+    # 任务存储类型
+    job-store-type: jdbc
+    # 关闭时等待任务完成
+    wait-for-jobs-to-complete-on-shutdown: false
+    # 是否覆盖已有的任务
+    overwrite-existing-jobs: true
+    # 是否自动启动计划程序
+    auto-startup: true
+    # 延迟启动
+    startup-delay: 0s
+    jdbc:
+      # 数据库架构初始化模式（never：从不进行初始化；always：每次都清空数据库进行初始化；embedded：只初始化内存数据库（默认值））
+      initialize-schema: never
+    # 相关属性配置
+    properties:
+      org:
+        quartz:
+          scheduler:
+            # 调度器实例名称
+            instanceName: QuartzScheduler
+            # 分布式节点ID自动生成
+            instanceId: AUTO
+          jobStore:
+            class: org.springframework.scheduling.quartz.LocalDataSourceJobStore
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+            # 表前缀
+            tablePrefix: mon_qrtz_
+            # 是否开启集群
+            isClustered: false
+            # 数据源别名（自定义）
+            dataSource: quartz
+            # 分布式节点有效性检查时间间隔（毫秒）
+            clusterCheckinInterval: 10000
+            useProperties: false
+          # 线程池配置
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 10
+            threadPriority: 5
+            threadsInheritContextClassLoaderOfInitializingThread: true
 
 # Sa-Token 配置
 sa-token:
@@ -80,15 +105,20 @@ springdoc:
   api-docs:
     path: /v3/api-docs
   group-configs:
-    - group: 'system'
+    - group: '系统管理'
       paths-to-match: '/**'
       packages-to-scan: com.jinlink.controller.system
+    - group: '监控管理'
+      paths-to-match: '/**'
+      packages-to-scan: com.jinlink.controller.monitor
 
 # knife4j的增强配置,不需要增强可以不配
 knife4j:
   enable: true
   setting:
     language: zh_cn
+    enable-footer: false
+    enable-footer-custom: true
 
 # MybatisFlex的配置项
 mybatis-flex:
@@ -99,4 +129,4 @@ mybatis-flex:
   type-handlers-package: com.jinlink.modules
 logging:
   level:
-    default: debug
+    default: info

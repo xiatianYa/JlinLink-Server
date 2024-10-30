@@ -31,10 +31,6 @@ public class AuthenticationFacadeImpl implements IAuthenticationFacade {
     @Resource
     private SysUserRoleService sysUserRoleService;
     @Resource
-    private SysRoleService sysRoleService;
-    @Resource
-    private SysPermissionService sysPermissionService;
-    @Resource
     private SysRolePermissionService sysRolePermissionService;
 
     /**
@@ -61,22 +57,11 @@ public class AuthenticationFacadeImpl implements IAuthenticationFacade {
         SysUserInfoVO sysUserInfoVo = new SysUserInfoVO();
         sysUserInfoVo.setUserId(sysUser.getId());
         sysUserInfoVo.setUserName(sysUser.getNickName());
-        //获取用户角色信息
-        List<SysUserRole> sysUserRoles = sysUserRoleService.list(new QueryWrapper().eq("user_id", sysUser.getId()));
-        //查询角色表
-        List<SysRole> sysRoles = sysRoleService.
-                list(new QueryWrapper().eq("status",1).in("id", sysUserRoles.stream().map(SysUserRole::getRoleId).collect(Collectors.toList())));
-        //用户所拥有的权限
-        String[] userRoles = sysRoles.stream().map(SysRole::getRoleCode).toArray(String[]::new);
+
+        String[] userRoles = sysUserRoleService.getUserRoles(sysUser.getId());
         sysUserInfoVo.setRoles(userRoles);
         //用户拥有角色的按钮权限
-        QueryWrapper sysRolePermissionQuery = new QueryWrapper();
-        sysRolePermissionQuery.in("role_id", sysUserRoles.stream().map(SysUserRole::getRoleId).collect(Collectors.toList()));
-        List<SysRolePermission> sysRolePermissionList = sysRolePermissionService.list(sysRolePermissionQuery);
-        QueryWrapper sysPermissionQuery = new QueryWrapper();
-        sysPermissionQuery.in("id",sysRolePermissionList.stream().map(SysRolePermission::getPermissionId).collect(Collectors.toList()));
-        List<SysPermission> sysPermissionList = sysPermissionService.list(sysPermissionQuery);
-        String[] buttons = sysPermissionList.stream().map(SysPermission::getCode).distinct().toArray(String[]::new);
+        String[] buttons = sysRolePermissionService.getUserPermissions(sysUser.getId());
         sysUserInfoVo.setButtons(buttons);
         return sysUserInfoVo;
     }

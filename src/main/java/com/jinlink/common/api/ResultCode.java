@@ -4,8 +4,6 @@ import lombok.Getter;
 
 /**
  * 自定义返回对象枚举信息
- * @Auth summer
- * @createTime 2024/09/26;
  */
 @Getter
 public enum ResultCode {

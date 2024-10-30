@@ -16,9 +16,20 @@ import java.util.List;
  */
 public interface SysUserRoleService extends IService<SysUserRole> {
 
+    /**
+     *删除用户角色根据ID
+     */
     @Transactional
-    Result<String> removeRoleById(Serializable id);
+    Boolean removeRoleById(Serializable id);
 
+    /**
+     *删除用户角色根据ID多个
+     */
     @Transactional
-    Result<Boolean> removeRoleByIds(List<Long> ids);
+    Boolean removeRoleByIds(List<Long> ids);
+
+    /**
+     * 获取用户角色列表
+     */
+    String[] getUserRoles(Long id);
 }

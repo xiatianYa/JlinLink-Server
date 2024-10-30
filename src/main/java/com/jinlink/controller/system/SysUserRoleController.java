@@ -1,5 +1,7 @@
 package com.jinlink.controller.system;
 
+import cn.dev33.satoken.annotation.SaCheckOr;
+import cn.dev33.satoken.annotation.SaCheckRole;
 import com.jinlink.common.api.Result;
 import com.mybatisflex.core.paginate.Page;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,6 +32,7 @@ import java.util.List;
 @Tag(name = "用户角色关联管理")
 @RequiredArgsConstructor
 @RequestMapping("/sysUserRole")
+@SaCheckOr(role = @SaCheckRole("R_SUPER"))
 public class SysUserRoleController {
 
     @NonNull
@@ -43,7 +46,7 @@ public class SysUserRoleController {
      */
     @PostMapping("save")
     @Operation(operationId = "1",summary = "添加用户角色对象")
-    public boolean save(@Parameter(description = "用户角色", required = true)@RequestBody SysUserRole sysUserRole) {
+    public Boolean save(@Parameter(description = "用户角色", required = true)@RequestBody SysUserRole sysUserRole) {
         return sysUserRoleService.save(sysUserRole);
     }
 
@@ -55,8 +58,8 @@ public class SysUserRoleController {
      */
     @DeleteMapping("remove/{id}")
     @Operation(operationId = "2",summary = "删除单个用户角色")
-    public Result<String> remove(@Parameter(description = "用户角色ID", required = true)@PathVariable Serializable id) {
-        return sysUserRoleService.removeRoleById(id);
+    public Result<Boolean> remove(@Parameter(description = "用户角色ID", required = true)@PathVariable Serializable id) {
+        return Result.success("删除成功!",sysUserRoleService.removeRoleById(id));
     }
 
     /**
@@ -68,7 +71,7 @@ public class SysUserRoleController {
     @DeleteMapping("removeByIds")
     @Operation(operationId = "3",summary = "删除多个用户角色")
     public Result<Boolean> removeByIds(@Parameter(description = "用户角色IDS", required = true)@RequestBody List<Long> ids) {
-        return sysUserRoleService.removeRoleByIds(ids) ;
+        return Result.success("删除成功!",sysUserRoleService.removeRoleByIds(ids));
     }
 
     /**
@@ -117,5 +120,4 @@ public class SysUserRoleController {
     public Page<SysUserRole> page(@Parameter(description = "查询用户角色(分页)对象", required = true)Page<SysUserRole> page) {
         return sysUserRoleService.page(page);
     }
-
 }

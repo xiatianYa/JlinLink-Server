@@ -1,6 +1,9 @@
 package com.jinlink.common.config.redis.service;
 
 import jakarta.annotation.Resource;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisServerCommands;
 import org.springframework.data.redis.core.BoundSetOperations;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -12,8 +15,6 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * spring redis 工具类
- *
- * @author summer
  **/
 @SuppressWarnings(value = {"unchecked", "rawtypes"})
 @Component
@@ -239,5 +240,22 @@ public class RedisService {
      */
     public Collection<String> keys(final String pattern) {
         return redisTemplate.keys(pattern);
+    }
+
+    /**
+     * 获取 Redis 信息
+     */
+    public Properties getRedisInfo(String section) {
+        RedisConnectionFactory connectionFactory = redisTemplate.getConnectionFactory();
+        assert connectionFactory != null;
+        try (RedisConnection connection = connectionFactory.getConnection()) {
+            RedisServerCommands serverCommands = connection.serverCommands();
+            // 如果提供了节名称，请求特定节的信息
+            if (section != null && !section.isEmpty()) {
+                return serverCommands.info(section);
+            } else {
+                return serverCommands.info();
+            }
+        }
     }
 }

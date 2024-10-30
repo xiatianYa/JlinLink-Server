@@ -1,7 +1,9 @@
 package com.jinlink.controller.system;
 
+import cn.dev33.satoken.annotation.SaCheckOr;
+import cn.dev33.satoken.annotation.SaCheckRole;
 import com.jinlink.common.api.Result;
-import com.jinlink.modules.system.entity.vo.SysPermissionVo;
+import com.jinlink.modules.system.entity.vo.SysPermissionTreeVo;
 import com.mybatisflex.core.paginate.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -31,6 +33,7 @@ import java.util.List;
 @Tag(name = "按钮权限管理")
 @RequiredArgsConstructor
 @RequestMapping("/sysPermission")
+@SaCheckOr(role = @SaCheckRole("R_SUPER"))
 public class SysPermissionController {
 
     @NonNull
@@ -113,7 +116,7 @@ public class SysPermissionController {
      */
     @GetMapping("listAll")
     @Operation(operationId = "7",summary = "查询全部按钮权限列表")
-    public Result<List<SysPermissionVo>> listAll() {
-        return sysPermissionService.listAll();
+    public Result<List<SysPermissionTreeVo>> listAll() {
+        return Result.success("获取成功!",sysPermissionService.listAll());
     }
 }
