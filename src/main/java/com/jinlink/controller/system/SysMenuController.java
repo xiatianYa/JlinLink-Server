@@ -3,8 +3,11 @@ package com.jinlink.controller.system;
 import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckRole;
 import com.jinlink.common.api.Result;
+import com.jinlink.common.page.PageQuery;
+import com.jinlink.common.page.RPage;
 import com.jinlink.modules.system.entity.dto.SysMenuFormDTO;
-import com.mybatisflex.core.paginate.Page;
+import com.jinlink.modules.system.entity.vo.SysMenuTreeVO;
+import com.jinlink.modules.system.entity.vo.SysMenuVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -112,13 +115,30 @@ public class SysMenuController {
     /**
      * 分页查询菜单管理。
      *
-     * @param page 分页对象
+     * @param query 分页对象
      * @return 分页对象
      */
     @GetMapping("page")
     @Operation(operationId = "7",summary = "获取菜单列表(分页)")
-    public Page<SysMenu> page(Page<SysMenu> page) {
-        return sysMenuService.page(page);
+    public Result<RPage<SysMenuVO>> page(@Parameter(description = "分页对象", required = true) PageQuery query) {
+        return Result.success("请求成功",sysMenuService.getMenuList(query));
     }
 
+    /**
+     * 获取所有菜单名称
+     */
+    @GetMapping("getAllPages")
+    @Operation(operationId = "8",summary = "获取所有菜单")
+    public Result<List<String>> getAllPages() {
+        return Result.success("请求成功",sysMenuService.getAllPages());
+    }
+
+    /**
+     * 获取菜单树
+     */
+    @GetMapping("getMenuTree")
+    @Operation(operationId = "9",summary = "获取菜单树")
+    public Result<List<SysMenuTreeVO>> getMenuTree() {
+        return Result.success("请求成功",sysMenuService.getMenuTree());
+    }
 }

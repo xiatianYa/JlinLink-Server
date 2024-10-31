@@ -1,7 +1,12 @@
 package com.jinlink.controller.monitor;
 
+import cn.dev33.satoken.annotation.SaCheckOr;
+import cn.dev33.satoken.annotation.SaCheckRole;
 import com.jinlink.common.api.Result;
+import com.jinlink.common.page.PageQuery;
 import com.jinlink.common.page.RPage;
+import com.jinlink.modules.monitor.entity.dto.MonLogsLoginSearchDTO;
+import com.jinlink.modules.monitor.entity.dto.MonSchedulerSearchDTO;
 import com.jinlink.modules.system.entity.vo.SysUserVO;
 import com.mybatisflex.core.paginate.Page;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,6 +38,7 @@ import java.util.List;
 @Tag(name = "定时任务管理")
 @RequiredArgsConstructor
 @RequestMapping("/monScheduler")
+@SaCheckOr(role = @SaCheckRole("R_SUPER"))
 public class MonSchedulerController {
 
     @NonNull
@@ -101,13 +107,13 @@ public class MonSchedulerController {
     /**
      * 分页查询调度管理。
      *
-     * @param page 分页对象
+     * @param query 分页对象
      * @return 分页对象
      */
     @GetMapping("page")
     @Operation(operationId = "6",summary = "分页查询调度管理")
-    public Result<RPage<MonScheduler>> page(@Parameter(description = "定时任务分页对象", required = true)Page<MonScheduler> page) {
-        Page<MonScheduler> monSchedulerPage = monSchedulerService.page(page);
+    public Result<RPage<MonScheduler>> page(@Parameter(description = "分页对象", required = true) PageQuery query, @Parameter(description = "查询对象", required = true) MonSchedulerSearchDTO monSchedulerSearchDTO) {
+        Page<MonScheduler> monSchedulerPage = monSchedulerService.listMonSchedulerPage(query,monSchedulerSearchDTO);
         return Result.success("请求成功", RPage.build(monSchedulerPage));
     }
 

@@ -3,17 +3,23 @@ package com.jinlink.modules.system.service.impl;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.extra.servlet.JakartaServletUtil;
+import com.jinlink.common.constants.RequestConstant;
 import com.jinlink.common.exception.JinLinkException;
 import com.jinlink.common.page.PageQuery;
 import com.jinlink.common.pool.StringPools;
+import com.jinlink.common.util.IPUtil;
+import com.jinlink.common.util.ServletHolderUtil;
+import com.jinlink.modules.monitor.entity.MonLogsLogin;
+import com.jinlink.modules.monitor.service.MonLogsLoginService;
 import com.jinlink.modules.system.entity.SysRole;
 import com.jinlink.modules.system.entity.SysUserRole;
 import com.jinlink.modules.system.entity.dto.LoginFormDTO;
 import com.jinlink.modules.system.entity.dto.SysUserFormDTO;
 import com.jinlink.modules.system.entity.dto.SysUserSearchDTO;
 import com.jinlink.modules.system.entity.vo.SysUserVO;
-import com.jinlink.modules.system.mapper.SysRoleMapper;
-import com.jinlink.modules.system.mapper.SysUserRoleMapper;
+import com.jinlink.modules.system.service.SysRoleService;
+import com.jinlink.modules.system.service.SysUserRoleService;
 import com.mybatisflex.core.logicdelete.LogicDeleteManager;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
@@ -44,35 +50,49 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Resource
     private SysUserMapper sysUserMapper;
     @Resource
-    private SysRoleMapper sysRoleMapper;
+    private SysRoleService sysRoleService;
     @Resource
-    private SysUserRoleMapper sysUserRoleMapper;
+    private SysUserRoleService sysUserRoleService;
+    @Resource
+    private MonLogsLoginService monLogsLoginService;
 
     /**
      * 用户登录
      */
     @Override
     public Map<String, String> userNameLogin(LoginFormDTO loginFormDTO) {
+        //查询当前用户
         SysUser userForUserName = sysUserMapper.getUserByUserName(loginFormDTO.getUserName());
-        if (ObjectUtils.isEmpty(userForUserName)) {
-            throw new JinLinkException("查找不到用户名 %s".formatted(loginFormDTO.getUserName()));
+        MonLogsLogin loginLogs = initLoginLog(loginFormDTO);;
+        try {
+            if (ObjectUtils.isEmpty(userForUserName)) {
+                throw new JinLinkException("查找不到用户名 %s".formatted(loginFormDTO.getUserName()));
+            }
+            if (StringPools.ZERO.equals(userForUserName.getStatus())) {
+                throw new JinLinkException("当前用户 %s 已被禁止登录".formatted(loginFormDTO.getUserName()));
+            }
+            // 密码拼接
+            String inputPassword = loginFormDTO.getPassword() + userForUserName.getSalt();
+            String s = DigestUtils.sha256Hex(inputPassword);
+            String password = userForUserName.getPassword();
+            // 密码比对
+            if (!s.equals(password)) {
+                throw new JinLinkException("登录失败，请核实用户名以及密码");
+            }
+            // saToken 进行登录
+            StpUtil.login(userForUserName.getId());
+            // 更新用户登录时间
+            userForUserName.setLastLoginTime(LocalDateTime.now());
+            // 操作用户登录日志
+            loginLogs.setUserId(userForUserName.getId());
+            super.updateById(userForUserName);
+        }catch (Exception e){
+            loginLogs.setStatus(StringPools.ZERO);
+            loginLogs.setMessage(e.getMessage());
+            throw e;
+        }finally {
+            monLogsLoginService.save(loginLogs);
         }
-        if (StringPools.ZERO.equals(userForUserName.getStatus())) {
-            throw new JinLinkException("当前用户 %s 已被禁止登录".formatted(loginFormDTO.getUserName()));
-        }
-        // 密码拼接
-        String inputPassword = loginFormDTO.getPassword() + userForUserName.getSalt();
-        String s = DigestUtils.sha256Hex(inputPassword);
-        String password = userForUserName.getPassword();
-        // 密码比对
-        if (!s.equals(password)) {
-            throw new JinLinkException("登录失败，请核实用户名以及密码");
-        }
-        // sa token 进行登录
-        StpUtil.login(userForUserName.getId());
-        // 更新用户登录时间
-        userForUserName.setLastLoginTime(LocalDateTime.now());
-        super.updateById(userForUserName);
         return Map.of("token", StpUtil.getTokenValue(),"refreshToken", StpUtil.getTokenValue());
     }
 
@@ -82,7 +102,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public Page<SysUserVO> listUserPage(PageQuery query, SysUserSearchDTO sysUserSearchDTO) {
         //查询所有角色
-        List<SysRole> sysRoles = sysRoleMapper.selectAll();
+        List<SysRole> sysRoles = sysRoleService.list();
         //返回数据列表
         List<SysUserVO> sysUserVOS = new ArrayList<>();
         //构建查询对象
@@ -102,7 +122,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             sysUserVo.setUserRoles(new ArrayList<>());
             QueryWrapper sysUserRoleQuery = new QueryWrapper();
             sysUserRoleQuery.eq("user_id", item.getId());
-            List<SysUserRole> sysUserRoles = sysUserRoleMapper.selectListByQuery(sysUserRoleQuery);
+            List<SysUserRole> sysUserRoles = sysUserRoleService.list(sysUserRoleQuery);
             sysUserRoles.forEach(userRole->{
                 for (SysRole role : sysRoles) {
                     if (role.getId().equals(userRole.getRoleId())) {
@@ -141,20 +161,20 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             QueryWrapper userRoleDeleteQuery = new QueryWrapper();
             userRoleDeleteQuery.eq("user_id",sysUser.getId());
             LogicDeleteManager.execWithoutLogicDelete(()->
-                    sysUserRoleMapper.deleteByQuery(userRoleDeleteQuery)
+                    sysUserRoleService.remove(userRoleDeleteQuery)
             );
             //遍历角色 添加新角色
             userRoles.forEach(item->{
                 //查询出角色
                 QueryWrapper roleQuery = new QueryWrapper();
                 roleQuery.eq("role_code",item);
-                SysRole sysRole = sysRoleMapper.selectOneByQuery(roleQuery);
+                SysRole sysRole = sysRoleService.getOne(roleQuery);
                 if(ObjectUtil.isNotNull(sysRole)){
                     //添加角色
                     SysUserRole sysUserRole = new SysUserRole();
                     sysUserRole.setUserId(sysUser.getId());
                     sysUserRole.setRoleId(sysRole.getId());
-                    sysUserRoleMapper.insert(sysUserRole);
+                    sysUserRoleService.save(sysUserRole);
                 }
             });
             return true;
@@ -181,14 +201,34 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 //查询出角色
                 QueryWrapper roleQuery = new QueryWrapper();
                 roleQuery.eq("role_code",item);
-                SysRole sysRole = sysRoleMapper.selectOneByQuery(roleQuery);
+                SysRole sysRole = sysRoleService.getOne(roleQuery);
                 //添加角色
                 SysUserRole sysUserRole = new SysUserRole();
                 sysUserRole.setUserId(sysUser.getId());
                 sysUserRole.setRoleId(sysRole.getId());
-                sysUserRoleMapper.insert(sysUserRole);
+                sysUserRoleService.save(sysUserRole);
             });
             return true;
         }
+    }
+
+    /**
+     * 初始化登录日志
+     *
+     * @param loginFormDTO 用户对象
+     * @return {@linkplain MonLogsLogin} 登录日志对象
+     * @author payne.zhuang
+     * @CreateTime 2024-05-05 18:44
+     */
+    private MonLogsLogin initLoginLog(LoginFormDTO loginFormDTO) {
+        String ip = JakartaServletUtil.getClientIP(ServletHolderUtil.getRequest());
+        return MonLogsLogin.builder()
+                .userName(loginFormDTO.getUserName())
+                .status(StringPools.ONE)
+                .userAgent(ServletHolderUtil.getRequest().getHeader(RequestConstant.USER_AGENT))
+                .ip(ip)
+                .ipAddr(IPUtil.getIpAddr(ip))
+                .message("登陆成功")
+                .build();
     }
 }

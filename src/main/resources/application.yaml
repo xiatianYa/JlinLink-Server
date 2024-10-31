@@ -122,7 +122,7 @@ knife4j:
 
 # MybatisFlex的配置项
 mybatis-flex:
-  mapper-locations: classpath*:mapper/*.xml
+  mapper-locations: classpath*:mapper/**/*.xml
   check-config-location: true
   global-config:
     print-banner: false

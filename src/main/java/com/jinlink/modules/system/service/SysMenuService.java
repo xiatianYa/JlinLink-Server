@@ -1,6 +1,5 @@
 package com.jinlink.modules.system.service;
 
-import com.jinlink.common.api.Result;
 import com.jinlink.common.page.PageQuery;
 import com.jinlink.common.page.RPage;
 import com.jinlink.modules.system.entity.dto.SysMenuFormDTO;

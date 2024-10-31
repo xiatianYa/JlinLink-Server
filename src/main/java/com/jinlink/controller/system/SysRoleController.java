@@ -3,7 +3,11 @@ package com.jinlink.controller.system;
 import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckRole;
 import com.jinlink.common.api.Result;
+import com.jinlink.common.page.PageQuery;
+import com.jinlink.common.page.RPage;
 import com.jinlink.modules.system.entity.dto.SysRoleFormDTO;
+import com.jinlink.modules.system.entity.dto.SysRoleSearchDTO;
+import com.jinlink.modules.system.entity.vo.SysRoleOptionVO;
 import com.mybatisflex.core.paginate.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -113,13 +117,23 @@ public class SysRoleController {
     /**
      * 分页查询角色管理。
      *
-     * @param page 分页对象
+     * @param query 分页对象
      * @return 分页对象
      */
     @GetMapping("page")
     @Operation(operationId = "7",summary = "查询角色(分页)")
-    public Page<SysRole> page(@Parameter(description = "分页查询对象", required = true)Page<SysRole> page) {
-        return sysRoleService.page(page);
+    public Result<RPage<SysRole>> page(@Parameter(description = "分页对象", required = true) PageQuery query,
+                              @Parameter(description = "查询对象", required = true) SysRoleSearchDTO sysRoleSearchDTO) {
+        Page<SysRole> sysRolePage = sysRoleService.listRolePage(query, sysRoleSearchDTO);
+        return Result.success("请求成功", RPage.build(sysRolePage));
     }
 
+    /**
+     * 获取所有角色
+     */
+    @GetMapping("getAllRoles")
+    @Operation(operationId = "8",summary = "获取所有角色")
+    public Result<List<SysRoleOptionVO>> getAllRoles() {
+        return Result.success("请求成功",sysRoleService.getAllRoles());
+    }
 }

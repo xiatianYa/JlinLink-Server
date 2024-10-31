@@ -1,6 +1,7 @@
 package com.jinlink.controller.monitor;
 
-import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.annotation.SaCheckOr;
+import cn.dev33.satoken.annotation.SaCheckRole;
 import com.jinlink.common.api.Result;
 import com.jinlink.modules.monitor.entity.vo.MonSystemVO;
 import com.jinlink.modules.monitor.service.IMonSystemFacade;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "系统服务监控")
 @RequiredArgsConstructor
 @RequestMapping("/monSystem")
+@SaCheckOr(role = @SaCheckRole("R_SUPER"))
 public class MonSystemController {
 
     @NonNull

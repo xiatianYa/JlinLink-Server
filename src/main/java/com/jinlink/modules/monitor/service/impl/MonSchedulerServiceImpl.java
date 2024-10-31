@@ -2,7 +2,11 @@ package com.jinlink.modules.monitor.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.jinlink.common.exception.JinLinkException;
+import com.jinlink.common.page.PageQuery;
+import com.jinlink.modules.monitor.entity.dto.MonSchedulerSearchDTO;
 import com.jinlink.modules.monitor.service.QuartzService;
+import com.mybatisflex.core.paginate.Page;
+import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.jinlink.modules.monitor.entity.MonScheduler;
 import com.jinlink.modules.monitor.mapper.MonSchedulerMapper;
@@ -21,6 +25,9 @@ import java.util.List;
  */
 @Service
 public class MonSchedulerServiceImpl extends ServiceImpl<MonSchedulerMapper, MonScheduler> implements MonSchedulerService {
+
+    @Resource
+    private MonSchedulerMapper monSchedulerMapper;
     @Resource
     private QuartzService quartzService;
 
@@ -80,5 +87,13 @@ public class MonSchedulerServiceImpl extends ServiceImpl<MonSchedulerMapper, Mon
             quartzService.deleteCronJob(getById(id));
         });
         return removeByIds(ids);
+    }
+
+    @Override
+    public Page<MonScheduler> listMonSchedulerPage(PageQuery query, MonSchedulerSearchDTO monSchedulerSearchDTO) {
+        return monSchedulerMapper.paginate(query.getCurrent(),query.getSize(),new QueryWrapper().like("job_name",monSchedulerSearchDTO.getJobName())
+                .like("job_group",monSchedulerSearchDTO.getJobGroup())
+                .like("trigger_name",monSchedulerSearchDTO.getTriggerName())
+                .like("trigger_group",monSchedulerSearchDTO.getTriggerGroup()));
     }
 }

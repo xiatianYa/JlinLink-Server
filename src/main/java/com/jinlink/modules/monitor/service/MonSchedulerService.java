@@ -1,5 +1,8 @@
 package com.jinlink.modules.monitor.service;
 
+import com.jinlink.common.page.PageQuery;
+import com.jinlink.modules.monitor.entity.dto.MonSchedulerSearchDTO;
+import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.service.IService;
 import com.jinlink.modules.monitor.entity.MonScheduler;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,4 +46,6 @@ public interface MonSchedulerService extends IService<MonScheduler> {
      */
     @Transactional
     Boolean removeSchedulerByIds(List<Long> ids);
+
+    Page<MonScheduler> listMonSchedulerPage(PageQuery query, MonSchedulerSearchDTO monSchedulerSearchDTO);
 }

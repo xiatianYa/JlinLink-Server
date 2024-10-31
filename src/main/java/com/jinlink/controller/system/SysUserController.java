@@ -3,7 +3,11 @@ package com.jinlink.controller.system;
 import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckRole;
 import com.jinlink.common.api.Result;
+import com.jinlink.common.page.PageQuery;
+import com.jinlink.common.page.RPage;
 import com.jinlink.modules.system.entity.dto.SysUserFormDTO;
+import com.jinlink.modules.system.entity.dto.SysUserSearchDTO;
+import com.jinlink.modules.system.entity.vo.SysUserVO;
 import com.mybatisflex.core.paginate.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -113,13 +117,15 @@ public class SysUserController {
     /**
      * 分页查询用户管理。
      *
-     * @param page 分页对象
+     * @param query 分页对象
      * @return 分页对象
      */
     @GetMapping("page")
     @Operation(operationId = "7",summary = "查询用户(分页)")
-    public Page<SysUser> page(@Parameter(description = "分页查询对象", required = true)Page<SysUser> page) {
-        return sysUserService.page(page);
+    public Result<RPage<SysUserVO>> page(@Parameter(description = "分页对象", required = true) PageQuery query,
+                              @Parameter(description = "查询对象", required = true) SysUserSearchDTO sysUserSearchDTO) {
+        Page<SysUserVO> sysRolePage = sysUserService.listUserPage(query, sysUserSearchDTO);
+        return Result.success("请求成功", RPage.build(sysRolePage));
     }
 
 }

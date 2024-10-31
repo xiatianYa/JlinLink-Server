@@ -8,16 +8,12 @@ import com.jinlink.modules.system.entity.dto.LoginFormDTO;
 import com.jinlink.modules.system.entity.vo.SysUserInfoVO;
 import com.jinlink.modules.system.facade.IAuthenticationFacade;
 import com.jinlink.modules.system.service.*;
-import com.mybatisflex.core.query.QueryWrapper;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * 用户认证门面接口实现层

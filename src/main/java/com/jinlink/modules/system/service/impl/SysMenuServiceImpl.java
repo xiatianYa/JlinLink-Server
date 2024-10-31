@@ -2,6 +2,9 @@ package com.jinlink.modules.system.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.core.lang.tree.TreeNodeConfig;
+import cn.hutool.core.lang.tree.TreeUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
@@ -29,6 +32,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 菜单管理 服务层实现。
@@ -72,8 +77,10 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
      */
     @Override
     public RPage<SysMenuVO> getMenuList(PageQuery query) {
-        Page<SysMenu> paginate = sysMenuMapper.paginate(query.getCurrent(), query.getSize(), new QueryWrapper());
-        return iniSysMenuChildren(paginate);
+        //查询所有父菜单
+        Page<SysMenu> paginate = sysMenuMapper.paginate(query.getCurrent(), query.getSize(), new QueryWrapper().eq("parent_id",0));
+        List<SysMenuVO> menuPageVOList = iniSysMenuChildren(paginate.getRecords());
+        return RPage.build(new Page<>(menuPageVOList, paginate.getPageNumber(), paginate.getPageSize(),menuPageVOList.size()));
     }
 
     /**
@@ -258,29 +265,22 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         //用户角色列表
         List<Long> roleIds = sysUserRoles.stream().map(SysUserRole::getRoleId).toList();
         //通过用户角色查询角色下拥有的菜单权限
-        Set<Long> menuIds = new LinkedHashSet<>();
+        List<Long> menuIds = new ArrayList<>();
         List<SysRoleMenu> sysRoleMenus = sysRoleMenuService.list(new QueryWrapper()
                         .in("role_id", roleIds)).stream()
                 .filter(item -> menuIds.add(item.getMenuId()))
                 .toList();
+        //查询所有符合条件的父菜单
+        List<SysMenu> parentMenus = sysMenuMapper.selectListByQuery(new QueryWrapper().eq("status", 1).eq("parent_id", 0));
+        //查询所有符合条件的子菜单
+        List<SysMenu> childrenMenus = sysMenuMapper.selectListByQuery(new QueryWrapper().ne("parent_id",0).in("id",menuIds));
         //查询用户菜单信息
         for (SysRoleMenu sysRoleMenu : sysRoleMenus) {
             //父路由
-            SysMenu sysMenu = sysMenuMapper.selectOneByQuery(new QueryWrapper()
-                    .eq("id", sysRoleMenu.getMenuId())
-                    .eq("status",1)
-                    .eq("parent_id",0));
-            if (ObjectUtil.isNull(sysMenu)) continue;
-            //查询当前路由下的子路由
-            List<SysMenu> sysMenus = sysMenuMapper.selectListByQuery(new QueryWrapper()
-                    .eq("status",1)
-                    .eq("parent_id", sysRoleMenu.getMenuId()));
-            SysUserRouteVO.Route route = SysUserRouteVOBuilder(sysMenu);
-            //添加子路由
-            for (SysMenu children : sysMenus) {
-                SysUserRouteVO.Route childrenRouter = SysUserRouteVOBuilder(children);
-                route.getChildren().add(childrenRouter);
-            }
+            Optional<SysMenu> sysMenu = parentMenus.stream().filter(item -> item.getId().equals(sysRoleMenu.getMenuId())).findFirst();
+            if (sysMenu.isEmpty()) continue;
+            //构建路由对象
+            SysUserRouteVO.Route route = SysUserRouteVOBuilder(sysMenu.get(),childrenMenus);
             resultRoute.add(route);
         }
         return SysUserRouteVO.builder()
@@ -328,134 +328,136 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     /**
      * 初始化子菜单分页
      */
-    private RPage<SysMenuVO> iniSysMenuChildren(Page<SysMenu> paginate) {
-        List<SysMenu> sysMenus = paginate.getRecords();
-        // 根据 parentId 获取菜单列表
-        List<SysMenu> parentMenuList = sysMenus.stream()
-                .filter(item -> item.getParentId().equals(0L)).toList();
-        List<SysMenuVO> menuPageVOList =new ArrayList<>();
-        for (SysMenu sysMenu : parentMenuList) {//获取菜单按钮权限列表
-            SysMenuVO sysMenuVO = sysMenuVOBuilder(sysMenu);
-            menuPageVOList.add(sysMenuVO);
-        }
-        for (SysMenu item : sysMenus) {// 递归获取子菜单
-            if (item.getId() != 0L) {
-                //查询子菜单属于那个父菜单 添加到父菜单内
-                for (SysMenuVO menu : menuPageVOList) {
-                    if (ObjectUtil.isNull(menu.getChildren())) menu.setChildren(new ArrayList<>());
-                    if (item.getParentId().equals(menu.getId())) {
-                        //获取菜单按钮权限列表
-                        SysMenuVO sysMenuVO = sysMenuVOBuilder(item);
-                        menu.getChildren().add(sysMenuVO);
-                    }
-                }
-            }
-        }
-        return RPage.build(new Page<>(menuPageVOList, paginate.getPageNumber(), paginate.getPageSize(),menuPageVOList.size()));
+    private List<SysMenuVO> iniSysMenuChildren(List<SysMenu> sysMenus) {
+        //查询所有子菜单
+        List<SysMenu> childrenMenus = sysMenuMapper.selectListByQuery(new QueryWrapper().ne("parent_id",0));
+        sysMenus = Stream.concat(childrenMenus.stream(), sysMenus.stream())
+                .collect(Collectors.toList());
+        //配置
+        TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
+        //数据ID
+        treeNodeConfig.setIdKey("id");
+        // 父级id字段
+        treeNodeConfig.setParentIdKey("parentId");
+        // 排序字段，这个字段不能是null，不然会报错，默认最好是数字
+        treeNodeConfig.setWeightKey("order");
+        // 设置子菜单属性名称
+        treeNodeConfig.setChildrenKey("children");
+        // 最大递归深度
+        treeNodeConfig.setDeep(3);
+        //转换器
+        List<Tree<Integer>> treeList = TreeUtil.build(sysMenus, 0, treeNodeConfig, ((sysMenu, treeNode) -> {
+            //获取菜单下的按钮列表
+            List<SysPermission> sysPermissionsList = sysPermissionService.list(new QueryWrapper().eq("menu_id", sysMenu.getId()));
+            List<BTPairs> buVoList = new ArrayList<>();
+            sysPermissionsList.forEach(sysPermission -> {
+                buVoList.add(BTPairs.builder()
+                        .code(sysPermission.getCode())
+                        .desc(sysPermission.getDescription())
+                        .build());
+            });
+            treeNode.setId(sysMenu.getId().intValue());
+            treeNode.setParentId(sysMenu.getParentId().intValue());
+            treeNode.putExtra("menuType", sysMenu.getMenuType());
+            treeNode.putExtra("menuName", sysMenu.getMenuName());
+            treeNode.putExtra("i18nKey", sysMenu.getI18nKey());
+            treeNode.putExtra("routeName", sysMenu.getRouteName());
+            treeNode.putExtra("routePath", sysMenu.getRoutePath());
+            treeNode.putExtra("icon", sysMenu.getIcon());
+            treeNode.putExtra("iconType", sysMenu.getIconType());
+            treeNode.putExtra("component", sysMenu.getComponent());
+            treeNode.putExtra("href", sysMenu.getHref());
+            treeNode.putExtra("activeMenu", sysMenu.getActiveMenu());
+            treeNode.putExtra("order", sysMenu.getOrder());
+            treeNode.putExtra("fixedIndexInTab", sysMenu.getFixedIndexInTab());
+            treeNode.putExtra("query",JSON.parseObject(sysMenu.getQuery(), new TypeReference<>() {
+            }));
+            treeNode.putExtra("buttons",buVoList);
+            treeNode.putExtra("keepAlive", sysMenu.getKeepAlive().equals("Y"));
+            treeNode.putExtra("hideInMenu", sysMenu.getHideInMenu().equals("Y"));
+            treeNode.putExtra("constant", sysMenu.getConstant().equals("Y"));
+            treeNode.putExtra("multiTab", sysMenu.getMultiTab().equals("y"));
+            treeNode.putExtra("createUserId", sysMenu.getCreateUserId());
+            treeNode.putExtra("createTime", sysMenu.getCreateTime());
+            treeNode.putExtra("updateUserId", sysMenu.getUpdateUserId());
+            treeNode.putExtra("updateTime", sysMenu.getUpdateTime());
+            treeNode.putExtra("status",sysMenu.getStatus());
+        }));
+        return JSON.parseArray(JSON.toJSONString(treeList), SysMenuVO.class);
+    }
+
+    /**
+     * 构建SysUserRouteVO.Route
+     */
+    public SysUserRouteVO.Route SysUserRouteVOBuilder(SysMenu sysMenu,List<SysMenu> sysMenus){
+        sysMenus.add(sysMenu);
+        //配置
+        TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
+        //数据ID
+        treeNodeConfig.setIdKey("id");
+        // 父级id字段
+        treeNodeConfig.setParentIdKey("parentId");
+        // 设置子菜单属性名称
+        treeNodeConfig.setChildrenKey("children");
+        // 最大递归深度
+        treeNodeConfig.setDeep(3);
+        //转换器
+        List<Tree<Integer>> tree = TreeUtil.build(sysMenus, 0, treeNodeConfig, ((sysMenuObj, treeNode) -> {
+            treeNode.setId(sysMenuObj.getId().intValue());
+            treeNode.setParentId(sysMenuObj.getParentId().intValue());
+            treeNode.putExtra("name", sysMenuObj.getRouteName());
+            treeNode.putExtra("path", sysMenuObj.getRoutePath());
+            treeNode.putExtra("component", sysMenuObj.getComponent());
+            treeNode.putExtra("meta", SysUserRouteVO.Meta.builder()
+                    .title(sysMenuObj.getMenuName())
+                    .i18nKey(sysMenuObj.getI18nKey())
+                    .order(sysMenuObj.getOrder())
+                    .href(sysMenuObj.getHref())
+                    .fixedIndexInTab(sysMenuObj.getFixedIndexInTab())
+                    .query(JSON.parseObject(sysMenuObj.getQuery(), new TypeReference<>() {
+                    }))
+                    .activeMenu(sysMenuObj.getActiveMenu())
+                    .keepAlive(sysMenuObj.getKeepAlive().equals("Y"))
+                    .constant(sysMenuObj.getConstant().equals("Y"))
+                    .hideInMenu(sysMenuObj.getHideInMenu().equals("Y"))
+                    .multiTab(sysMenuObj.getMultiTab().equals("Y"))
+                    .icon(sysMenuObj.getIconType().equals("1") ? sysMenuObj.getIcon() : null)
+                    .localIcon(sysMenuObj.getIconType().equals("2") ? sysMenuObj.getIcon() : null)
+                    .build());
+        }));
+        sysMenus.remove(sysMenu);
+        return JSON.parseArray(JSON.toJSONString(tree), SysUserRouteVO.Route.class).get(0);
     }
 
     /**
      * 初始化子菜单
      */
     private  List<SysMenuTreeVO> initMenuChildren(List<SysMenu> sysMenus) {
-        // 根据 parentId 获取菜单列表
-        List<SysMenu> parentMenuList = sysMenus.stream()
-                .filter(item -> item.getParentId().equals(0L)).toList();
-        List<SysMenuTreeVO> menuPageVOList =new ArrayList<>();
-        parentMenuList.forEach(item -> {
-            //拷贝到新列表中
-            SysMenuTreeVO sysMenuTreeVO = BeanUtil.copyProperties(item, SysMenuTreeVO.class);
-            sysMenuTreeVO.setLabel(item.getMenuName());
-            menuPageVOList.add(sysMenuTreeVO);
-        });
-        sysMenus.forEach(item -> {
-            // 递归获取子菜单
-            if (item.getId() != 0L){
-                //查询子菜单属于那个父菜单 添加到父菜单内
-                menuPageVOList.forEach(menu->{
-                    if(ObjectUtil.isNull(menu.getChildren())) menu.setChildren(new ArrayList<>());
-                    if(item.getParentId().equals(menu.getId())){
-                        //拷贝到新列表中
-                        SysMenuTreeVO sysMenuTreeVO = BeanUtil.copyProperties(item, SysMenuTreeVO.class);
-                        sysMenuTreeVO.setLabel(item.getMenuName());
-                        menu.getChildren().add(sysMenuTreeVO);
-                    }
-                });
-            }
-        });
-        // 按照排序值排序
-        menuPageVOList.sort(Comparator.comparing(SysMenuTreeVO::getSort, Comparator.nullsLast(Comparator.naturalOrder())));
-        return menuPageVOList;
-    }
-
-    /**
-     * 构建sysMenuVO
-     */
-    public SysMenuVO sysMenuVOBuilder(SysMenu sysMenu){
-        QueryWrapper permissionWrapper = new QueryWrapper();
-        permissionWrapper.eq("menu_id", sysMenu.getId());
-        List<SysPermission> sysPermissionsList = sysPermissionService.list(permissionWrapper);
-        List<BTPairs> buVoList = new ArrayList<>();
-        sysPermissionsList.forEach(sysPermission -> {
-            buVoList.add(BTPairs.builder()
-                    .code(sysPermission.getCode())
-                    .desc(sysPermission.getDescription())
-                    .build());
-        });
-        //拷贝到新列表中
-        return SysMenuVO.builder()
-                .id(sysMenu.getId())
-                .parentId(sysMenu.getParentId())
-                .children(new ArrayList<>())
-                .parentId(sysMenu.getParentId())
-                .menuType(sysMenu.getMenuType())
-                .menuName(sysMenu.getMenuName())
-                .i18nKey(sysMenu.getI18nKey())
-                .routeName(sysMenu.getRouteName())
-                .routePath(sysMenu.getRoutePath())
-                .icon(sysMenu.getIcon())
-                .iconType(sysMenu.getIconType())
-                .component(sysMenu.getComponent())
-                .keepAlive(sysMenu.getKeepAlive().equals("Y"))
-                .hideInMenu(sysMenu.getHideInMenu().equals("Y"))
-                .constant(sysMenu.getConstant().equals("Y"))
-                .href(sysMenu.getHref())
-                .activeMenu(sysMenu.getActiveMenu())
-                .order(sysMenu.getOrder())
-                .multiTab(sysMenu.getMultiTab().equals("Y"))
-                .fixedIndexInTab(sysMenu.getFixedIndexInTab())
-                .buttons(buVoList)
-                .query(JSON.parseObject(sysMenu.getQuery(), new TypeReference<>() {
-                }))
-                .status(sysMenu.getStatus())
-                .build();
-    }
-
-    /**
-     * 构建SysUserRouteVO.Route
-     */
-    public SysUserRouteVO.Route SysUserRouteVOBuilder(SysMenu sysMenu){
-        return SysUserRouteVO.Route.builder()
-                .name(sysMenu.getRouteName())
-                .path(sysMenu.getRoutePath())
-                .component(sysMenu.getComponent())
-                .children(new ArrayList<>())
-                .meta(SysUserRouteVO.Meta.builder()
-                        .title(sysMenu.getRouteName())
-                        .i18nKey(sysMenu.getI18nKey())
-                        .keepAlive(sysMenu.getKeepAlive().equals("Y"))
-                        .constant(sysMenu.getConstant().equals("Y"))
-                        .icon(sysMenu.getIconType().equals("1") ? sysMenu.getIcon() : null)
-                        .localIcon(sysMenu.getIconType().equals("2") ? sysMenu.getIcon() : null)
-                        .order(sysMenu.getOrder())
-                        .href(sysMenu.getHref())
-                        .hideInMenu(sysMenu.getHideInMenu().equals("Y"))
-                        .activeMenu(sysMenu.getActiveMenu())
-                        .multiTab(sysMenu.getMultiTab().equals("Y"))
-                        .fixedIndexInTab(sysMenu.getFixedIndexInTab())
-                        .query(JSON.parseObject(sysMenu.getQuery(), new TypeReference<>() {
-                        }))
-                        .build())
-                .build();
+        //查询所有子菜单
+        List<SysMenu> childrenMenus = sysMenuMapper.selectListByQuery(new QueryWrapper().ne("parent_id",0));
+        sysMenus = Stream.concat(childrenMenus.stream(), sysMenus.stream())
+                .collect(Collectors.toList());
+        //配置
+        TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
+        //数据ID
+        treeNodeConfig.setIdKey("id");
+        // 父级id字段
+        treeNodeConfig.setParentIdKey("parentId");
+        // 排序字段，这个字段不能是null，不然会报错，默认最好是数字
+        treeNodeConfig.setWeightKey("sort");
+        // 设置子菜单属性名称
+        treeNodeConfig.setChildrenKey("children");
+        // 最大递归深度
+        treeNodeConfig.setDeep(3);
+        //转换器
+        List<Tree<Integer>> treeList = TreeUtil.build(sysMenus, 0, treeNodeConfig, ((sysMenu, treeNode) -> {
+            //获取菜单下的按钮列表
+            treeNode.setId(sysMenu.getId().intValue());
+            treeNode.setParentId(sysMenu.getParentId().intValue());
+            treeNode.putExtra("label",sysMenu.getMenuName());
+            treeNode.putExtra("pid",sysMenu.getParentId().intValue());
+            treeNode.putExtra("sort", sysMenu.getOrder());
+        }));
+        return JSON.parseArray(JSON.toJSONString(treeList), SysMenuTreeVO.class);
     }
 }
