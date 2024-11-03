@@ -5,6 +5,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.extra.servlet.JakartaServletUtil;
 import com.jinlink.common.constants.RequestConstant;
+import com.jinlink.common.domain.Options;
 import com.jinlink.common.exception.JinLinkException;
 import com.jinlink.common.page.PageQuery;
 import com.jinlink.common.pool.StringPools;
@@ -210,6 +211,17 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             });
             return true;
         }
+    }
+
+    @Override
+    public List<Options<String>> getAllUserNames() {
+        List<SysUser> sysUsers = sysUserMapper.selectAll();
+        return sysUsers.stream()
+                .map(item -> Options.<String>builder()
+                        .label(item.getNickName())
+                        .value(String.valueOf(item.getId()))
+                        .build())
+                .toList();
     }
 
     /**

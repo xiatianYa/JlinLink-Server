@@ -1,0 +1,18 @@
+package com.jinlink.modules.monitor.service;
+
+import com.jinlink.common.page.PageQuery;
+import com.jinlink.modules.monitor.entity.dto.MonLogsSchedulerSearchDTO;
+import com.mybatisflex.core.paginate.Page;
+import com.mybatisflex.core.service.IService;
+import com.jinlink.modules.monitor.entity.MonLogsScheduler;
+
+/**
+ * 调度日志 服务层。
+ *
+ * @author Summer
+ * @since 1.0.0
+ */
+public interface MonLogsSchedulerService extends IService<MonLogsScheduler> {
+
+    Page<MonLogsScheduler> listMonLogsSchedulerPage(PageQuery query, MonLogsSchedulerSearchDTO monLogsSchedulerSearchDTO);
+}

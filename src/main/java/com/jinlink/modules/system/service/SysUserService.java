@@ -1,6 +1,7 @@
 package com.jinlink.modules.system.service;
 
 import com.jinlink.common.api.Result;
+import com.jinlink.common.domain.Options;
 import com.jinlink.common.page.PageQuery;
 import com.jinlink.modules.system.entity.dto.LoginFormDTO;
 import com.jinlink.modules.system.entity.dto.SysUserFormDTO;
@@ -49,4 +50,9 @@ public interface SysUserService extends IService<SysUser> {
      */
     @Transactional
     Boolean saveUser(SysUserFormDTO sysUser);
+
+    /**
+     * 根据用户Ids 获取用户Options
+     */
+    List<Options<String>> getAllUserNames();
 }

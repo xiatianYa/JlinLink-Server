@@ -3,6 +3,7 @@ package com.jinlink.controller.system;
 import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckRole;
 import com.jinlink.common.api.Result;
+import com.jinlink.common.page.RPage;
 import com.mybatisflex.core.paginate.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -46,8 +47,8 @@ public class SysUserRoleController {
      */
     @PostMapping("save")
     @Operation(operationId = "1",summary = "添加用户角色对象")
-    public Boolean save(@Parameter(description = "用户角色", required = true)@RequestBody SysUserRole sysUserRole) {
-        return sysUserRoleService.save(sysUserRole);
+    public Result<Boolean> save(@Parameter(description = "用户角色", required = true)@RequestBody SysUserRole sysUserRole) {
+        return Result.success("请求成功",sysUserRoleService.save(sysUserRole));
     }
 
     /**
@@ -82,8 +83,8 @@ public class SysUserRoleController {
      */
     @PutMapping("update")
     @Operation(operationId = "4",summary = "修改用户角色")
-    public boolean update(@Parameter(description = "修改用户角色对象", required = true)@RequestBody SysUserRole sysUserRole) {
-        return sysUserRoleService.updateById(sysUserRole);
+    public Result<Boolean> update(@Parameter(description = "修改用户角色对象", required = true)@RequestBody SysUserRole sysUserRole) {
+        return Result.success("请求成功",sysUserRoleService.updateById(sysUserRole));
     }
 
     /**
@@ -93,8 +94,8 @@ public class SysUserRoleController {
      */
     @GetMapping("list")
     @Operation(operationId = "5",summary = "查询所有用户角色列表")
-    public List<SysUserRole> list() {
-        return sysUserRoleService.list();
+    public Result<List<SysUserRole>> list() {
+        return Result.success("请求成功",sysUserRoleService.list());
     }
 
     /**
@@ -105,8 +106,8 @@ public class SysUserRoleController {
      */
     @GetMapping("getInfo/{id}")
     @Operation(operationId = "6",summary = "查询用户角色详细")
-    public SysUserRole getInfo(@Parameter(description = "用户ID", required = true)@PathVariable Serializable id) {
-        return sysUserRoleService.getById(id);
+    public Result<SysUserRole> getInfo(@Parameter(description = "用户ID", required = true)@PathVariable Serializable id) {
+        return Result.success("请求成功",sysUserRoleService.getById(id));
     }
 
     /**
@@ -117,7 +118,7 @@ public class SysUserRoleController {
      */
     @GetMapping("page")
     @Operation(operationId = "7",summary = "查询用户角色(分页)")
-    public Page<SysUserRole> page(@Parameter(description = "查询用户角色(分页)对象", required = true)Page<SysUserRole> page) {
-        return sysUserRoleService.page(page);
+    public Result<RPage<SysUserRole>> page(@Parameter(description = "查询用户角色(分页)对象", required = true)Page<SysUserRole> page) {
+        return Result.data(RPage.build(sysUserRoleService.page(page)));
     }
 }

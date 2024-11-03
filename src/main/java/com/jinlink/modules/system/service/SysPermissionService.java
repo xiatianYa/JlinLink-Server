@@ -18,5 +18,5 @@ public interface SysPermissionService extends IService<SysPermission> {
     /**
      * 获取按钮树
      */
-    List<SysPermissionTreeVo> listAll();
+    List<SysPermissionTreeVo> getPermissionTree();
 }

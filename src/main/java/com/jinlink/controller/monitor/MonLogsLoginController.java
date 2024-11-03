@@ -50,8 +50,8 @@ public class MonLogsLoginController {
      */
     @PostMapping("save")
     @Operation(operationId = "1",summary = "新增登录日志")
-    public boolean save(@Parameter(description = "登录日志对象", required = true)@RequestBody MonLogsLogin monLogsLogin) {
-        return monLogsLoginService.save(monLogsLogin);
+    public Result<Boolean> save(@Parameter(description = "登录日志对象", required = true)@RequestBody MonLogsLogin monLogsLogin) {
+        return Result.success("请求成功",monLogsLoginService.save(monLogsLogin));
     }
 
     /**
@@ -62,8 +62,8 @@ public class MonLogsLoginController {
      */
     @DeleteMapping("remove/{id}")
     @Operation(operationId = "2",summary = "删除登录日志")
-    public boolean remove(@Parameter(description = "登录日志ID", required = true)@PathVariable Serializable id) {
-        return monLogsLoginService.removeById(id);
+    public Result<Boolean> remove(@Parameter(description = "日志ID", required = true)@PathVariable Serializable id) {
+        return Result.success("请求成功",monLogsLoginService.removeById(id));
     }
 
     /**
@@ -74,8 +74,8 @@ public class MonLogsLoginController {
      */
     @PutMapping("update")
     @Operation(operationId = "3",summary = "修改登录日志")
-    public boolean update(@Parameter(description = "登录日志对象", required = true)@RequestBody MonLogsLogin monLogsLogin) {
-        return monLogsLoginService.updateById(monLogsLogin);
+    public Result<Boolean> update(@Parameter(description = "登录日志对象", required = true)@RequestBody MonLogsLogin monLogsLogin) {
+        return Result.success("请求成功",monLogsLoginService.updateById(monLogsLogin));
     }
 
     /**
@@ -85,8 +85,8 @@ public class MonLogsLoginController {
      */
     @GetMapping("list")
     @Operation(operationId = "4",summary = "查询所有登录日志")
-    public List<MonLogsLogin> list() {
-        return monLogsLoginService.list();
+    public Result<List<MonLogsLogin>> list() {
+        return Result.success("请求成功",monLogsLoginService.list());
     }
 
     /**
@@ -97,8 +97,8 @@ public class MonLogsLoginController {
      */
     @GetMapping("getInfo/{id}")
     @Operation(operationId = "5",summary = "根据登录日志主键获取详细信息")
-    public MonLogsLogin getInfo(@PathVariable Serializable id) {
-        return monLogsLoginService.getById(id);
+    public Result<MonLogsLogin> getInfo(@Parameter(description = "日志ID", required = true)@PathVariable Serializable id) {
+        return Result.success("请求成功",monLogsLoginService.getById(id));
     }
 
     /**
@@ -111,7 +111,7 @@ public class MonLogsLoginController {
     @Operation(operationId = "6",summary = "分页查询登录日志")
     public Result<RPage<MonLogsLogin>> page(@Parameter(description = "分页对象", required = true) PageQuery query,@Parameter(description = "查询对象", required = true) MonLogsLoginSearchDTO monLogsLoginSearchDTO) {
         Page<MonLogsLogin> monLogsLoginPage = monLogsLoginService.listMonLogsLoginPage(query,monLogsLoginSearchDTO);
-        return Result.success("请求成功",RPage.build(monLogsLoginPage));
+        return Result.data(RPage.build(monLogsLoginPage));
     }
 
 }

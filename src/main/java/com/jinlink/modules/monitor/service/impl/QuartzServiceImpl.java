@@ -18,15 +18,15 @@ public class QuartzServiceImpl implements QuartzService {
     @Resource
     private Scheduler scheduler;
 
-    private static final String TRIGGER_PRE = "Trigger_";
-
     @Override
     public void addCronJob(MonScheduler monScheduler) {
         try {
             // 当前任务不存在才进行添加
             JobKey jobKey = JobKey.jobKey(monScheduler.getJobName(), monScheduler.getJobGroup());
             if (scheduler.checkExists(jobKey)) {
-                throw new JinLinkException("[添加定时任务]已存在该作业，jobKey为："+jobKey);
+                //如果当前定时任务已添加 则删除定时任务
+                deleteCronJob(monScheduler);
+                return;
             }
 
             // 构建 Job
@@ -38,7 +38,7 @@ public class QuartzServiceImpl implements QuartzService {
 
             // 构建 Trigger
             Trigger trigger = TriggerBuilder.newTrigger()
-                    .withIdentity(TriggerKey.triggerKey(TRIGGER_PRE + monScheduler.getJobName(), monScheduler.getTriggerGroup()))
+                    .withIdentity(TriggerKey.triggerKey(monScheduler.getJobName(), monScheduler.getTriggerGroup()))
                     .withSchedule(cronScheduleBuilder).build();
 
             // 启动调度器
@@ -92,7 +92,7 @@ public class QuartzServiceImpl implements QuartzService {
             JobDetail job = JobBuilder.newJob(getClass(monScheduler.getJobClassName()).getClass())
                     .withIdentity(jobKey).build();
             Trigger trigger = TriggerBuilder.newTrigger()
-                    .withIdentity(TriggerKey.triggerKey(TRIGGER_PRE + monScheduler.getJobName(), monScheduler.getTriggerGroup()))
+                    .withIdentity(TriggerKey.triggerKey(monScheduler.getJobName(), monScheduler.getTriggerGroup()))
                     .build();
             // 启动调度器
             scheduler.scheduleJob(job, trigger);

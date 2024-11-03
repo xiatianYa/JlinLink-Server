@@ -1,5 +1,6 @@
 package com.jinlink.modules.system.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.jinlink.modules.system.entity.SysPermission;
 import com.jinlink.modules.system.entity.SysUserRole;
 import com.jinlink.modules.system.entity.dto.SysRolePermissionFormDTO;
@@ -84,7 +85,8 @@ public class SysRolePermissionServiceImpl extends ServiceImpl<SysRolePermissionM
         List<Long> userPermissionIds = sysRolePermissionMapper.selectListByQuery(new QueryWrapper().in("role_id", userRoleIds)).stream()
                 .map(SysRolePermission::getPermissionId).toList();
         //获取用户拥有的按钮
-        return sysPermissionService.list(new QueryWrapper().in("id", userPermissionIds)).stream()
+        if (ObjectUtil.isEmpty(userPermissionIds)) return new String[0];
+        return sysPermissionService.listByIds(userPermissionIds).stream()
                 .map(SysPermission::getCode).toArray(String[]::new);
     }
 }

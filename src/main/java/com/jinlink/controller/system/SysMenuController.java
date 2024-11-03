@@ -49,7 +49,7 @@ public class SysMenuController {
      */
     @PostMapping("save")
     @Operation(operationId = "1",summary = "添加菜单")
-    public Result<Boolean> save(@RequestBody SysMenuFormDTO sysMenu) {
+    public Result<Boolean> save(@Parameter(description = "菜单对象", required = true)@RequestBody SysMenuFormDTO sysMenu) {
         return Result.success("新增成功!",sysMenuService.saveMenu(sysMenu));
     }
 
@@ -96,8 +96,8 @@ public class SysMenuController {
      */
     @GetMapping("list")
     @Operation(operationId = "5",summary = "查询所有菜单")
-    public List<SysMenu> list() {
-        return sysMenuService.list();
+    public Result<List<SysMenu>> list() {
+        return Result.success("请求成功",sysMenuService.list());
     }
 
     /**
@@ -108,8 +108,8 @@ public class SysMenuController {
      */
     @GetMapping("getInfo/{id}")
     @Operation(operationId = "6",summary = "获取菜单详细")
-    public SysMenu getInfo(@PathVariable Serializable id) {
-        return sysMenuService.getById(id);
+    public Result<SysMenu> getInfo(@PathVariable Serializable id) {
+        return Result.success("请求成功",sysMenuService.getById(id));
     }
 
     /**
@@ -121,7 +121,7 @@ public class SysMenuController {
     @GetMapping("page")
     @Operation(operationId = "7",summary = "获取菜单列表(分页)")
     public Result<RPage<SysMenuVO>> page(@Parameter(description = "分页对象", required = true) PageQuery query) {
-        return Result.success("请求成功",sysMenuService.getMenuList(query));
+        return Result.data(sysMenuService.getMenuList(query));
     }
 
     /**

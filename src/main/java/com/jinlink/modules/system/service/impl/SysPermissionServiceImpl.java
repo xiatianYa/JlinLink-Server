@@ -1,5 +1,6 @@
 package com.jinlink.modules.system.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.jinlink.modules.system.entity.SysMenu;
 import com.jinlink.modules.system.entity.vo.SysPermissionTreeVo;
@@ -33,7 +34,7 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
      * 查询全部按钮权限列表
      */
     @Override
-    public List<SysPermissionTreeVo> listAll() {
+    public List<SysPermissionTreeVo> getPermissionTree() {
         //返回数据列表
         List<SysPermissionTreeVo> sysPermissionTreeVos = new ArrayList<>();
         //查询所有的菜单
@@ -49,16 +50,18 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
                     .build();
             //获取子菜单权限
             List<SysPermission> sysPermissions = sysPermissionList.stream().filter(permission -> permission.getMenuId().equals(item.getId())).toList();
-            sysPermissions.forEach(permission->{
-                SysPermissionTreeVo children = SysPermissionTreeVo.builder()
-                        .id(permission.getId())
-                        .label(permission.getDescription())
-                        .code(permission.getCode())
-                        .checkboxDisabled(false)
-                        .build();
-                sysPermissionTreeVo.getChildren().add(children);
-            });
-            sysPermissionTreeVos.add(sysPermissionTreeVo);
+            if (ObjectUtil.isNotEmpty(sysPermissions)){
+                sysPermissions.forEach(permission->{
+                    SysPermissionTreeVo children = SysPermissionTreeVo.builder()
+                            .id(permission.getId())
+                            .label(permission.getDescription())
+                            .code(permission.getCode())
+                            .checkboxDisabled(false)
+                            .build();
+                    sysPermissionTreeVo.getChildren().add(children);
+                });
+                sysPermissionTreeVos.add(sysPermissionTreeVo);
+            }
         });
         return sysPermissionTreeVos;
     }

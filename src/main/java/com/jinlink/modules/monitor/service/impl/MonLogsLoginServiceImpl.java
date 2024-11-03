@@ -24,6 +24,7 @@ public class MonLogsLoginServiceImpl extends ServiceImpl<MonLogsLoginMapper, Mon
 
     @Override
     public Page<MonLogsLogin> listMonLogsLoginPage(PageQuery query, MonLogsLoginSearchDTO monLogsLoginSearchDTO) {
-        return monLogsLoginMapper.paginate(query.getCurrent(),query.getSize(),new QueryWrapper().like("user_name",monLogsLoginSearchDTO.getUserName()));
+        return monLogsLoginMapper.paginate(query.getCurrent(),query.getSize(),new QueryWrapper()
+                .like("user_name",monLogsLoginSearchDTO.getUserName()).orderBy("create_time",false));
     }
 }

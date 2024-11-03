@@ -3,6 +3,7 @@ package com.jinlink.controller.system;
 import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckRole;
 import com.jinlink.common.api.Result;
+import com.jinlink.common.domain.Options;
 import com.jinlink.common.page.PageQuery;
 import com.jinlink.common.page.RPage;
 import com.jinlink.modules.system.entity.dto.SysUserFormDTO;
@@ -52,7 +53,7 @@ public class SysUserController {
     @PostMapping("save")
     @Operation(operationId = "1",summary = "添加用户")
     public Result<Boolean> save(@Parameter(description = "添加对象", required = true)@RequestBody SysUserFormDTO sysUser) {
-        return Result.success("新增成功",sysUserService.saveUser(sysUser));
+        return Result.success("请求成功",sysUserService.saveUser(sysUser));
     }
 
     /**
@@ -64,7 +65,7 @@ public class SysUserController {
     @DeleteMapping("removeByIds")
     @Operation(operationId = "2",summary = "删除多个用户")
     public Result<Boolean> removeByIds(@Parameter(description = "用户IDS", required = true)@RequestBody List<Long> ids) {
-        return Result.success("删除成功!",sysUserService.removeByIds(ids)) ;
+        return Result.success("请求成功!",sysUserService.removeByIds(ids)) ;
     }
 
     /**
@@ -76,7 +77,7 @@ public class SysUserController {
     @DeleteMapping("remove/{id}")
     @Operation(operationId = "3",summary = "删除单个用户")
     public Result<Boolean> remove(@Parameter(description = "用户ID", required = true)@PathVariable Long id) {
-        return Result.success("操作成功", sysUserService.removeById(id)) ;
+        return Result.success("请求成功", sysUserService.removeById(id)) ;
     }
 
     /**
@@ -88,7 +89,7 @@ public class SysUserController {
     @PutMapping("update")
     @Operation(operationId = "4",summary = "修改用户对象")
     public Result<Boolean> update(@Parameter(description = "修改对象", required = true)@RequestBody SysUserFormDTO sysUser) {
-        return Result.success("更新成功!",sysUserService.updateUser(sysUser));
+        return Result.success("请求成功!",sysUserService.updateUser(sysUser));
     }
 
     /**
@@ -98,8 +99,8 @@ public class SysUserController {
      */
     @GetMapping("list")
     @Operation(operationId = "5",summary = "查询全部用户")
-    public List<SysUser> list() {
-        return sysUserService.list();
+    public Result<List<SysUser>> list() {
+        return Result.success("请求成功",sysUserService.list());
     }
 
     /**
@@ -110,8 +111,8 @@ public class SysUserController {
      */
     @GetMapping("getInfo/{id}")
     @Operation(operationId = "6",summary = "查询用户详细")
-    public SysUser getInfo(@Parameter(description = "用户ID", required = true)@PathVariable Serializable id) {
-        return sysUserService.getById(id);
+    public Result<SysUser> getInfo(@Parameter(description = "用户ID", required = true)@PathVariable Serializable id) {
+        return Result.success("请求成功",sysUserService.getById(id));
     }
 
     /**
@@ -124,8 +125,15 @@ public class SysUserController {
     @Operation(operationId = "7",summary = "查询用户(分页)")
     public Result<RPage<SysUserVO>> page(@Parameter(description = "分页对象", required = true) PageQuery query,
                               @Parameter(description = "查询对象", required = true) SysUserSearchDTO sysUserSearchDTO) {
-        Page<SysUserVO> sysRolePage = sysUserService.listUserPage(query, sysUserSearchDTO);
-        return Result.success("请求成功", RPage.build(sysRolePage));
+        return Result.data(RPage.build(sysUserService.listUserPage(query, sysUserSearchDTO)));
     }
 
+    /**
+     * 查询全部用户名称。
+     */
+    @GetMapping("allUserNames")
+    @Operation(operationId = "8",summary = "查询全部调度任务名称")
+    public Result<List<Options<String>>> allJobNames() {
+        return Result.success("请求成功",sysUserService.getAllUserNames());
+    }
 }

@@ -15,7 +15,12 @@ public class MyInsertListener implements InsertListener {
         BaseEntity baseEntity = (BaseEntity) entity;
         baseEntity.setCreateTime(LocalDateTime.now());
         baseEntity.setUpdateTime(LocalDateTime.now());
-        baseEntity.setUpdateUserId(StpUtil.getLoginIdAsLong());
-        baseEntity.setCreateUserId(StpUtil.getLoginIdAsLong());
+        try {
+            baseEntity.setUpdateUserId(StpUtil.getLoginIdAsLong());
+            baseEntity.setCreateUserId(StpUtil.getLoginIdAsLong());
+        }catch (Exception e){
+            baseEntity.setUpdateUserId(0L);
+            baseEntity.setCreateUserId(0L);
+        }
     }
 }

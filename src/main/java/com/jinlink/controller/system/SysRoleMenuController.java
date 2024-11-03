@@ -3,6 +3,7 @@ package com.jinlink.controller.system;
 import cn.dev33.satoken.annotation.SaCheckOr;
 import cn.dev33.satoken.annotation.SaCheckRole;
 import com.jinlink.common.api.Result;
+import com.jinlink.common.page.RPage;
 import com.jinlink.modules.system.entity.dto.SysRoleMenuUpdateDTO;
 import com.mybatisflex.core.paginate.Page;
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,8 +42,8 @@ public class SysRoleMenuController {
      */
     @PostMapping("save")
     @Operation(operationId = "1",summary = "添加菜单角色对象")
-    public boolean save(@Parameter(description = "菜单角色", required = true)@RequestBody SysRoleMenu sysRoleMenu) {
-        return sysRoleMenuService.save(sysRoleMenu);
+    public Result<Boolean> save(@Parameter(description = "菜单角色", required = true)@RequestBody SysRoleMenu sysRoleMenu) {
+        return Result.success("请求成功",sysRoleMenuService.save(sysRoleMenu));
     }
 
     /**
@@ -53,8 +54,8 @@ public class SysRoleMenuController {
      */
     @DeleteMapping("remove/{id}")
     @Operation(operationId = "2",summary = "删除单个菜单角色")
-    public boolean remove(@Parameter(description = "菜单角色ID", required = true)@PathVariable Serializable id) {
-        return sysRoleMenuService.removeById(id);
+    public Result<Boolean> remove(@Parameter(description = "菜单角色ID", required = true)@PathVariable Serializable id) {
+        return Result.success("请求成功",sysRoleMenuService.removeById(id));
     }
 
     /**
@@ -65,8 +66,8 @@ public class SysRoleMenuController {
      */
     @PutMapping("update")
     @Operation(operationId = "3",summary = "修改菜单角色")
-    public boolean update(@Parameter(description = "菜单角色", required = true)@RequestBody SysRoleMenu sysRoleMenu) {
-        return sysRoleMenuService.updateById(sysRoleMenu);
+    public Result<Boolean> update(@Parameter(description = "菜单角色", required = true)@RequestBody SysRoleMenu sysRoleMenu) {
+        return Result.success("请求成功",sysRoleMenuService.updateById(sysRoleMenu));
     }
 
     /**
@@ -76,8 +77,8 @@ public class SysRoleMenuController {
      */
     @GetMapping("list")
     @Operation(operationId = "4",summary = "查询所有菜单角色列表")
-    public List<SysRoleMenu> list() {
-        return sysRoleMenuService.list();
+    public Result<List<SysRoleMenu>> list() {
+        return Result.success("请求成功",sysRoleMenuService.list());
     }
 
     /**
@@ -88,7 +89,7 @@ public class SysRoleMenuController {
     @GetMapping("getRoleByRoleId/{roleId}")
     @Operation(operationId = "5",summary = "查询权限菜单列表")
     public Result<List<Long>> getRoleMenuByRoleId(@Parameter(description = "权限Id", required = true)@PathVariable Long roleId) {
-        return Result.success("操作成功!",sysRoleMenuService.getRoleMenuByRoleId(roleId));
+        return Result.success("请求成功",sysRoleMenuService.getRoleMenuByRoleId(roleId));
     }
 
     /**
@@ -99,8 +100,8 @@ public class SysRoleMenuController {
      */
     @GetMapping("getInfo/{id}")
     @Operation(operationId = "6",summary = "查询菜单角色详细")
-    public SysRoleMenu getInfo(@Parameter(description = "菜单角色ID", required = true)@PathVariable Serializable id) {
-        return sysRoleMenuService.getById(id);
+    public Result<SysRoleMenu> getInfo(@Parameter(description = "菜单角色ID", required = true)@PathVariable Serializable id) {
+        return Result.success("请求成功",sysRoleMenuService.getById(id));
     }
 
     /**
@@ -111,8 +112,8 @@ public class SysRoleMenuController {
      */
     @GetMapping("page")
     @Operation(operationId = "7",summary = "查询菜单角色(分页)")
-    public Page<SysRoleMenu> page(@Parameter(description = "菜单角色分页对象", required = true)Page<SysRoleMenu> page) {
-        return sysRoleMenuService.page(page);
+    public Result<RPage<SysRoleMenu>> page(@Parameter(description = "菜单角色分页对象", required = true)Page<SysRoleMenu> page) {
+        return Result.data(RPage.build(sysRoleMenuService.page(page)));
     }
 
     /**

@@ -70,8 +70,7 @@ public class NullSerializersModule extends SimpleModule {
         public static final JsonSerializer<Object> MAP_JSON_SERIALIZER = new JsonSerializer<>() {
             @Override
             public void serialize(Object value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-                gen.writeStartObject();
-                gen.writeEndObject();
+                gen.writeNull();
             }
         };
         /**
@@ -80,7 +79,7 @@ public class NullSerializersModule extends SimpleModule {
         public static final JsonSerializer<Object> STRING_JSON_SERIALIZER = new JsonSerializer<>() {
             @Override
             public void serialize(Object value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-                gen.writeString(StringPools.EMPTY);
+                gen.writeNull();
             }
         };
         /**
@@ -89,7 +88,7 @@ public class NullSerializersModule extends SimpleModule {
         public static final JsonSerializer<Object> NUMBER_JSON_SERIALIZER = new JsonSerializer<>() {
             @Override
             public void serialize(Object value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-                gen.writeNumber(0);
+                gen.writeNull();
             }
         };
         /**
@@ -98,7 +97,7 @@ public class NullSerializersModule extends SimpleModule {
         public static final JsonSerializer<Object> BOOLEAN_JSON_SERIALIZER = new JsonSerializer<>() {
             @Override
             public void serialize(Object value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-                gen.writeBoolean(false);
+                gen.writeNull();
             }
         };
         /**
@@ -107,8 +106,7 @@ public class NullSerializersModule extends SimpleModule {
         public static final JsonSerializer<Object> ARRAY_JSON_SERIALIZER = new JsonSerializer<>() {
             @Override
             public void serialize(Object value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-                gen.writeStartArray();
-                gen.writeEndArray();
+                gen.writeNull();
             }
         };
         /**
@@ -117,8 +115,7 @@ public class NullSerializersModule extends SimpleModule {
         public static final JsonSerializer<Object> OBJECT_JSON_SERIALIZER = new JsonSerializer<>() {
             @Override
             public void serialize(Object value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-                gen.writeStartObject();
-                gen.writeEndObject();
+                gen.writeNull();
             }
         };
 

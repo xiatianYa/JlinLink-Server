@@ -409,11 +409,11 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             treeNode.putExtra("path", sysMenuObj.getRoutePath());
             treeNode.putExtra("component", sysMenuObj.getComponent());
             treeNode.putExtra("meta", SysUserRouteVO.Meta.builder()
-                    .title(sysMenuObj.getMenuName())
+                    .title(sysMenuObj.getRouteName())
                     .i18nKey(sysMenuObj.getI18nKey())
                     .order(sysMenuObj.getOrder())
                     .href(sysMenuObj.getHref())
-                    .fixedIndexInTab(sysMenuObj.getFixedIndexInTab())
+                    .fixedIndexInTab(ObjectUtil.isNotNull(sysMenuObj.getFixedIndexInTab()) ? sysMenuObj.getFixedIndexInTab() : null)
                     .query(JSON.parseObject(sysMenuObj.getQuery(), new TypeReference<>() {
                     }))
                     .activeMenu(sysMenuObj.getActiveMenu())

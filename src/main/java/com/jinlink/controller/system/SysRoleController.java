@@ -98,8 +98,8 @@ public class SysRoleController {
      */
     @GetMapping("list")
     @Operation(operationId = "5",summary = "查询全部角色")
-    public List<SysRole> list() {
-        return sysRoleService.list();
+    public Result<List<SysRole>> list() {
+        return Result.success("请求成功",sysRoleService.list());
     }
 
     /**
@@ -110,8 +110,8 @@ public class SysRoleController {
      */
     @GetMapping("getInfo/{id}")
     @Operation(operationId = "6",summary = "查询角色详细")
-    public SysRole getInfo(@Parameter(description = "角色ID", required = true)@PathVariable Serializable id) {
-        return sysRoleService.getById(id);
+    public Result<SysRole> getInfo(@Parameter(description = "角色ID", required = true)@PathVariable Serializable id) {
+        return Result.success("请求成功",sysRoleService.getById(id));
     }
 
     /**
@@ -125,7 +125,7 @@ public class SysRoleController {
     public Result<RPage<SysRole>> page(@Parameter(description = "分页对象", required = true) PageQuery query,
                               @Parameter(description = "查询对象", required = true) SysRoleSearchDTO sysRoleSearchDTO) {
         Page<SysRole> sysRolePage = sysRoleService.listRolePage(query, sysRoleSearchDTO);
-        return Result.success("请求成功", RPage.build(sysRolePage));
+        return Result.data(RPage.build(sysRolePage));
     }
 
     /**

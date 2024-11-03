@@ -1,8 +1,6 @@
 package com.jinlink.controller.system;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
-import cn.dev33.satoken.annotation.SaCheckOr;
-import cn.dev33.satoken.annotation.SaCheckRole;
 import com.jinlink.common.api.Result;
 import com.jinlink.modules.system.entity.vo.SysUserRouteVO;
 import com.jinlink.modules.system.service.SysMenuService;

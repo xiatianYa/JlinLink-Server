@@ -57,7 +57,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     @Override
     public Boolean updateRole(SysRoleFormDTO sysRoleFormDTO) {
         int isTrue = sysRoleMapper.update(sysRoleFormDTO);
-        if (ObjectUtil.isNull(isTrue)) {
+        if (ObjectUtil.isNotNull(isTrue)) {
             return true;
         }
         throw new JinLinkException("删除失败!");

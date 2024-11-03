@@ -70,5 +70,4 @@ public class GlobalJacksonConfiguration {
                                 new BigDecimalAsStringModule());
 
     }
-
 }

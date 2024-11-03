@@ -1,6 +1,5 @@
 package com.jinlink.common.domain;
 
-import com.mybatisflex.annotation.Column;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,14 +25,11 @@ public class BaseVO implements Serializable {
     @Schema(description = "ID")
     private Long id;
 
-    @Schema(description = "创建用户名称")
-    private Long createUserId;
-
     @Schema(description = "创建时间")
     private LocalDateTime createTime;
 
-    @Schema(description = "更新用户名称")
-    private Long updateUserId;
+    @Schema(description = "创建用户名称")
+    private String createUser;
 
     @Schema(description = "更新时间")
     private LocalDateTime updateTime;

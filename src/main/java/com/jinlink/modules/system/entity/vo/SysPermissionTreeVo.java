@@ -29,10 +29,7 @@ public class SysPermissionTreeVo {
     @Schema(description = "code")
     private String code;
 
-    @Schema(description = "pid")
-    private String pid;
-
-    @Schema(description = "checkboxDisabled")
+    @Schema(description = "是否禁止勾选")
     private Boolean checkboxDisabled;
 
     @Schema(description = "子对象")

@@ -1,8 +1,10 @@
 package com.jinlink.modules.monitor.service;
 
+import com.jinlink.common.domain.Options;
 import com.jinlink.common.page.PageQuery;
+import com.jinlink.common.page.RPage;
 import com.jinlink.modules.monitor.entity.dto.MonSchedulerSearchDTO;
-import com.mybatisflex.core.paginate.Page;
+import com.jinlink.modules.monitor.entity.vo.MonSchedulerVo;
 import com.mybatisflex.core.service.IService;
 import com.jinlink.modules.monitor.entity.MonScheduler;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,5 +49,13 @@ public interface MonSchedulerService extends IService<MonScheduler> {
     @Transactional
     Boolean removeSchedulerByIds(List<Long> ids);
 
-    Page<MonScheduler> listMonSchedulerPage(PageQuery query, MonSchedulerSearchDTO monSchedulerSearchDTO);
+    /**
+     * 分页查询定时任务
+     */
+    RPage<MonSchedulerVo> listMonSchedulerPage(PageQuery query, MonSchedulerSearchDTO monSchedulerSearchDTO);
+
+    /**
+     * 查询全部调度任务名称
+     */
+    List<Options<String>> allJobNames();
 }
