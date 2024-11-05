@@ -1,12 +1,14 @@
 package com.jinlink.controller.system;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.hutool.core.bean.BeanUtil;
 import com.jinlink.common.api.Result;
 import com.jinlink.common.page.PageQuery;
 import com.jinlink.common.page.RPage;
 import com.jinlink.modules.system.entity.dto.SysRoleFormDTO;
 import com.jinlink.modules.system.entity.dto.SysRoleSearchDTO;
-import com.jinlink.modules.system.entity.vo.SysRoleOptionVO;
+import com.jinlink.modules.system.entity.vo.SysRoleOptionVo;
+import com.jinlink.modules.system.entity.vo.SysRoleVo;
 import com.mybatisflex.core.paginate.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -101,8 +103,8 @@ public class SysRoleController {
     @GetMapping("list")
     @Operation(operationId = "5",summary = "查询全部角色")
     @SaCheckPermission("sys:role:list")
-    public Result<List<SysRole>> list() {
-        return Result.success("请求成功",sysRoleService.list());
+    public Result<List<SysRoleVo>> list() {
+        return Result.success("请求成功",BeanUtil.copyToList(sysRoleService.list(), SysRoleVo.class));
     }
 
     /**
@@ -114,8 +116,8 @@ public class SysRoleController {
     @GetMapping("getInfo/{id}")
     @Operation(operationId = "6",summary = "查询角色详细")
     @SaCheckPermission("sys:role:info")
-    public Result<SysRole> getInfo(@Parameter(description = "角色ID", required = true)@PathVariable Serializable id) {
-        return Result.success("请求成功",sysRoleService.getById(id));
+    public Result<SysRoleVo> getInfo(@Parameter(description = "角色ID", required = true)@PathVariable Serializable id) {
+        return Result.success("请求成功", BeanUtil.copyProperties(sysRoleService.getById(id),SysRoleVo.class));
     }
 
     /**
@@ -127,9 +129,9 @@ public class SysRoleController {
     @GetMapping("page")
     @Operation(operationId = "7",summary = "查询角色(分页)")
     @SaCheckPermission("sys:role:page")
-    public Result<RPage<SysRole>> page(@Parameter(description = "分页对象", required = true) PageQuery query,
-                              @Parameter(description = "查询对象", required = true) SysRoleSearchDTO sysRoleSearchDTO) {
-        Page<SysRole> sysRolePage = sysRoleService.listRolePage(query, sysRoleSearchDTO);
+    public Result<RPage<SysRoleVo>> page(@Parameter(description = "分页对象", required = true) PageQuery query,
+                                         @Parameter(description = "查询对象", required = true) SysRoleSearchDTO sysRoleSearchDTO) {
+        Page<SysRoleVo> sysRolePage = sysRoleService.listRolePage(query, sysRoleSearchDTO);
         return Result.data(RPage.build(sysRolePage));
     }
 
@@ -139,7 +141,7 @@ public class SysRoleController {
     @GetMapping("getAllRoles")
     @SaCheckPermission("sys:role:getAllRoles")
     @Operation(operationId = "8",summary = "获取所有角色")
-    public Result<List<SysRoleOptionVO>> getAllRoles() {
+    public Result<List<SysRoleOptionVo>> getAllRoles() {
         return Result.success("请求成功",sysRoleService.getAllRoles());
     }
 }

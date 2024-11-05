@@ -28,9 +28,6 @@ import java.io.Serial;
 @Table(value = "sys_role_menu")
 public class SysRoleMenu extends BaseEntity {
 
-    @Id(keyType = KeyType.Auto)
-    private Long id;
-
     /**
      * 角色ID
      */

@@ -3,7 +3,7 @@ package com.jinlink.modules.monitor.service;
 import com.jinlink.common.page.PageQuery;
 import com.jinlink.common.page.RPage;
 import com.jinlink.modules.monitor.entity.dto.MonLogsOperationSearchDTO;
-import com.jinlink.modules.monitor.entity.vo.MonLogsOperationVO;
+import com.jinlink.modules.monitor.entity.vo.MonLogsOperationVo;
 import com.mybatisflex.core.service.IService;
 import com.jinlink.modules.monitor.entity.MonLogsOperation;
 
@@ -18,5 +18,5 @@ public interface MonLogsOperationService extends IService<MonLogsOperation> {
     /**
      * 分页查询操作日志。
      */
-    RPage<MonLogsOperationVO> listMonLogsOperationPage(PageQuery pageQuery, MonLogsOperationSearchDTO monLogsOperationSearchDTO);
+    RPage<MonLogsOperationVo> listMonLogsOperationPage(PageQuery pageQuery, MonLogsOperationSearchDTO monLogsOperationSearchDTO);
 }

@@ -3,7 +3,7 @@ package com.jinlink.controller.system;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import com.jinlink.common.api.Result;
 import com.jinlink.modules.system.entity.dto.LoginFormDTO;
-import com.jinlink.modules.system.entity.vo.SysUserInfoVO;
+import com.jinlink.modules.system.entity.vo.SysUserInfoVo;
 import com.jinlink.modules.system.facade.IAuthenticationFacade;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -37,7 +37,7 @@ public class AuthenticationController {
     @GetMapping("/getUserInfo")
     @Operation(operationId = "2",summary = "获取用户权限信息")
     @SaCheckLogin
-    public Result<SysUserInfoVO> getUserInfo(){
+    public Result<SysUserInfoVo> getUserInfo(){
         return Result.success("请求成功",authenticationFacade.getUserInfo());
     }
 

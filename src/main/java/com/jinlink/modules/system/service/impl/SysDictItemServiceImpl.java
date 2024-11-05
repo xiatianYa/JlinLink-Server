@@ -2,9 +2,8 @@ package com.jinlink.modules.system.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.jinlink.common.page.PageQuery;
-import com.jinlink.common.page.RPage;
 import com.jinlink.modules.system.entity.dto.SysDictItemSearchDTO;
-import com.jinlink.modules.system.entity.vo.SysDictItemVO;
+import com.jinlink.modules.system.entity.vo.SysDictItemVo;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
@@ -29,7 +28,7 @@ public class SysDictItemServiceImpl extends ServiceImpl<SysDictItemMapper, SysDi
     private SysDictItemMapper sysDictItemMapper;
 
     @Override
-    public Page<SysDictItemVO> listSysDictItemPage(PageQuery pageQuery, SysDictItemSearchDTO sysDictItemSearchDTO) {
+    public Page<SysDictItemVo> listSysDictItemPage(PageQuery pageQuery, SysDictItemSearchDTO sysDictItemSearchDTO) {
         QueryWrapper sysDictItemQuery = new QueryWrapper()
                 .eq("dict_id", sysDictItemSearchDTO.getDictId())
                 .eq("value", sysDictItemSearchDTO.getValue())
@@ -38,7 +37,7 @@ public class SysDictItemServiceImpl extends ServiceImpl<SysDictItemMapper, SysDi
                 .like("description",sysDictItemSearchDTO.getDescription());
         Page<SysDictItem> paginate = sysDictItemMapper.paginate(pageQuery.getCurrent(), pageQuery.getSize(), sysDictItemQuery);
         List<SysDictItem> paginateRecords = paginate.getRecords();
-        List<SysDictItemVO> sysDictItemVOS = BeanUtil.copyToList(paginateRecords, SysDictItemVO.class);
-        return new Page<>(sysDictItemVOS, paginate.getPageNumber(), paginate.getPageSize(),sysDictItemVOS.size());
+        List<SysDictItemVo> sysDictItemVos = BeanUtil.copyToList(paginateRecords, SysDictItemVo.class);
+        return new Page<>(sysDictItemVos, paginate.getPageNumber(), paginate.getPageSize(), sysDictItemVos.size());
     }
 }

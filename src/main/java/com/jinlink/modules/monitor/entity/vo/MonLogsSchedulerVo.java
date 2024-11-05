@@ -8,15 +8,15 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 /**
- * 调度管理 VO
+ * 调度日志 VO 展示类
  */
 
 @Data
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(name = "MonSchedulerVo", description = "调度管理 VO 对象")
-public class MonSchedulerVo extends BaseVO {
+@Schema(name = "MonLogsSchedulerVo", description = "调度日志 VO 对象")
+public class MonLogsSchedulerVo extends BaseVO {
 
     @Schema(description = "任务名称")
     private String jobName;
@@ -30,18 +30,21 @@ public class MonSchedulerVo extends BaseVO {
     @Schema(description = "触发器组别")
     private String triggerGroup;
 
-    @Schema(description = "任务参数")
-    private String jobData;
-
-    @Schema(description = "触发器参数")
-    private String triggerData;
-
-    @Schema(description = "调度表达式")
-    private String cron;
-
-    @Schema(description = "调度任务全类名")
-    private String jobClassName;
+    @Schema(description = "耗时")
+    private Long useTime;
 
     @Schema(description = "状态")
     private String status;
+
+    @Schema(description = "异常信息")
+    private String exceptionMessage;
+
+    @Schema(description = "异常类")
+    private String exceptionClass;
+
+    @Schema(description = "异常行号")
+    private Integer line;
+
+    @Schema(description = "堆栈信息")
+    private String stackTrace;
 }

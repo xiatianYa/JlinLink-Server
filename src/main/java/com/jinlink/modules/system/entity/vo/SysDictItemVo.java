@@ -7,8 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.io.Serial;
-
 /**
  * 数据字典子项管理 VO 展示类
  */
@@ -18,10 +16,7 @@ import java.io.Serial;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(name = "SysDictItemVO", description = "数据字典子项管理 VO 对象")
-public class SysDictItemVO extends BaseVO {
-
-    @Serial
-    private static final long serialVersionUID = -7429297391463712321L;
+public class SysDictItemVo extends BaseVO {
 
     @Schema(description = "父字典ID")
     private Long dictId;

@@ -2,11 +2,14 @@ package com.jinlink.controller.system;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.hutool.core.bean.BeanUtil;
 import com.jinlink.common.api.Result;
+import com.jinlink.common.page.PageQuery;
 import com.jinlink.common.page.RPage;
 import com.jinlink.modules.system.entity.dto.SysDictItemDeleteDTO;
-import com.jinlink.modules.system.entity.vo.SysDictItemOptionsVO;
-import com.jinlink.modules.system.entity.vo.SysDictVO;
+import com.jinlink.modules.system.entity.dto.SysUserSearchDTO;
+import com.jinlink.modules.system.entity.vo.SysDictItemOptionsVo;
+import com.jinlink.modules.system.entity.vo.SysDictVo;
 import com.mybatisflex.core.paginate.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -89,8 +92,8 @@ public class SysDictController {
     @GetMapping("list")
     @Operation(operationId = "4",summary = "查询所有字典")
     @SaCheckPermission("sys:dict:list")
-    public Result<List<SysDict>> list() {
-        return Result.success("请求成功",sysDictService.list());
+    public Result<List<SysDictVo>> list() {
+        return Result.success("请求成功", BeanUtil.copyToList(sysDictService.list(),SysDictVo.class));
     }
 
     /**
@@ -102,21 +105,22 @@ public class SysDictController {
     @GetMapping("getInfo/{id}")
     @Operation(operationId = "5",summary = "查询字典详细信息")
     @SaCheckPermission("sys:dict:info")
-    public Result<SysDictVO> getInfo(@PathVariable Serializable id) {
+    public Result<SysDictVo> getInfo(@PathVariable Serializable id) {
         return Result.success("请求成功",sysDictService.getInfo(id));
     }
 
     /**
      * 分页查询数据字典管理。
      *
-     * @param page 分页对象
+     * @param query 分页对象
      * @return 分页对象
      */
     @GetMapping("page")
     @Operation(operationId = "6",summary = "查询字典分页")
     @SaCheckPermission("sys:dict:page")
-    public Result<RPage<SysDict>> page(Page<SysDict> page) {
-        return Result.data(RPage.build(sysDictService.page(page)));
+    public Result<RPage<SysDictVo>> page(@Parameter(description = "分页对象", required = true) PageQuery query) {
+        Page<SysDictVo> sysDictPage = sysDictService.listDictPage(query);
+        return Result.data(RPage.build(sysDictPage));
     }
 
     /**
@@ -125,7 +129,7 @@ public class SysDictController {
     @GetMapping("/allDict")
     @Operation(operationId = "7", summary = "查询所有的数据字典子项 Map 结构")
     @SaCheckLogin
-    public Result<Map<String, List<SysDictItemOptionsVO>>> queryAllDictItemMap() {
+    public Result<Map<String, List<SysDictItemOptionsVo>>> queryAllDictItemMap() {
         return Result.data(sysDictService.queryAllDictMap());
     }
 

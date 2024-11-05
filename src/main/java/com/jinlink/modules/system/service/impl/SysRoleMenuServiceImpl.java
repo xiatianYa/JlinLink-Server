@@ -1,7 +1,11 @@
 package com.jinlink.modules.system.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
+import com.jinlink.common.page.PageQuery;
 import com.jinlink.modules.system.entity.dto.SysRoleMenuUpdateDTO;
+import com.jinlink.modules.system.entity.vo.SysRoleMenuVo;
 import com.mybatisflex.core.logicdelete.LogicDeleteManager;
+import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.jinlink.modules.system.entity.SysRoleMenu;
@@ -64,5 +68,13 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
             if (!userMenus.contains(sysRoleMenu.getMenuId())) userMenus.add(sysRoleMenu.getMenuId());
         }
         return userMenus;
+    }
+
+    @Override
+    public Page<SysRoleMenuVo> listRoleMenuPage(PageQuery query) {
+        Page<SysRoleMenu> paginate = sysRoleMenuMapper.paginate(query.getCurrent(), query.getSize(), new QueryWrapper());
+        List<SysRoleMenu> records = paginate.getRecords();
+        List<SysRoleMenuVo> sysRoleMenuVos = BeanUtil.copyToList(records, SysRoleMenuVo.class);
+        return new Page<>(sysRoleMenuVos,paginate.getPageNumber(),paginate.getPageSize(),paginate.getTotalRow());
     }
 }

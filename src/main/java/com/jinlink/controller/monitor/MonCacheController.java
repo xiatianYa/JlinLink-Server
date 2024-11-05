@@ -2,7 +2,7 @@ package com.jinlink.controller.monitor;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.jinlink.common.api.Result;
-import com.jinlink.modules.monitor.entity.vo.MonCacheRedisVO;
+import com.jinlink.modules.monitor.entity.vo.MonCacheRedisVo;
 import com.jinlink.modules.monitor.service.IMonCacheFacade;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,7 +27,7 @@ public class MonCacheController {
     @GetMapping("/redis")
     @Operation(operationId = "1", summary = "获取 Redis 信息")
     @SaCheckPermission("mon:monCache:info")
-    public Result<MonCacheRedisVO> getRedisInfo() {
+    public Result<MonCacheRedisVo> getRedisInfo() {
         return Result.data(monCacheFacade.redisInfo());
     }
 }

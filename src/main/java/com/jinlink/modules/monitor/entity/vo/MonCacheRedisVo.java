@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -14,7 +16,10 @@ import java.util.List;
 @Data
 @Builder
 @Schema(name = "MonCacheRedisVO", description = "系统缓存 Redis VO 对象")
-public class MonCacheRedisVO {
+public class MonCacheRedisVo implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 6911476596639057720L;
 
     @Schema(description = "版本")
     private String version;

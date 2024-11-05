@@ -1,8 +1,12 @@
 package com.jinlink.modules.system.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.jinlink.common.exception.JinLinkException;
+import com.jinlink.common.page.PageQuery;
 import com.jinlink.modules.system.entity.SysRole;
+import com.jinlink.modules.system.entity.vo.SysUserRoleVo;
 import com.jinlink.modules.system.service.SysRoleService;
+import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.jinlink.modules.system.entity.SysUserRole;
@@ -67,5 +71,13 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
                 list(new QueryWrapper().eq("status",1).in("id", sysUserRoles.stream().map(SysUserRole::getRoleId).collect(Collectors.toList())));
         //用户所拥有的权限
         return sysRoles.stream().map(SysRole::getRoleCode).toArray(String[]::new);
+    }
+
+    @Override
+    public Page<SysUserRoleVo> listSysUserRolePage(PageQuery query) {
+        Page<SysUserRole> paginate = sysUserRoleMapper.paginate(query.getCurrent(), query.getSize(), new QueryWrapper());
+        List<SysUserRole> records = paginate.getRecords();
+        List<SysUserRoleVo> sysUserRoleVos = BeanUtil.copyToList(records, SysUserRoleVo.class);
+        return new Page<>(sysUserRoleVos,paginate.getPageNumber(),paginate.getPageSize(),paginate.getTotalRow());
     }
 }

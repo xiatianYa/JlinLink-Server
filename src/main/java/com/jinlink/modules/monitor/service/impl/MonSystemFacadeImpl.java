@@ -1,7 +1,7 @@
 package com.jinlink.modules.monitor.service.impl;
 
 import cn.hutool.core.date.DatePattern;
-import com.jinlink.modules.monitor.entity.vo.MonSystemVO;
+import com.jinlink.modules.monitor.entity.vo.MonSystemVo;
 import com.jinlink.modules.monitor.service.IMonSystemFacade;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,7 +28,7 @@ import java.util.Properties;
 public class MonSystemFacadeImpl implements IMonSystemFacade {
 
     @Override
-    public MonSystemVO getServerInfo() {
+    public MonSystemVo getServerInfo() {
         // 创建系统信息对象
         oshi.SystemInfo si = new oshi.SystemInfo();
         // 获取硬件层信息
@@ -38,7 +38,7 @@ public class MonSystemFacadeImpl implements IMonSystemFacade {
         // 获取计算机系统信息
         ComputerSystem computerSystem = hardware.getComputerSystem();
         // 构建服务器信息视图对象
-        return MonSystemVO.builder()
+        return MonSystemVo.builder()
                 .operatingSystem(getOperatingSystemVO(operatingSystem, computerSystem))
                 .centralProcessor(getCentralProcessorVO(hardware))
                 .globalMemory(getGlobalMemoryVO(hardware))
@@ -53,17 +53,17 @@ public class MonSystemFacadeImpl implements IMonSystemFacade {
      *
      * @param operatingSystem 操作系统对象
      * @param computerSystem  计算机系统对象
-     * @return {@linkplain MonSystemVO.OperatingSystemVO} 操作系统信息视图对象
+     * @return {@linkplain MonSystemVo.OperatingSystemVO} 操作系统信息视图对象
      * @author payne.zhuang
      * @CreateTime 2024-05-01 22:52
      */
-    private MonSystemVO.OperatingSystemVO getOperatingSystemVO(OperatingSystem operatingSystem, ComputerSystem computerSystem) {
+    private MonSystemVo.OperatingSystemVO getOperatingSystemVO(OperatingSystem operatingSystem, ComputerSystem computerSystem) {
         // 时间格式化器
         DateTimeFormatter formatter = DateTimeFormatter
                 .ofPattern(DatePattern.NORM_DATETIME_PATTERN).withZone(ZoneId.systemDefault());
         Properties props = System.getProperties();
         // 构建并返回操作系统信息视图对象
-        return MonSystemVO.OperatingSystemVO.builder()
+        return MonSystemVo.OperatingSystemVO.builder()
                 // 设置操作系统名称
                 .name(props.getProperty("os.name"))
                 // 设置操作系统架构
@@ -81,11 +81,11 @@ public class MonSystemFacadeImpl implements IMonSystemFacade {
      * 构建中央处理器信息视图对象
      *
      * @param hardware 硬件抽象层对象
-     * @return {@linkplain MonSystemVO.CentralProcessorVO} 中央处理器信息视图对象
+     * @return {@linkplain MonSystemVo.CentralProcessorVO} 中央处理器信息视图对象
      * @author payne.zhuang
      * @CreateTime 2024-05-01 22:52
      */
-    private MonSystemVO.CentralProcessorVO getCentralProcessorVO(HardwareAbstractionLayer hardware) {
+    private MonSystemVo.CentralProcessorVO getCentralProcessorVO(HardwareAbstractionLayer hardware) {
         CentralProcessor processor = hardware.getProcessor();
         CentralProcessor.ProcessorIdentifier identifier = processor.getProcessorIdentifier();
         // 获取系统CPU负载
@@ -103,7 +103,7 @@ public class MonSystemFacadeImpl implements IMonSystemFacade {
 
         long totalCpu = user + nice + system + idle + ioWait + irq + softIrq + steal;
         // 获取处理器信息并构建中央处理器视图对象
-        return MonSystemVO.CentralProcessorVO.builder()
+        return MonSystemVo.CentralProcessorVO.builder()
                 // 设置处理器的名称
                 .name(identifier.getName())
                 // 设置处理器的标识符
@@ -129,11 +129,11 @@ public class MonSystemFacadeImpl implements IMonSystemFacade {
      * 构建全局内存信息视图对象
      *
      * @param hardware 硬件抽象层对象
-     * @return {@linkplain MonSystemVO.GlobalMemoryVO} 全局内存信息视图对象
+     * @return {@linkplain MonSystemVo.GlobalMemoryVO} 全局内存信息视图对象
      * @author payne.zhuang
      * @CreateTime 2024-05-01 22:52
      */
-    private MonSystemVO.GlobalMemoryVO getGlobalMemoryVO(HardwareAbstractionLayer hardware) {
+    private MonSystemVo.GlobalMemoryVO getGlobalMemoryVO(HardwareAbstractionLayer hardware) {
         // 获取硬件的全局内存信息
         GlobalMemory memory = hardware.getMemory();
         // 获取虚拟内存信息
@@ -162,7 +162,7 @@ public class MonSystemFacadeImpl implements IMonSystemFacade {
         String swapUsedFormatted = FormatUtil.formatBytes(usedSwap);
         String swapFreeFormatted = FormatUtil.formatBytes(freeSwap);
         // 构建并返回全局内存信息视图对象
-        return MonSystemVO.GlobalMemoryVO.builder()
+        return MonSystemVo.GlobalMemoryVO.builder()
                 // 设置总内存
                 .total(totalFormatted)
                 // 设置已用内存
@@ -185,11 +185,11 @@ public class MonSystemFacadeImpl implements IMonSystemFacade {
     /**
      * 构建Java虚拟机信息视图对象
      *
-     * @return {@linkplain MonSystemVO.JvmVO} Java虚拟机信息视图对象
+     * @return {@linkplain MonSystemVo.JvmVO} Java虚拟机信息视图对象
      * @author payne.zhuang
      * @CreateTime 2024-05-01 22:53
      */
-    private MonSystemVO.JvmVO getJvmVO() {
+    private MonSystemVo.JvmVO getJvmVO() {
         // 获取Java虚拟机运行时和内存使用信息
         RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
         MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
@@ -201,7 +201,7 @@ public class MonSystemFacadeImpl implements IMonSystemFacade {
         // 计算内存使用率
         double memoryUsageRate = Math.round(((double) heapMemoryUsed / heapMemoryMax) * 100);
         // 构建并返回Java虚拟机信息视图对象
-        return MonSystemVO.JvmVO.builder()
+        return MonSystemVo.JvmVO.builder()
                 // 设置Java虚拟机的名称
                 .vmName(runtimeMXBean.getVmName())
                 // 设置Java虚拟机的运行时间，并格式化为易于理解的时间格式（如：天、小时、分钟）
@@ -233,12 +233,12 @@ public class MonSystemFacadeImpl implements IMonSystemFacade {
      * @author payne.zhuang
      * @CreateTime 2024-05-01 22:53
      */
-    private List<MonSystemVO.OSProcessVO> getProcessesList(OperatingSystem operatingSystem) {
+    private List<MonSystemVo.OSProcessVO> getProcessesList(OperatingSystem operatingSystem) {
         // 获取并排序进程信息
         List<OSProcess> processes = operatingSystem.getProcesses(
                 OperatingSystem.ProcessFiltering.ALL_PROCESSES, OperatingSystem.ProcessSorting.CPU_DESC, 6);
         // 构建并返回进程信息视图对象列表
-        return processes.stream().map(process -> MonSystemVO.OSProcessVO.builder()
+        return processes.stream().map(process -> MonSystemVo.OSProcessVO.builder()
                 // 设置进程ID
                 .processID(process.getProcessID())
                 // 设置进程名称
@@ -252,13 +252,13 @@ public class MonSystemFacadeImpl implements IMonSystemFacade {
      * 获取并构建文件存储信息视图对象列表。
      *
      * @param operatingSystem 操作系统对象
-     * @return {@linkplain List<MonSystemVO.OSFileStoreVO>} 文件存储信息视图对象列表
+     * @return {@linkplain List< MonSystemVo.OSFileStoreVO>} 文件存储信息视图对象列表
      * @author payne.zhuang
      * @CreateTime 2024-05-01 22:53
      */
-    private List<MonSystemVO.OSFileStoreVO> getFileStoresList(OperatingSystem operatingSystem) {
+    private List<MonSystemVo.OSFileStoreVO> getFileStoresList(OperatingSystem operatingSystem) {
         // 获取文件存储信息并构建文件存储信息视图对象列表
-        return operatingSystem.getFileSystem().getFileStores().stream().map(fs -> MonSystemVO.OSFileStoreVO.builder()
+        return operatingSystem.getFileSystem().getFileStores().stream().map(fs -> MonSystemVo.OSFileStoreVO.builder()
                 // 设置文件存储的名称
                 .name(fs.getName())
                 // 设置文件存储的类型

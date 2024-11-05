@@ -2,7 +2,7 @@ package com.jinlink.modules.monitor.service.impl;
 
 import com.jinlink.common.config.redis.service.RedisService;
 import com.jinlink.common.pool.StringPools;
-import com.jinlink.modules.monitor.entity.vo.MonCacheRedisVO;
+import com.jinlink.modules.monitor.entity.vo.MonCacheRedisVo;
 import com.jinlink.modules.monitor.service.IMonCacheFacade;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,7 @@ public class MonCacheFacadeImpl implements IMonCacheFacade {
     private RedisService redisService;
 
     @Override
-    public MonCacheRedisVO redisInfo() {
+    public MonCacheRedisVo redisInfo() {
         Properties redisInfo = redisService.getRedisInfo(null);
 
         // 获取 Redis 命令统计
@@ -44,7 +44,7 @@ public class MonCacheFacadeImpl implements IMonCacheFacade {
             memoryUsageRate = BigDecimal.valueOf(((double) usedMemory / Long.parseLong(maxMemory)) * 100).setScale(6, RoundingMode.HALF_UP);
             maxMemory = FormatUtil.formatBytes(Long.parseLong(maxMemory));
         }
-        MonCacheRedisVO redisVO = MonCacheRedisVO.builder()
+        MonCacheRedisVo redisVO = MonCacheRedisVo.builder()
                 // 版本号
                 .version(redisInfo.getProperty("redis_version"))
                 // 运行时间
@@ -65,7 +65,7 @@ public class MonCacheFacadeImpl implements IMonCacheFacade {
         // 获取 Redis 命令统计信息
         Properties commandStats = redisService.getRedisInfo("commandstats");
         // 命令统计信息
-        List<MonCacheRedisVO.CommandVO> commandVOS = new ArrayList<>();
+        List<MonCacheRedisVo.CommandVO> commandVOS = new ArrayList<>();
         // 计算每个命令的占比
         for (String commandKey : commandStats.stringPropertyNames()) {
             // 去除前缀 "cmdstat_"
@@ -76,7 +76,7 @@ public class MonCacheFacadeImpl implements IMonCacheFacade {
             // 计算命令调用占比
             double commandPercentage = (double) commandCalls / totalCommands * 100;
             // 构建命令统计对象
-            commandVOS.add(MonCacheRedisVO.CommandVO.builder()
+            commandVOS.add(MonCacheRedisVo.CommandVO.builder()
                     .name(commandName)
                     .value(commandCalls)
                     .percentage(BigDecimal.valueOf(commandPercentage).setScale(4, RoundingMode.HALF_UP)).build());

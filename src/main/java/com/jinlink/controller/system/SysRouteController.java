@@ -2,7 +2,7 @@ package com.jinlink.controller.system;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import com.jinlink.common.api.Result;
-import com.jinlink.modules.system.entity.vo.SysUserRouteVO;
+import com.jinlink.modules.system.entity.vo.SysUserRouteVo;
 import com.jinlink.modules.system.service.SysMenuService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -45,7 +45,7 @@ public class SysRouteController {
     @GetMapping("getUserRoutes")
     @Operation(operationId = "2",summary = "获取用户路由数据")
     @SaCheckLogin
-    public Result<SysUserRouteVO> getUserRoutes() {
+    public Result<SysUserRouteVo> getUserRoutes() {
         return Result.success("获取成功!",sysMenuService.getUserRoutes());
     }
 }

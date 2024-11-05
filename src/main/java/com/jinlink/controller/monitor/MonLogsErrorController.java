@@ -1,11 +1,12 @@
 package com.jinlink.controller.monitor;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.hutool.core.bean.BeanUtil;
 import com.jinlink.common.api.Result;
 import com.jinlink.common.page.PageQuery;
 import com.jinlink.common.page.RPage;
 import com.jinlink.modules.monitor.entity.dto.MonLogsOperationSearchDTO;
-import com.jinlink.modules.monitor.entity.vo.MonLogsErrorVO;
+import com.jinlink.modules.monitor.entity.vo.MonLogsErrorVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -87,8 +88,8 @@ public class MonLogsErrorController {
     @GetMapping("list")
     @Operation(operationId = "4",summary = "查询所有异常日志")
     @SaCheckPermission("mon:monLogsError:list")
-    public List<MonLogsError> list() {
-        return monLogsErrorService.list();
+    public Result<List<MonLogsErrorVo>> list() {
+        return Result.success("请求成功",BeanUtil.copyToList(monLogsErrorService.list(), MonLogsErrorVo.class));
     }
 
     /**
@@ -100,8 +101,8 @@ public class MonLogsErrorController {
     @GetMapping("getInfo/{id}")
     @Operation(operationId = "5",summary = "查询异常日志详细")
     @SaCheckPermission("mon:monLogsError:info")
-    public MonLogsError getInfo(@Parameter(description = "日志ID", required = true)@PathVariable Serializable id) {
-        return monLogsErrorService.getById(id);
+    public Result<MonLogsErrorVo> getInfo(@Parameter(description = "日志ID", required = true)@PathVariable Serializable id) {
+        return Result.success("请求成功",BeanUtil.copyProperties(monLogsErrorService.getById(id), MonLogsErrorVo.class));
     }
 
     /**
@@ -113,9 +114,9 @@ public class MonLogsErrorController {
     @GetMapping("page")
     @Operation(operationId = "6",summary = "分页查询异常日志管理")
     @SaCheckPermission("mon:monLogsError:page")
-    public Result<RPage<MonLogsErrorVO>> page(@Parameter(description = "分页对象", required = true) @Valid PageQuery pageQuery,
-                                            @Parameter(description = "查询对象") MonLogsOperationSearchDTO monLogsOperationSearchDTO) {
-        RPage<MonLogsErrorVO> monLogsOperationPage= monLogsErrorService.listMonLogsErrorPage(pageQuery,monLogsOperationSearchDTO);
+    public Result<RPage<MonLogsErrorVo>> page(@Parameter(description = "分页对象", required = true) @Valid PageQuery pageQuery,
+                                              @Parameter(description = "查询对象") MonLogsOperationSearchDTO monLogsOperationSearchDTO) {
+        RPage<MonLogsErrorVo> monLogsOperationPage= monLogsErrorService.listMonLogsErrorPage(pageQuery,monLogsOperationSearchDTO);
         return Result.data(monLogsOperationPage);
     }
 

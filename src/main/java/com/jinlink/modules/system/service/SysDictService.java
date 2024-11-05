@@ -1,7 +1,9 @@
 package com.jinlink.modules.system.service;
 
-import com.jinlink.modules.system.entity.vo.SysDictItemOptionsVO;
-import com.jinlink.modules.system.entity.vo.SysDictVO;
+import com.jinlink.common.page.PageQuery;
+import com.jinlink.modules.system.entity.vo.SysDictItemOptionsVo;
+import com.jinlink.modules.system.entity.vo.SysDictVo;
+import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.service.IService;
 import com.jinlink.modules.system.entity.SysDict;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,13 +23,13 @@ public interface SysDictService extends IService<SysDict> {
     /**
      * 获取字典Map
      */
-    Map<String, List<SysDictItemOptionsVO>> queryAllDictMap();
+    Map<String, List<SysDictItemOptionsVo>> queryAllDictMap();
 
 
     /**
      * 获取字典详细信息
      */
-    SysDictVO getInfo(Serializable id);
+    SysDictVo getInfo(Serializable id);
 
     /**
      * 删除字典多个
@@ -46,4 +48,9 @@ public interface SysDictService extends IService<SysDict> {
      */
     @Transactional
     Boolean updateDictById(SysDict sysDict);
+
+    /**
+     * 分页查询数据字典管理
+     */
+    Page<SysDictVo> listDictPage(PageQuery query);
 }

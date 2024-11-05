@@ -16,9 +16,9 @@ import com.jinlink.modules.system.entity.SysRoleMenu;
 import com.jinlink.modules.system.entity.SysUserRole;
 import com.jinlink.modules.system.entity.dto.SysMenuFormDTO;
 import com.jinlink.common.domain.BTPairs;
-import com.jinlink.modules.system.entity.vo.SysMenuTreeVO;
-import com.jinlink.modules.system.entity.vo.SysMenuVO;
-import com.jinlink.modules.system.entity.vo.SysUserRouteVO;
+import com.jinlink.modules.system.entity.vo.SysMenuTreeVo;
+import com.jinlink.modules.system.entity.vo.SysMenuVo;
+import com.jinlink.modules.system.entity.vo.SysUserRouteVo;
 import com.jinlink.modules.system.service.*;
 import com.mybatisflex.core.logicdelete.LogicDeleteManager;
 import com.mybatisflex.core.paginate.Page;
@@ -67,7 +67,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
      * 获取菜单树
      */
     @Override
-    public List<SysMenuTreeVO> getMenuTree() {
+    public List<SysMenuTreeVo> getMenuTree() {
         List<SysMenu> sysMenus = sysMenuMapper.selectAll();
         return initMenuChildren(sysMenus);
     }
@@ -76,10 +76,10 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
      * 获取菜单列表(分页)
      */
     @Override
-    public RPage<SysMenuVO> getMenuList(PageQuery query) {
+    public RPage<SysMenuVo> getMenuList(PageQuery query) {
         //查询所有父菜单
         Page<SysMenu> paginate = sysMenuMapper.paginate(query.getCurrent(), query.getSize(), new QueryWrapper().eq("parent_id",0));
-        List<SysMenuVO> menuPageVOList = iniSysMenuChildren(paginate.getRecords());
+        List<SysMenuVo> menuPageVOList = iniSysMenuChildren(paginate.getRecords());
         return RPage.build(new Page<>(menuPageVOList, paginate.getPageNumber(), paginate.getPageSize(),menuPageVOList.size()));
     }
 
@@ -257,8 +257,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
      * 获取用户路由权限
      */
     @Override
-    public SysUserRouteVO getUserRoutes() {
-        List<SysUserRouteVO.Route> resultRoute = new ArrayList<>();
+    public SysUserRouteVo getUserRoutes() {
+        List<SysUserRouteVo.Route> resultRoute = new ArrayList<>();
         //查询用户角色
         List<SysUserRole> sysUserRoles = sysUserRoleService
                 .list(new QueryWrapper().eq("user_id", StpUtil.getLoginIdAsLong()));
@@ -280,10 +280,10 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             Optional<SysMenu> sysMenu = parentMenus.stream().filter(item -> item.getId().equals(sysRoleMenu.getMenuId())).findFirst();
             if (sysMenu.isEmpty()) continue;
             //构建路由对象
-            SysUserRouteVO.Route route = SysUserRouteVOBuilder(sysMenu.get(),childrenMenus);
+            SysUserRouteVo.Route route = SysUserRouteVOBuilder(sysMenu.get(),childrenMenus);
             resultRoute.add(route);
         }
-        return SysUserRouteVO.builder()
+        return SysUserRouteVo.builder()
                 .home("home")
                 .routes(resultRoute)
                 .build();
@@ -328,7 +328,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
     /**
      * 初始化子菜单分页
      */
-    private List<SysMenuVO> iniSysMenuChildren(List<SysMenu> sysMenus) {
+    private List<SysMenuVo> iniSysMenuChildren(List<SysMenu> sysMenus) {
         //查询所有子菜单
         List<SysMenu> childrenMenus = sysMenuMapper.selectListByQuery(new QueryWrapper().ne("parent_id",0));
         sysMenus = Stream.concat(childrenMenus.stream(), sysMenus.stream())
@@ -383,13 +383,13 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             treeNode.putExtra("updateTime", sysMenu.getUpdateTime());
             treeNode.putExtra("status",sysMenu.getStatus());
         }));
-        return JSON.parseArray(JSON.toJSONString(treeList), SysMenuVO.class);
+        return JSON.parseArray(JSON.toJSONString(treeList), SysMenuVo.class);
     }
 
     /**
      * 构建SysUserRouteVO.Route
      */
-    public SysUserRouteVO.Route SysUserRouteVOBuilder(SysMenu sysMenu,List<SysMenu> sysMenus){
+    public SysUserRouteVo.Route SysUserRouteVOBuilder(SysMenu sysMenu, List<SysMenu> sysMenus){
         sysMenus.add(sysMenu);
         //配置
         TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
@@ -408,7 +408,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             treeNode.putExtra("name", sysMenuObj.getRouteName());
             treeNode.putExtra("path", sysMenuObj.getRoutePath());
             treeNode.putExtra("component", sysMenuObj.getComponent());
-            treeNode.putExtra("meta", SysUserRouteVO.Meta.builder()
+            treeNode.putExtra("meta", SysUserRouteVo.Meta.builder()
                     .title(sysMenuObj.getRouteName())
                     .i18nKey(sysMenuObj.getI18nKey())
                     .order(sysMenuObj.getOrder())
@@ -426,13 +426,13 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
                     .build());
         }));
         sysMenus.remove(sysMenu);
-        return JSON.parseArray(JSON.toJSONString(tree), SysUserRouteVO.Route.class).get(0);
+        return JSON.parseArray(JSON.toJSONString(tree), SysUserRouteVo.Route.class).get(0);
     }
 
     /**
      * 初始化子菜单
      */
-    private  List<SysMenuTreeVO> initMenuChildren(List<SysMenu> sysMenus) {
+    private  List<SysMenuTreeVo> initMenuChildren(List<SysMenu> sysMenus) {
         //查询所有子菜单
         List<SysMenu> childrenMenus = sysMenuMapper.selectListByQuery(new QueryWrapper().ne("parent_id",0));
         sysMenus = Stream.concat(childrenMenus.stream(), sysMenus.stream())
@@ -458,6 +458,6 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
             treeNode.putExtra("pid",sysMenu.getParentId().intValue());
             treeNode.putExtra("sort", sysMenu.getOrder());
         }));
-        return JSON.parseArray(JSON.toJSONString(treeList), SysMenuTreeVO.class);
+        return JSON.parseArray(JSON.toJSONString(treeList), SysMenuTreeVo.class);
     }
 }

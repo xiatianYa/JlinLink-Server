@@ -27,7 +27,6 @@ import java.io.Serial;
 @Table(value = "mon_logs_scheduler")
 public class MonLogsScheduler extends BaseEntity {
 
-
     /**
      * 任务名称
      */

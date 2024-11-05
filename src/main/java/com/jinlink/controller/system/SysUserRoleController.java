@@ -1,8 +1,11 @@
 package com.jinlink.controller.system;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.hutool.core.bean.BeanUtil;
 import com.jinlink.common.api.Result;
+import com.jinlink.common.page.PageQuery;
 import com.jinlink.common.page.RPage;
+import com.jinlink.modules.system.entity.vo.SysUserRoleVo;
 import com.mybatisflex.core.paginate.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -97,8 +100,8 @@ public class SysUserRoleController {
     @GetMapping("list")
     @Operation(operationId = "5",summary = "查询所有用户角色列表")
     @SaCheckPermission("sys:user:role:list")
-    public Result<List<SysUserRole>> list() {
-        return Result.success("请求成功",sysUserRoleService.list());
+    public Result<List<SysUserRoleVo>> list() {
+        return Result.success("请求成功",BeanUtil.copyToList(sysUserRoleService.list(),SysUserRoleVo.class));
     }
 
     /**
@@ -110,20 +113,21 @@ public class SysUserRoleController {
     @GetMapping("getInfo/{id}")
     @Operation(operationId = "6",summary = "查询用户角色详细")
     @SaCheckPermission("sys:user:role:info")
-    public Result<SysUserRole> getInfo(@Parameter(description = "用户ID", required = true)@PathVariable Serializable id) {
-        return Result.success("请求成功",sysUserRoleService.getById(id));
+    public Result<SysUserRoleVo> getInfo(@Parameter(description = "用户ID", required = true)@PathVariable Serializable id) {
+        return Result.success("请求成功", BeanUtil.copyProperties(sysUserRoleService.getById(id),SysUserRoleVo.class));
     }
 
     /**
      * 分页查询用户角色管理。
      *
-     * @param page 分页对象
+     * @param query 分页对象
      * @return 分页对象
      */
     @GetMapping("page")
     @Operation(operationId = "7",summary = "查询用户角色(分页)")
     @SaCheckPermission("sys:user:role:page")
-    public Result<RPage<SysUserRole>> page(@Parameter(description = "查询用户角色(分页)对象", required = true)Page<SysUserRole> page) {
-        return Result.data(RPage.build(sysUserRoleService.page(page)));
+    public Result<RPage<SysUserRoleVo>> page(@Parameter(description = "分页对象", required = true) PageQuery query) {
+        Page<SysUserRoleVo> sysUserRoleVoPage = sysUserRoleService.listSysUserRolePage(query);
+        return Result.data(RPage.build(sysUserRoleVoPage));
     }
 }

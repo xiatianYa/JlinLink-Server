@@ -5,7 +5,7 @@ import com.jinlink.common.domain.Options;
 import com.jinlink.common.page.PageQuery;
 import com.jinlink.common.page.RPage;
 import com.jinlink.modules.monitor.entity.dto.MonLogsOperationSearchDTO;
-import com.jinlink.modules.monitor.entity.vo.MonLogsOperationVO;
+import com.jinlink.modules.monitor.entity.vo.MonLogsOperationVo;
 import com.jinlink.modules.system.service.SysUserService;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
@@ -36,15 +36,15 @@ public class MonLogsOperationServiceImpl extends ServiceImpl<MonLogsOperationMap
      * 分页查询操作日志。
      */
     @Override
-    public RPage<MonLogsOperationVO> listMonLogsOperationPage(PageQuery pageQuery, MonLogsOperationSearchDTO monLogsOperationSearchDTO) {
+    public RPage<MonLogsOperationVo> listMonLogsOperationPage(PageQuery pageQuery, MonLogsOperationSearchDTO monLogsOperationSearchDTO) {
         //查询全部用户名称
         List<Options<String>> allUserNames = sysUserService.getAllUserNames();
         Page<MonLogsOperation> paginate = monLogsOperationMapper.paginate(pageQuery.getCurrent(), pageQuery.getSize(),new QueryWrapper()
                 .eq("create_user_id",monLogsOperationSearchDTO.getCreateUser())
                 .orderBy("create_time",false));
         List<MonLogsOperation> records = paginate.getRecords();
-        List<MonLogsOperationVO> monLogsOperationVOS = BeanUtil.copyToList(records, MonLogsOperationVO.class);
-        monLogsOperationVOS.forEach(item->{
+        List<MonLogsOperationVo> monLogsOperationVos = BeanUtil.copyToList(records, MonLogsOperationVo.class);
+        monLogsOperationVos.forEach(item->{
             // 使用Stream API查找第一个value为1的元素  
             Optional<Options<String>> sysUserName = allUserNames.stream()
                     .filter(sysUser -> sysUser.getValue().equals(String.valueOf(item.getCreateUserId())))
@@ -52,6 +52,6 @@ public class MonLogsOperationServiceImpl extends ServiceImpl<MonLogsOperationMap
             //如果找到了
             sysUserName.ifPresent(stringOptions -> item.setCreateUser(stringOptions.getLabel()));
         });
-        return RPage.build(new Page<>(monLogsOperationVOS, paginate.getPageNumber(), paginate.getPageSize(),paginate.getTotalRow()));
+        return RPage.build(new Page<>(monLogsOperationVos, paginate.getPageNumber(), paginate.getPageSize(),paginate.getTotalRow()));
     }
 }

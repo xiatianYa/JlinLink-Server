@@ -10,7 +10,6 @@ import org.springframework.context.ApplicationContext;
  * 它实现了ApplicationContextAware接口,可以在应用启动时
  * 通过调用setApplicationContext方法设置ApplicationContext
  * 来完成初始化
- * 
  * 在应用启动后,就可以通过getBean方法从静态方法获取容器中的Bean
  * 避免在类中注入Spring Bean,保持纯静态工具类的特性
  */

@@ -1,9 +1,12 @@
 package com.jinlink.controller.system;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.hutool.core.bean.BeanUtil;
 import com.jinlink.common.api.Result;
+import com.jinlink.common.page.PageQuery;
 import com.jinlink.common.page.RPage;
 import com.jinlink.modules.system.entity.vo.SysPermissionTreeVo;
+import com.jinlink.modules.system.entity.vo.SysPermissionVo;
 import com.mybatisflex.core.paginate.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -85,8 +88,8 @@ public class SysPermissionController {
     @GetMapping("list")
     @Operation(operationId = "4",summary = "查询全部按钮权限")
     @SaCheckPermission("sys:permission:list")
-    public Result<List<SysPermission>> list() {
-        return Result.success("请求成功",sysPermissionService.list());
+    public Result<List<SysPermissionVo>> list() {
+        return Result.success("请求成功",BeanUtil.copyToList(sysPermissionService.list(),SysPermissionVo.class));
     }
 
     /**
@@ -98,21 +101,21 @@ public class SysPermissionController {
     @GetMapping("getInfo/{id}")
     @Operation(operationId = "5",summary = "查询按钮权限详细")
     @SaCheckPermission("sys:permission:info")
-    public Result<SysPermission> getInfo(@Parameter(description = "按钮权限ID", required = true)@PathVariable Serializable id) {
-        return Result.success("请求成功",sysPermissionService.getById(id));
+    public Result<SysPermissionVo> getInfo(@Parameter(description = "按钮权限ID", required = true)@PathVariable Serializable id) {
+        return Result.success("请求成功", BeanUtil.copyProperties(sysPermissionService.getById(id),SysPermissionVo.class));
     }
 
     /**
      * 分页查询权限(按钮)管理。
      *
-     * @param page 分页对象
+     * @param query 分页对象
      * @return 分页对象
      */
     @GetMapping("page")
     @Operation(operationId = "6",summary = "查询按钮权限(分页)")
     @SaCheckPermission("sys:permission:page")
-    public Result<RPage<SysPermission>> page(@Parameter(description = "分页查询对象", required = true)Page<SysPermission> page) {
-        return Result.data(RPage.build(sysPermissionService.page(page)));
+    public Result<RPage<SysPermissionVo>> page(@Parameter(description = "分页对象", required = true) PageQuery query) {
+        return Result.data(RPage.build(sysPermissionService.listSysPermissionPage(query)));
     }
 
     /**

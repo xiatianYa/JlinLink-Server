@@ -1,10 +1,15 @@
 package com.jinlink.modules.system.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
+import com.jinlink.common.page.PageQuery;
 import com.jinlink.modules.system.entity.SysMenu;
 import com.jinlink.modules.system.entity.vo.SysPermissionTreeVo;
+import com.jinlink.modules.system.entity.vo.SysPermissionVo;
 import com.jinlink.modules.system.mapper.SysMenuMapper;
+import com.mybatisflex.core.paginate.Page;
+import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.jinlink.modules.system.entity.SysPermission;
 import com.jinlink.modules.system.mapper.SysPermissionMapper;
@@ -64,5 +69,13 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
             }
         });
         return sysPermissionTreeVos;
+    }
+
+    @Override
+    public Page<SysPermissionVo> listSysPermissionPage(PageQuery query) {
+        Page<SysPermission> paginate = sysPermissionMapper.paginate(query.getCurrent(), query.getSize(), new QueryWrapper());
+        List<SysPermission> records = paginate.getRecords();
+        List<SysPermissionVo> sysPermissionVos = BeanUtil.copyToList(records, SysPermissionVo.class);
+        return new Page<>(sysPermissionVos,paginate.getPageNumber(),paginate.getPageSize(),paginate.getTotalRow());
     }
 }

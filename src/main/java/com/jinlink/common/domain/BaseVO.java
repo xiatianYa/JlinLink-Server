@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -19,17 +18,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class BaseVO implements Serializable {
 
-    @Serial
-    private static final long serialVersionUID = 7743104535838008617L;
-
     @Schema(description = "ID")
     private Long id;
 
     @Schema(description = "创建时间")
     private LocalDateTime createTime;
-
-    @Schema(description = "创建用户名称")
-    private String createUser;
 
     @Schema(description = "更新时间")
     private LocalDateTime updateTime;

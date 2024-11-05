@@ -3,7 +3,7 @@ package com.jinlink.modules.monitor.service;
 import com.jinlink.common.page.PageQuery;
 import com.jinlink.common.page.RPage;
 import com.jinlink.modules.monitor.entity.dto.MonLogsOperationSearchDTO;
-import com.jinlink.modules.monitor.entity.vo.MonLogsErrorVO;
+import com.jinlink.modules.monitor.entity.vo.MonLogsErrorVo;
 import com.mybatisflex.core.service.IService;
 import com.jinlink.modules.monitor.entity.MonLogsError;
 
@@ -17,5 +17,5 @@ public interface MonLogsErrorService extends IService<MonLogsError> {
     /**
      * 分页查询错误异常日志。
      */
-    RPage<MonLogsErrorVO> listMonLogsErrorPage(PageQuery pageQuery, MonLogsOperationSearchDTO monLogsOperationSearchDTO);
+    RPage<MonLogsErrorVo> listMonLogsErrorPage(PageQuery pageQuery, MonLogsOperationSearchDTO monLogsOperationSearchDTO);
 }

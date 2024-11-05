@@ -18,10 +18,7 @@ import java.io.Serial;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(name = "SysDictVO", description = "数据字典管理 VO 对象")
-public class SysDictVO extends BaseVO {
-
-    @Serial
-    private static final long serialVersionUID = 6528557571731691764L;
+public class SysDictVo extends BaseVO {
 
     @Schema(description = "字典名称")
     private String name;

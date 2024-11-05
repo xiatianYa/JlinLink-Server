@@ -1,6 +1,7 @@
 package com.jinlink.modules.system.entity.vo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.jinlink.common.domain.BaseVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,11 +18,8 @@ import java.util.List;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Schema(name = "SysPermissionTreeVo", description = "按钮管理列表 VO 对象")
-public class SysPermissionTreeVo {
-    @Schema(description = "id")
-    private Long id;
+public class SysPermissionTreeVo extends BaseVO {
 
     @Schema(description = "label")
     private String label;

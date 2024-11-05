@@ -14,7 +14,7 @@ import java.util.List;
 @Data
 @Builder
 @Schema(name = "MonSystemVO", description = "系统服务监控 VO 对象")
-public class MonSystemVO implements Serializable {
+public class MonSystemVo implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 6911476596639057720L;

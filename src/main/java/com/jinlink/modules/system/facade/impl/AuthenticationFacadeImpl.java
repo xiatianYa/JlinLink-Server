@@ -5,7 +5,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.jinlink.common.exception.JinLinkException;
 import com.jinlink.modules.system.entity.*;
 import com.jinlink.modules.system.entity.dto.LoginFormDTO;
-import com.jinlink.modules.system.entity.vo.SysUserInfoVO;
+import com.jinlink.modules.system.entity.vo.SysUserInfoVo;
 import com.jinlink.modules.system.facade.IAuthenticationFacade;
 import com.jinlink.modules.system.service.*;
 import jakarta.annotation.Resource;
@@ -41,7 +41,7 @@ public class AuthenticationFacadeImpl implements IAuthenticationFacade {
      * 获取用户鉴权信息
      */
     @Override
-    public SysUserInfoVO getUserInfo() {
+    public SysUserInfoVo getUserInfo() {
         long loginIdAsLong = StpUtil.getLoginIdAsLong();
         if (ObjectUtil.isNull(loginIdAsLong)){
             throw new JinLinkException("用户未登录!");
@@ -50,7 +50,7 @@ public class AuthenticationFacadeImpl implements IAuthenticationFacade {
         if (ObjectUtil.isNull(sysUser)){
             throw new JinLinkException("用户不存在!");
         }
-        SysUserInfoVO sysUserInfoVo = new SysUserInfoVO();
+        SysUserInfoVo sysUserInfoVo = new SysUserInfoVo();
         sysUserInfoVo.setUserId(sysUser.getId());
         sysUserInfoVo.setUserName(sysUser.getNickName());
 

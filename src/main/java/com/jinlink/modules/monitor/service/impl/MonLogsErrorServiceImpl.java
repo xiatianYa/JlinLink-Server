@@ -4,10 +4,8 @@ import cn.hutool.core.bean.BeanUtil;
 import com.jinlink.common.domain.Options;
 import com.jinlink.common.page.PageQuery;
 import com.jinlink.common.page.RPage;
-import com.jinlink.modules.monitor.entity.MonLogsOperation;
 import com.jinlink.modules.monitor.entity.dto.MonLogsOperationSearchDTO;
-import com.jinlink.modules.monitor.entity.vo.MonLogsErrorVO;
-import com.jinlink.modules.monitor.entity.vo.MonLogsOperationVO;
+import com.jinlink.modules.monitor.entity.vo.MonLogsErrorVo;
 import com.jinlink.modules.system.service.SysUserService;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
@@ -38,14 +36,14 @@ public class MonLogsErrorServiceImpl extends ServiceImpl<MonLogsErrorMapper, Mon
      * 分页查询错误异常日志。
      */
     @Override
-    public RPage<MonLogsErrorVO> listMonLogsErrorPage(PageQuery pageQuery, MonLogsOperationSearchDTO monLogsOperationSearchDTO) {
+    public RPage<MonLogsErrorVo> listMonLogsErrorPage(PageQuery pageQuery, MonLogsOperationSearchDTO monLogsOperationSearchDTO) {
         //查询全部用户名称
         List<Options<String>> allUserNames = sysUserService.getAllUserNames();
         Page<MonLogsError> paginate = monLogsErrorMapper.paginate(pageQuery.getCurrent(), pageQuery.getSize(),new QueryWrapper()
                 .eq("create_user_id",monLogsOperationSearchDTO.getCreateUser())
                 .orderBy("create_time",false));
         List<MonLogsError> records = paginate.getRecords();
-        List<MonLogsErrorVO> monLogsErrorVOS = BeanUtil.copyToList(records, MonLogsErrorVO.class);
+        List<MonLogsErrorVo> monLogsErrorVOS = BeanUtil.copyToList(records, MonLogsErrorVo.class);
         monLogsErrorVOS.forEach(item->{
             // 使用Stream API查找第一个value为1的元素
             Optional<Options<String>> sysUserName = allUserNames.stream()

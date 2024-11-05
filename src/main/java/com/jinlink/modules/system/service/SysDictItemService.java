@@ -2,7 +2,7 @@ package com.jinlink.modules.system.service;
 
 import com.jinlink.common.page.PageQuery;
 import com.jinlink.modules.system.entity.dto.SysDictItemSearchDTO;
-import com.jinlink.modules.system.entity.vo.SysDictItemVO;
+import com.jinlink.modules.system.entity.vo.SysDictItemVo;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.service.IService;
 import com.jinlink.modules.system.entity.SysDictItem;
@@ -14,5 +14,5 @@ import com.jinlink.modules.system.entity.SysDictItem;
  * @since 1.0.0
  */
 public interface SysDictItemService extends IService<SysDictItem> {
-    Page<SysDictItemVO> listSysDictItemPage(PageQuery pageQuery, SysDictItemSearchDTO sysDictItemSearchDTO);
+    Page<SysDictItemVo> listSysDictItemPage(PageQuery pageQuery, SysDictItemSearchDTO sysDictItemSearchDTO);
 }

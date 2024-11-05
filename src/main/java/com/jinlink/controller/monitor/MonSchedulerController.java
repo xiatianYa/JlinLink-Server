@@ -1,6 +1,7 @@
 package com.jinlink.controller.monitor;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.hutool.core.bean.BeanUtil;
 import com.jinlink.common.api.Result;
 import com.jinlink.common.domain.Options;
 import com.jinlink.common.page.PageQuery;
@@ -87,8 +88,8 @@ public class MonSchedulerController {
     @GetMapping("list")
     @Operation(operationId = "4",summary = "查询所有调度管理")
     @SaCheckPermission("mon:scheduler:list")
-    public Result<List<MonScheduler>> list() {
-        return Result.success("请求成功",monSchedulerService.list());
+    public Result<List<MonSchedulerVo>> list() {
+        return Result.success("请求成功", BeanUtil.copyToList(monSchedulerService.list(),MonSchedulerVo.class));
     }
 
     /**
@@ -100,8 +101,8 @@ public class MonSchedulerController {
     @GetMapping("getInfo/{id}")
     @Operation(operationId = "5",summary = "根据调度管理主键获取详细信息")
     @SaCheckPermission("mon:scheduler:info")
-    public Result<MonScheduler> getInfo(@Parameter(description = "定时任务ID", required = true)@PathVariable Serializable id) {
-        return Result.success("请求成功",monSchedulerService.getById(id));
+    public Result<MonSchedulerVo> getInfo(@Parameter(description = "定时任务ID", required = true)@PathVariable Serializable id) {
+        return Result.success("请求成功",BeanUtil.copyProperties(monSchedulerService.getById(id),MonSchedulerVo.class));
     }
 
     /**

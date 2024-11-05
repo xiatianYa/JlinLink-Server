@@ -28,13 +28,6 @@ import java.io.Serial;
 @AllArgsConstructor
 @Table(value = "sys_role_permission")
 public class SysRolePermission extends BaseEntity {
-
-    @Serial
-    private static final long serialVersionUID = 1L;
-
-    @Id(keyType = KeyType.Auto)
-    private Long id;
-
     /**
      * 角色ID
      */

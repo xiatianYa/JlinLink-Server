@@ -21,10 +21,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(name = "SysMenuVO", description = "菜单管理 VO 对象")
-public class SysMenuVO extends BaseVO {
-
-    @Serial
-    private static final long serialVersionUID = 8285981486599719027L;
+public class SysMenuVo extends BaseVO {
 
     @Schema(description = "父菜单ID")
     private Long parentId;
@@ -87,5 +84,5 @@ public class SysMenuVO extends BaseVO {
     private String status;
 
     @Schema(description = "子对象")
-    private List<SysMenuVO> children;
+    private List<SysMenuVo> children;
 }

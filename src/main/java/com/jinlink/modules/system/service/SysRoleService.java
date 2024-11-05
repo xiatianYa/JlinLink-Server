@@ -1,10 +1,10 @@
 package com.jinlink.modules.system.service;
 
-import com.jinlink.common.api.Result;
 import com.jinlink.common.page.PageQuery;
 import com.jinlink.modules.system.entity.dto.SysRoleFormDTO;
 import com.jinlink.modules.system.entity.dto.SysRoleSearchDTO;
-import com.jinlink.modules.system.entity.vo.SysRoleOptionVO;
+import com.jinlink.modules.system.entity.vo.SysRoleOptionVo;
+import com.jinlink.modules.system.entity.vo.SysRoleVo;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.service.IService;
 import com.jinlink.modules.system.entity.SysRole;
@@ -22,12 +22,12 @@ public interface SysRoleService extends IService<SysRole> {
     /**
      * 获取角色(分页)
      */
-    Page<SysRole> listRolePage(PageQuery query, SysRoleSearchDTO sysRoleSearchDTO);
+    Page<SysRoleVo> listRolePage(PageQuery query, SysRoleSearchDTO sysRoleSearchDTO);
 
     /**
      * 获取全部角色
      */
-    List<SysRoleOptionVO> getAllRoles();
+    List<SysRoleOptionVo> getAllRoles();
 
     /**
      * 修改角色

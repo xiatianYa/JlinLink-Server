@@ -7,7 +7,7 @@ import com.jinlink.common.page.PageQuery;
 import com.jinlink.common.page.RPage;
 import com.jinlink.modules.system.entity.dto.SysUserFormDTO;
 import com.jinlink.modules.system.entity.dto.SysUserSearchDTO;
-import com.jinlink.modules.system.entity.vo.SysUserVO;
+import com.jinlink.modules.system.entity.vo.SysUserVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -127,8 +127,8 @@ public class SysUserController {
     @GetMapping("page")
     @Operation(operationId = "7",summary = "查询用户(分页)")
     @SaCheckPermission("sys:user:page")
-    public Result<RPage<SysUserVO>> page(@Parameter(description = "分页对象", required = true) PageQuery query,
-                              @Parameter(description = "查询对象", required = true) SysUserSearchDTO sysUserSearchDTO) {
+    public Result<RPage<SysUserVo>> page(@Parameter(description = "分页对象", required = true) PageQuery query,
+                                         @Parameter(description = "查询对象", required = true) SysUserSearchDTO sysUserSearchDTO) {
         return Result.data(RPage.build(sysUserService.listUserPage(query, sysUserSearchDTO)));
     }
 

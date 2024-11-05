@@ -2,6 +2,7 @@ package com.jinlink.modules.monitor.service;
 
 import com.jinlink.common.page.PageQuery;
 import com.jinlink.modules.monitor.entity.dto.MonLogsSchedulerSearchDTO;
+import com.jinlink.modules.monitor.entity.vo.MonLogsSchedulerVo;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.service.IService;
 import com.jinlink.modules.monitor.entity.MonLogsScheduler;
@@ -14,5 +15,5 @@ import com.jinlink.modules.monitor.entity.MonLogsScheduler;
  */
 public interface MonLogsSchedulerService extends IService<MonLogsScheduler> {
 
-    Page<MonLogsScheduler> listMonLogsSchedulerPage(PageQuery query, MonLogsSchedulerSearchDTO monLogsSchedulerSearchDTO);
+    Page<MonLogsSchedulerVo> listMonLogsSchedulerPage(PageQuery query, MonLogsSchedulerSearchDTO monLogsSchedulerSearchDTO);
 }

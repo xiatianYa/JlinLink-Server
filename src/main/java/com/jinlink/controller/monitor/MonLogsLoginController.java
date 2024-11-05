@@ -1,10 +1,12 @@
 package com.jinlink.controller.monitor;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.hutool.core.bean.BeanUtil;
 import com.jinlink.common.api.Result;
 import com.jinlink.common.page.PageQuery;
 import com.jinlink.common.page.RPage;
 import com.jinlink.modules.monitor.entity.dto.MonLogsLoginSearchDTO;
+import com.jinlink.modules.monitor.entity.vo.MonLogsLoginVo;
 import com.mybatisflex.core.paginate.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -86,8 +88,8 @@ public class MonLogsLoginController {
     @GetMapping("list")
     @Operation(operationId = "4",summary = "查询所有登录日志")
     @SaCheckPermission("mon:monLogsLogin:list")
-    public Result<List<MonLogsLogin>> list() {
-        return Result.success("请求成功",monLogsLoginService.list());
+    public Result<List<MonLogsLoginVo>> list() {
+        return Result.success("请求成功",BeanUtil.copyToList(monLogsLoginService.list(),MonLogsLoginVo.class));
     }
 
     /**
@@ -99,8 +101,8 @@ public class MonLogsLoginController {
     @GetMapping("getInfo/{id}")
     @Operation(operationId = "5",summary = "根据登录日志主键获取详细信息")
     @SaCheckPermission("mon:monLogsLogin:info")
-    public Result<MonLogsLogin> getInfo(@Parameter(description = "日志ID", required = true)@PathVariable Serializable id) {
-        return Result.success("请求成功",monLogsLoginService.getById(id));
+    public Result<MonLogsLoginVo> getInfo(@Parameter(description = "日志ID", required = true)@PathVariable Serializable id) {
+        return Result.success("请求成功", BeanUtil.copyProperties(monLogsLoginService.getById(id), MonLogsLoginVo.class));
     }
 
     /**
@@ -112,8 +114,8 @@ public class MonLogsLoginController {
     @GetMapping("page")
     @Operation(operationId = "6",summary = "分页查询登录日志")
     @SaCheckPermission("mon:monLogsLogin:page")
-    public Result<RPage<MonLogsLogin>> page(@Parameter(description = "分页对象", required = true) PageQuery query,@Parameter(description = "查询对象", required = true) MonLogsLoginSearchDTO monLogsLoginSearchDTO) {
-        Page<MonLogsLogin> monLogsLoginPage = monLogsLoginService.listMonLogsLoginPage(query,monLogsLoginSearchDTO);
+    public Result<RPage<MonLogsLoginVo>> page(@Parameter(description = "分页对象", required = true) PageQuery query,@Parameter(description = "查询对象", required = true) MonLogsLoginSearchDTO monLogsLoginSearchDTO) {
+        Page<MonLogsLoginVo> monLogsLoginPage = monLogsLoginService.listMonLogsLoginPage(query,monLogsLoginSearchDTO);
         return Result.data(RPage.build(monLogsLoginPage));
     }
 

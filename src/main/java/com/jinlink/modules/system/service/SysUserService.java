@@ -1,12 +1,11 @@
 package com.jinlink.modules.system.service;
 
-import com.jinlink.common.api.Result;
 import com.jinlink.common.domain.Options;
 import com.jinlink.common.page.PageQuery;
 import com.jinlink.modules.system.entity.dto.LoginFormDTO;
 import com.jinlink.modules.system.entity.dto.SysUserFormDTO;
 import com.jinlink.modules.system.entity.dto.SysUserSearchDTO;
-import com.jinlink.modules.system.entity.vo.SysUserVO;
+import com.jinlink.modules.system.entity.vo.SysUserVo;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.service.IService;
 import com.jinlink.modules.system.entity.SysUser;
@@ -31,7 +30,7 @@ public interface SysUserService extends IService<SysUser> {
     /**
      * 获取全部用户(分页)
      */
-    Page<SysUserVO> listUserPage(PageQuery query, SysUserSearchDTO sysUserSearchDTO);
+    Page<SysUserVo> listUserPage(PageQuery query, SysUserSearchDTO sysUserSearchDTO);
 
     /**
      * 删除用户多个

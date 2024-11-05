@@ -3,9 +3,9 @@ package com.jinlink.modules.system.service;
 import com.jinlink.common.page.PageQuery;
 import com.jinlink.common.page.RPage;
 import com.jinlink.modules.system.entity.dto.SysMenuFormDTO;
-import com.jinlink.modules.system.entity.vo.SysMenuTreeVO;
-import com.jinlink.modules.system.entity.vo.SysMenuVO;
-import com.jinlink.modules.system.entity.vo.SysUserRouteVO;
+import com.jinlink.modules.system.entity.vo.SysMenuTreeVo;
+import com.jinlink.modules.system.entity.vo.SysMenuVo;
+import com.jinlink.modules.system.entity.vo.SysUserRouteVo;
 import com.mybatisflex.core.service.IService;
 import com.jinlink.modules.system.entity.SysMenu;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,12 +30,12 @@ public interface SysMenuService extends IService<SysMenu> {
     /**
      * 获取菜单树
      */
-    List<SysMenuTreeVO> getMenuTree();
+    List<SysMenuTreeVo> getMenuTree();
 
     /**
      * 获取菜单列表(分页)
      */
-    RPage<SysMenuVO> getMenuList(PageQuery query);
+    RPage<SysMenuVo> getMenuList(PageQuery query);
 
     /**
      * 修改菜单
@@ -64,7 +64,7 @@ public interface SysMenuService extends IService<SysMenu> {
     /**
      * 获取用户路由
      */
-    SysUserRouteVO getUserRoutes();
+    SysUserRouteVo getUserRoutes();
 
     /**
      * 获取常量路由

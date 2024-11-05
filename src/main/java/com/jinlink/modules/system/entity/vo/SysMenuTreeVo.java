@@ -1,13 +1,13 @@
 package com.jinlink.modules.system.entity.vo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.jinlink.common.domain.BaseVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.io.Serial;
 import java.util.List;
 
 /**
@@ -18,12 +18,8 @@ import java.util.List;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Schema(name = "SysMenuPageVO", description = "菜单管理列表 VO 对象")
-public class SysMenuTreeVO {
-
-    @Schema(description = "ID")
-    private Long id;
+public class SysMenuTreeVo extends BaseVO {
 
     @Schema(description = "label")
     private String label;
@@ -35,5 +31,5 @@ public class SysMenuTreeVO {
     private String sort;
 
     @Schema(description = "子对象")
-    private List<SysMenuTreeVO> children;
+    private List<SysMenuTreeVo> children;
 }

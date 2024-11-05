@@ -1,13 +1,14 @@
 package com.jinlink.controller.system;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.hutool.core.bean.BeanUtil;
 import com.jinlink.common.api.Result;
 import com.jinlink.common.page.PageQuery;
 import com.jinlink.common.page.RPage;
 import com.jinlink.modules.system.entity.SysDictItem;
 import com.jinlink.modules.system.entity.dto.SysDictItemDeleteDTO;
 import com.jinlink.modules.system.entity.dto.SysDictItemSearchDTO;
-import com.jinlink.modules.system.entity.vo.SysDictItemVO;
+import com.jinlink.modules.system.entity.vo.SysDictItemVo;
 import com.jinlink.modules.system.service.SysDictItemService;
 import com.mybatisflex.core.paginate.Page;
 import io.swagger.v3.oas.annotations.Operation;
@@ -83,8 +84,8 @@ public class SysDictItemController {
     @GetMapping("list")
     @Operation(operationId = "4",summary = "查询所有子字典")
     @SaCheckPermission("sys:dict:item:list")
-    public Result<List<SysDictItem>> list() {
-        return Result.success("请求成功",sysDictItemService.list());
+    public Result<List<SysDictItemVo>> list() {
+        return Result.success("请求成功",BeanUtil.copyToList(sysDictItemService.list(), SysDictItemVo.class));
     }
 
     /**
@@ -96,8 +97,8 @@ public class SysDictItemController {
     @GetMapping("getInfo/{id}")
     @Operation(operationId = "5",summary = "查询子字典详细信息")
     @SaCheckPermission("sys:dict:item:info")
-    public Result<SysDictItem> getInfo(@PathVariable Serializable id) {
-        return Result.success("请求成功",sysDictItemService.getById(id));
+    public Result<SysDictItemVo> getInfo(@PathVariable Serializable id) {
+        return Result.success("请求成功", BeanUtil.copyProperties(sysDictItemService.getById(id),SysDictItemVo.class));
     }
 
     /**
@@ -109,9 +110,9 @@ public class SysDictItemController {
     @GetMapping("page")
     @Operation(operationId = "6",summary = "查询子字典分页")
     @SaCheckPermission("sys:dict:item:page")
-    public Result<RPage<SysDictItemVO>> page(@Parameter(description = "分页对象", required = true) @Valid PageQuery pageQuery,
+    public Result<RPage<SysDictItemVo>> page(@Parameter(description = "分页对象", required = true) @Valid PageQuery pageQuery,
                                              @Parameter(description = "查询对象") SysDictItemSearchDTO sysDictItemSearchDTO) {
-        Page<SysDictItemVO> sysDictItemPage = sysDictItemService.listSysDictItemPage(pageQuery,sysDictItemSearchDTO);
+        Page<SysDictItemVo> sysDictItemPage = sysDictItemService.listSysDictItemPage(pageQuery,sysDictItemSearchDTO);
         return Result.data(RPage.build(sysDictItemPage));
     }
 

@@ -1,5 +1,6 @@
 package com.jinlink.modules.system.entity.vo;
 
+import com.jinlink.common.domain.BaseVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,14 +10,16 @@ import lombok.experimental.SuperBuilder;
 import java.io.Serial;
 import java.io.Serializable;
 
+/**
+ * 用户信息 VO 展示类
+ */
+
 @Data
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SysUserInfoVO implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID = -6246685532247396266L;
+@Schema(name = "SysUserInfoVo", description = "用户信息 VO 对象")
+public class SysUserInfoVo extends BaseVO {
 
     /**
      * 用户ID

@@ -1,9 +1,12 @@
 package com.jinlink.controller.system;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.hutool.core.bean.BeanUtil;
 import com.jinlink.common.api.Result;
+import com.jinlink.common.page.PageQuery;
 import com.jinlink.common.page.RPage;
 import com.jinlink.modules.system.entity.dto.SysRolePermissionFormDTO;
+import com.jinlink.modules.system.entity.vo.SysRolePermissionVo;
 import com.mybatisflex.core.paginate.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -85,8 +88,8 @@ public class SysRolePermissionController {
     @GetMapping("list")
     @Operation(operationId = "4",summary = "查询全部按钮权限角色")
     @SaCheckPermission("sys:role:permission:list")
-    public Result<List<SysRolePermission>> list() {
-        return Result.success("请求成功",sysRolePermissionService.list());
+    public Result<List<SysRolePermissionVo>> list() {
+        return Result.success("请求成功",BeanUtil.copyToList(sysRolePermissionService.list(),SysRolePermissionVo.class));
     }
 
     /**
@@ -98,21 +101,22 @@ public class SysRolePermissionController {
     @GetMapping("getInfo/{id}")
     @Operation(operationId = "5",summary = "查询按钮权限角色详细")
     @SaCheckPermission("sys:role:permission:info")
-    public Result<SysRolePermission> getInfo(@Parameter(description = "按钮权限角色ID", required = true)@PathVariable Serializable id) {
-        return Result.success("请求成功",sysRolePermissionService.getById(id));
+    public Result<SysRolePermissionVo> getInfo(@Parameter(description = "按钮权限角色ID", required = true)@PathVariable Serializable id) {
+        return Result.success("请求成功", BeanUtil.copyProperties(sysRolePermissionService.getById(id),SysRolePermissionVo.class));
     }
 
     /**
      * 分页查询角色权限管理。
      *
-     * @param page 分页对象
+     * @param query 分页对象
      * @return 分页对象
      */
     @GetMapping("page")
     @Operation(operationId = "6",summary = "查询按钮权限角色(分页)")
     @SaCheckPermission("sys:role:permission:page")
-    public Result<RPage<SysRolePermission>> page(@Parameter(description = "分页查询对象", required = true)Page<SysRolePermission> page) {
-        return Result.data(RPage.build(sysRolePermissionService.page(page)));
+    public Result<RPage<SysRolePermissionVo>> page(@Parameter(description = "分页对象", required = true) PageQuery query) {
+        Page<SysRolePermissionVo> sysRolePermissionPage = sysRolePermissionService.listSysRolePermissionPage(query);
+        return Result.data(RPage.build(sysRolePermissionPage));
     }
 
     /**

@@ -1,13 +1,17 @@
 package com.jinlink.modules.system.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.jinlink.common.exception.JinLinkException;
+import com.jinlink.common.page.PageQuery;
 import com.jinlink.modules.system.entity.SysPermission;
 import com.jinlink.modules.system.entity.SysUserRole;
 import com.jinlink.modules.system.entity.dto.SysRolePermissionFormDTO;
+import com.jinlink.modules.system.entity.vo.SysRolePermissionVo;
 import com.jinlink.modules.system.service.SysPermissionService;
 import com.jinlink.modules.system.service.SysUserRoleService;
 import com.mybatisflex.core.logicdelete.LogicDeleteManager;
+import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.jinlink.modules.system.entity.SysRolePermission;
@@ -108,5 +112,17 @@ public class SysRolePermissionServiceImpl extends ServiceImpl<SysRolePermissionM
         if (ObjectUtil.isEmpty(userPermissionIds)) return new String[0];
         return sysPermissionService.listByIds(userPermissionIds).stream()
                 .map(SysPermission::getCode).toArray(String[]::new);
+    }
+
+
+    /**
+     * 分页查询角色权限管理。
+     */
+    @Override
+    public Page<SysRolePermissionVo> listSysRolePermissionPage(PageQuery query) {
+        Page<SysRolePermission> paginate = sysRolePermissionMapper.paginate(query.getCurrent(), query.getSize(), new QueryWrapper());
+        List<SysRolePermission> records = paginate.getRecords();
+        List<SysRolePermissionVo> sysRolePermissionVos = BeanUtil.copyToList(records, SysRolePermissionVo.class);
+        return new Page<>(sysRolePermissionVos,paginate.getPageNumber(),paginate.getPageSize(),paginate.getTotalRow());
     }
 }

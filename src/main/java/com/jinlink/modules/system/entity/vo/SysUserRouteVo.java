@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -15,12 +16,13 @@ import java.util.List;
 /**
  * 用户权限路由对象
  */
+
 @Data
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(name = "SysUserRouteVO", description = "用户权限路由对象")
-public class SysUserRouteVO implements Serializable {
+public class SysUserRouteVo implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 2968348016258383993L;

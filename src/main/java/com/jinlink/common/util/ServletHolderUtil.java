@@ -20,8 +20,6 @@ public class ServletHolderUtil {
      *
      * @return {@link HttpServletRequest} 当前请求的HttpServletRequest对象
      * @throws IllegalStateException 如果当前上下文中没有RequestAttributes
-     * @author payne.zhuang
-     * @CreateTime 2023-07-18 10:34
      */
     public static HttpServletRequest getRequest() {
         return getRequestAttributes().getRequest();
@@ -32,8 +30,6 @@ public class ServletHolderUtil {
      *
      * @return {@link HttpServletResponse} 当前请求的HttpServletResponse对象
      * @throws IllegalStateException 如果当前上下文中没有RequestAttributes
-     * @author payne.zhuang
-     * @CreateTime 2023-07-18 10:37
      */
     public static HttpServletResponse getResponse() {
         return getRequestAttributes().getResponse();
@@ -44,8 +40,6 @@ public class ServletHolderUtil {
      *
      * @return {@link ServletRequestAttributes} ServletRequestAttributes对象
      * @throws IllegalStateException 如果获取不到RequestAttributes
-     * @author payne.zhuang
-     * @CreateTime 2023-07-18 10:32
      */
     private static ServletRequestAttributes getRequestAttributes() {
         RequestAttributes attributes = RequestContextHolder.getRequestAttributes();

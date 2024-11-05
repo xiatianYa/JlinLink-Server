@@ -1,9 +1,12 @@
 package com.jinlink.controller.system;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.hutool.core.bean.BeanUtil;
 import com.jinlink.common.api.Result;
+import com.jinlink.common.page.PageQuery;
 import com.jinlink.common.page.RPage;
 import com.jinlink.modules.system.entity.dto.SysRoleMenuUpdateDTO;
+import com.jinlink.modules.system.entity.vo.SysRoleMenuVo;
 import com.mybatisflex.core.paginate.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -79,8 +82,8 @@ public class SysRoleMenuController {
     @GetMapping("list")
     @Operation(operationId = "4",summary = "查询所有菜单角色列表")
     @SaCheckPermission("sys:role:menu:list")
-    public Result<List<SysRoleMenu>> list() {
-        return Result.success("请求成功",sysRoleMenuService.list());
+    public Result<List<SysRoleMenuVo>> list() {
+        return Result.success("请求成功",BeanUtil.copyToList(sysRoleMenuService.list(), SysRoleMenuVo.class));
     }
 
     /**
@@ -104,21 +107,22 @@ public class SysRoleMenuController {
     @GetMapping("getInfo/{id}")
     @Operation(operationId = "6",summary = "查询菜单角色详细")
     @SaCheckPermission("sys:role:menu:info")
-    public Result<SysRoleMenu> getInfo(@Parameter(description = "菜单角色ID", required = true)@PathVariable Serializable id) {
-        return Result.success("请求成功",sysRoleMenuService.getById(id));
+    public Result<SysRoleMenuVo> getInfo(@Parameter(description = "菜单角色ID", required = true)@PathVariable Serializable id) {
+        return Result.success("请求成功", BeanUtil.copyProperties(sysRoleMenuService.getById(id), SysRoleMenuVo.class));
     }
 
     /**
      * 分页查询角色菜单管理。
      *
-     * @param page 分页对象
+     * @param query 分页对象
      * @return 分页对象
      */
     @GetMapping("page")
     @Operation(operationId = "7",summary = "查询菜单角色(分页)")
     @SaCheckPermission("sys:role:menu:page")
-    public Result<RPage<SysRoleMenu>> page(@Parameter(description = "菜单角色分页对象", required = true)Page<SysRoleMenu> page) {
-        return Result.data(RPage.build(sysRoleMenuService.page(page)));
+    public Result<RPage<SysRoleMenuVo>> page(@Parameter(description = "分页对象", required = true) PageQuery query) {
+        Page<SysRoleMenuVo> sysRoleMenuVoPage = sysRoleMenuService.listRoleMenuPage(query);
+        return Result.data(RPage.build(sysRoleMenuVoPage));
     }
 
     /**

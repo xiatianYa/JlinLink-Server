@@ -3,6 +3,7 @@ package com.jinlink.modules.monitor.entity.vo;
 import com.jinlink.common.domain.BaseVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -10,15 +11,15 @@ import lombok.experimental.SuperBuilder;
 import java.io.Serial;
 
 /**
- * 操作日志 VO 展示类
+ * 错误日志 VO 展示类
  */
 
 @Data
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(name = "MonLogsOperationVO", description = "操作日志 VO 对象")
-public class MonLogsOperationVO extends BaseVO {
+@Schema(name = "MonLogsErrorVo", description = "错误日志 VO 对象")
+public class MonLogsErrorVo extends BaseVO {
 
     @Serial
     private static final long serialVersionUID = 5769107831011956328L;
@@ -56,6 +57,21 @@ public class MonLogsOperationVO extends BaseVO {
     @Schema(description = "请求耗时")
     private Long useTime;
 
+    @Schema(description = "异常信息")
+    private String exceptionMessage;
+
+    @Schema(description = "异常类")
+    private String exceptionClass;
+
+    @Schema(description = "异常行号")
+    private Integer line;
+
+    @Schema(description = "堆栈信息")
+    private String stackTrace;
+
     @Schema(description = "操作用户ID")
     private Long createUserId;
+
+    @Schema(description = "操作用户名称")
+    private String createUser;
 }

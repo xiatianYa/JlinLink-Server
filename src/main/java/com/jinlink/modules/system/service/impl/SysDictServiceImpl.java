@@ -1,10 +1,12 @@
 package com.jinlink.modules.system.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.jinlink.common.page.PageQuery;
 import com.jinlink.modules.system.entity.SysDictItem;
-import com.jinlink.modules.system.entity.vo.SysDictItemOptionsVO;
-import com.jinlink.modules.system.entity.vo.SysDictVO;
+import com.jinlink.modules.system.entity.vo.SysDictItemOptionsVo;
+import com.jinlink.modules.system.entity.vo.SysDictVo;
 import com.jinlink.modules.system.service.SysDictItemService;
+import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.jinlink.modules.system.entity.SysDict;
 import com.jinlink.modules.system.mapper.SysDictMapper;
@@ -37,7 +39,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
      * 获取字典Map
      */
     @Override
-    public Map<String, List<SysDictItemOptionsVO>> queryAllDictMap() {
+    public Map<String, List<SysDictItemOptionsVo>> queryAllDictMap() {
         //查询所有字典
         List<SysDict> sysDicts = sysDictMapper.selectAll();
         //查询所有子字典
@@ -50,9 +52,9 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
      * 获取字典详细信息
      */
     @Override
-    public SysDictVO getInfo(Serializable id) {
+    public SysDictVo getInfo(Serializable id) {
         SysDict sysDict = sysDictMapper.selectOneById(id);
-        return BeanUtil.copyProperties(sysDict,SysDictVO.class);
+        return BeanUtil.copyProperties(sysDict, SysDictVo.class);
     }
 
     /**
@@ -81,16 +83,27 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
     }
 
     /**
+     * 分页查询数据字典管理
+     */
+    @Override
+    public Page<SysDictVo> listDictPage(PageQuery query) {
+        Page<SysDict> paginate = sysDictMapper.paginate(query.getCurrent(), query.getSize(), new QueryWrapper());
+        List<SysDict> records = paginate.getRecords();
+        List<SysDictVo> sysDictVos = BeanUtil.copyToList(records, SysDictVo.class);
+        return new Page<>(sysDictVos,paginate.getPageNumber(),paginate.getPageSize(),paginate.getTotalRow());
+    }
+
+    /**
      * 构建字典MapVo
      */
-    public Map<String, List<SysDictItemOptionsVO>> getDictItemOptions(List<SysDict> sysDicts,List<SysDictItem> sysDictItems) {
+    public Map<String, List<SysDictItemOptionsVo>> getDictItemOptions(List<SysDict> sysDicts, List<SysDictItem> sysDictItems) {
         return sysDicts.stream()
                 .collect(Collectors.toMap(
                         SysDict::getCode, // 使用dict的code作为键
                         dict -> sysDictItems.stream() // 对每个dict，过滤sysDictItems
                                 .filter(dictItem -> dictItem.getDictId().equals(dict.getId())) // 保留与dictId匹配的项
                                 .map(dictItem -> { // 将每个匹配的dictItem映射到SysDictItemOptionsVO
-                                    SysDictItemOptionsVO vo = new SysDictItemOptionsVO();
+                                    SysDictItemOptionsVo vo = new SysDictItemOptionsVo();
                                     vo.setLabel(dictItem.getZhCn());
                                     vo.setValue(dictItem.getValue());
                                     vo.setType(dictItem.getType());
