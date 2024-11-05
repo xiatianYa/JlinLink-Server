@@ -1,12 +1,12 @@
 package com.jinlink.controller.monitor;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.jinlink.common.api.Result;
 import com.jinlink.common.page.PageQuery;
 import com.jinlink.common.page.RPage;
 import com.jinlink.modules.monitor.entity.dto.MonLogsOperationSearchDTO;
 import com.jinlink.modules.monitor.entity.vo.MonLogsErrorVO;
-import com.jinlink.modules.monitor.entity.vo.MonLogsOperationVO;
-import com.mybatisflex.core.paginate.Page;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.beans.factory.annotation.Autowired;
 import com.jinlink.modules.monitor.entity.MonLogsError;
 import com.jinlink.modules.monitor.service.MonLogsErrorService;
 import org.springframework.web.bind.annotation.RestController;
@@ -48,8 +47,10 @@ public class MonLogsErrorController {
      * @return {@code true} 添加成功，{@code false} 添加失败
      */
     @PostMapping("save")
-    public boolean save(@RequestBody MonLogsError monLogsError) {
-        return monLogsErrorService.save(monLogsError);
+    @Operation(operationId = "1",summary = "新增异常日志")
+    @SaCheckPermission("mon:monLogsError:save")
+    public Result<Boolean> save(@Parameter(description = "日常日志对象", required = true)@RequestBody MonLogsError monLogsError) {
+        return Result.success("请求成功",monLogsErrorService.save(monLogsError));
     }
 
     /**
@@ -59,8 +60,10 @@ public class MonLogsErrorController {
      * @return {@code true} 删除成功，{@code false} 删除失败
      */
     @DeleteMapping("remove/{id}")
-    public boolean remove(@PathVariable Serializable id) {
-        return monLogsErrorService.removeById(id);
+    @Operation(operationId = "2",summary = "删除异常日志")
+    @SaCheckPermission("mon:monLogsError:delete")
+    public Result<Boolean> remove(@Parameter(description = "日志ID", required = true)@PathVariable Serializable id) {
+        return Result.success("请求成功",monLogsErrorService.removeById(id));
     }
 
     /**
@@ -70,8 +73,10 @@ public class MonLogsErrorController {
      * @return {@code true} 更新成功，{@code false} 更新失败
      */
     @PutMapping("update")
-    public boolean update(@RequestBody MonLogsError monLogsError) {
-        return monLogsErrorService.updateById(monLogsError);
+    @Operation(operationId = "3",summary = "更新异常日志")
+    @SaCheckPermission("mon:monLogsError:update")
+    public Result<Boolean> update(@Parameter(description = "日常日志对象", required = true)@RequestBody MonLogsError monLogsError) {
+        return Result.success("请求成功",monLogsErrorService.updateById(monLogsError));
     }
 
     /**
@@ -80,6 +85,8 @@ public class MonLogsErrorController {
      * @return 所有数据
      */
     @GetMapping("list")
+    @Operation(operationId = "4",summary = "查询所有异常日志")
+    @SaCheckPermission("mon:monLogsError:list")
     public List<MonLogsError> list() {
         return monLogsErrorService.list();
     }
@@ -91,7 +98,9 @@ public class MonLogsErrorController {
      * @return 错误异常日志详情
      */
     @GetMapping("getInfo/{id}")
-    public MonLogsError getInfo(@PathVariable Serializable id) {
+    @Operation(operationId = "5",summary = "查询异常日志详细")
+    @SaCheckPermission("mon:monLogsError:info")
+    public MonLogsError getInfo(@Parameter(description = "日志ID", required = true)@PathVariable Serializable id) {
         return monLogsErrorService.getById(id);
     }
 
@@ -102,6 +111,8 @@ public class MonLogsErrorController {
      * @return 分页对象
      */
     @GetMapping("page")
+    @Operation(operationId = "6",summary = "分页查询异常日志管理")
+    @SaCheckPermission("mon:monLogsError:page")
     public Result<RPage<MonLogsErrorVO>> page(@Parameter(description = "分页对象", required = true) @Valid PageQuery pageQuery,
                                             @Parameter(description = "查询对象") MonLogsOperationSearchDTO monLogsOperationSearchDTO) {
         RPage<MonLogsErrorVO> monLogsOperationPage= monLogsErrorService.listMonLogsErrorPage(pageQuery,monLogsOperationSearchDTO);

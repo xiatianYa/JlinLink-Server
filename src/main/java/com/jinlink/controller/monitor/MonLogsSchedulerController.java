@@ -1,7 +1,6 @@
 package com.jinlink.controller.monitor;
 
-import cn.dev33.satoken.annotation.SaCheckOr;
-import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.jinlink.common.api.Result;
 import com.jinlink.common.page.PageQuery;
 import com.jinlink.common.page.RPage;
@@ -35,7 +34,6 @@ import java.util.List;
 @Tag(name = "定时任务日志管理")
 @RequiredArgsConstructor
 @RequestMapping("/monLogsScheduler")
-@SaCheckOr(role = @SaCheckRole("R_SUPER"))
 public class MonLogsSchedulerController {
 
     @NonNull
@@ -48,7 +46,8 @@ public class MonLogsSchedulerController {
      * @return {@code true} 添加成功，{@code false} 添加失败
      */
     @PostMapping("save")
-    @Operation(operationId = "1",summary = "新增添加调度日志")
+    @Operation(operationId = "1",summary = "新增调度日志")
+    @SaCheckPermission("mon:monLogsScheduler:save")
     public Result<Boolean> save(@Parameter(description = "调度日志对象", required = true)@RequestBody MonLogsScheduler monLogsScheduler) {
         return Result.success("请求成功",monLogsSchedulerService.save(monLogsScheduler));
     }
@@ -61,6 +60,7 @@ public class MonLogsSchedulerController {
      */
     @DeleteMapping("remove/{id}")
     @Operation(operationId = "2",summary = "删除调度日志")
+    @SaCheckPermission("mon:monLogsScheduler:delete")
     public Result<Boolean> remove(@Parameter(description = "日志ID", required = true)@PathVariable Serializable id) {
         return Result.success("请求成功",monLogsSchedulerService.removeById(id));
     }
@@ -73,6 +73,7 @@ public class MonLogsSchedulerController {
      */
     @PutMapping("update")
     @Operation(operationId = "3",summary = "修改调度日志")
+    @SaCheckPermission("mon:monLogsScheduler:update")
     public boolean update(@Parameter(description = "调度日志对象", required = true)@RequestBody MonLogsScheduler monLogsScheduler) {
         return monLogsSchedulerService.updateById(monLogsScheduler);
     }
@@ -84,6 +85,7 @@ public class MonLogsSchedulerController {
      */
     @GetMapping("list")
     @Operation(operationId = "4",summary = "查询所有调度日志")
+    @SaCheckPermission("mon:monLogsScheduler:list")
     public List<MonLogsScheduler> list() {
         return monLogsSchedulerService.list();
     }
@@ -96,6 +98,7 @@ public class MonLogsSchedulerController {
      */
     @GetMapping("getInfo/{id}")
     @Operation(operationId = "5",summary = "根据调度日志主键获取详细信息")
+    @SaCheckPermission("mon:monLogsScheduler:info")
     public MonLogsScheduler getInfo(@Parameter(description = "日志ID", required = true)@PathVariable Serializable id) {
         return monLogsSchedulerService.getById(id);
     }
@@ -108,6 +111,7 @@ public class MonLogsSchedulerController {
      */
     @GetMapping("page")
     @Operation(operationId = "6",summary = "分页查询调度日志")
+    @SaCheckPermission("mon:monLogsScheduler:page")
     public Result<RPage<MonLogsScheduler>> page(@Parameter(description = "分页对象", required = true) PageQuery query, @Parameter(description = "查询对象", required = true) MonLogsSchedulerSearchDTO monLogsSchedulerSearchDTO) {
         Page<MonLogsScheduler> monLogsSchedulerPage = monLogsSchedulerService.listMonLogsSchedulerPage(query,monLogsSchedulerSearchDTO);
         return Result.data(RPage.build(monLogsSchedulerPage));

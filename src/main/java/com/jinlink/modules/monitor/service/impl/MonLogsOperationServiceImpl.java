@@ -40,7 +40,8 @@ public class MonLogsOperationServiceImpl extends ServiceImpl<MonLogsOperationMap
         //查询全部用户名称
         List<Options<String>> allUserNames = sysUserService.getAllUserNames();
         Page<MonLogsOperation> paginate = monLogsOperationMapper.paginate(pageQuery.getCurrent(), pageQuery.getSize(),new QueryWrapper()
-                .eq("create_user_id",monLogsOperationSearchDTO.getCreateUser()));
+                .eq("create_user_id",monLogsOperationSearchDTO.getCreateUser())
+                .orderBy("create_time",false));
         List<MonLogsOperation> records = paginate.getRecords();
         List<MonLogsOperationVO> monLogsOperationVOS = BeanUtil.copyToList(records, MonLogsOperationVO.class);
         monLogsOperationVOS.forEach(item->{
@@ -51,6 +52,6 @@ public class MonLogsOperationServiceImpl extends ServiceImpl<MonLogsOperationMap
             //如果找到了
             sysUserName.ifPresent(stringOptions -> item.setCreateUser(stringOptions.getLabel()));
         });
-        return RPage.build(new Page<>(monLogsOperationVOS, paginate.getPageNumber(), paginate.getPageSize(),monLogsOperationVOS.size()));
+        return RPage.build(new Page<>(monLogsOperationVOS, paginate.getPageNumber(), paginate.getPageSize(),paginate.getTotalRow()));
     }
 }

@@ -153,6 +153,5 @@ public class OperationLogAspect {
     private void remove() {
         logsOperationAddDTO.remove();
         startTime.remove();
-        System.out.println("remove");
     }
 }

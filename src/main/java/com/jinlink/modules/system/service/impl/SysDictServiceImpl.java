@@ -1,17 +1,17 @@
 package com.jinlink.modules.system.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.jinlink.common.api.Result;
 import com.jinlink.modules.system.entity.SysDictItem;
 import com.jinlink.modules.system.entity.vo.SysDictItemOptionsVO;
 import com.jinlink.modules.system.entity.vo.SysDictVO;
 import com.jinlink.modules.system.service.SysDictItemService;
 import com.mybatisflex.core.query.QueryWrapper;
-import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.jinlink.modules.system.entity.SysDict;
 import com.jinlink.modules.system.mapper.SysDictMapper;
 import com.jinlink.modules.system.service.SysDictService;
+import com.mybatisflex.spring.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
  * @since 1.0.0
  */
 @Service
+@CacheConfig(cacheNames = "SysDict")
 public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> implements SysDictService {
     @Resource
     private SysDictMapper sysDictMapper;
@@ -68,10 +69,15 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
      * 删除字典
      */
     @Override
-    public boolean removeDictById(Serializable id) {
+    public Boolean removeDictById(Serializable id) {
         //删除子字典
         sysDictItemService.remove(new QueryWrapper().eq("dict_id", id));
         return removeById(id);
+    }
+
+    @Override
+    public Boolean updateDictById(SysDict sysDict) {
+        return updateById(sysDict);
     }
 
     /**

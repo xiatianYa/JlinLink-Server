@@ -1,7 +1,6 @@
 package com.jinlink.controller.system;
 
-import cn.dev33.satoken.annotation.SaCheckOr;
-import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.jinlink.common.api.Result;
 import com.jinlink.common.page.PageQuery;
 import com.jinlink.common.page.RPage;
@@ -36,7 +35,6 @@ import java.util.List;
 @Tag(name = "菜单管理")
 @RequiredArgsConstructor
 @RequestMapping("/sysMenu")
-@SaCheckOr(role = @SaCheckRole("R_SUPER"))
 public class SysMenuController {
     @NonNull
     private SysMenuService sysMenuService;
@@ -49,6 +47,7 @@ public class SysMenuController {
      */
     @PostMapping("save")
     @Operation(operationId = "1",summary = "添加菜单")
+    @SaCheckPermission("sys:menu:save")
     public Result<Boolean> save(@Parameter(description = "菜单对象", required = true)@RequestBody SysMenuFormDTO sysMenu) {
         return Result.success("新增成功!",sysMenuService.saveMenu(sysMenu));
     }
@@ -61,6 +60,7 @@ public class SysMenuController {
      */
     @DeleteMapping("remove/{id}")
     @Operation(operationId = "2",summary = "删除菜单")
+    @SaCheckPermission("sys:menu:delete")
     public Result<Boolean> remove(@PathVariable Serializable id) {
         return Result.success("删除成功!",sysMenuService.removeMenuById(id));
     }
@@ -73,6 +73,7 @@ public class SysMenuController {
      */
     @DeleteMapping("removeByIds")
     @Operation(operationId = "3",summary = "删除多个菜单")
+    @SaCheckPermission("sys:menu:delete")
     public Result<Boolean> removeByIds(@Parameter(description = "用户IDS", required = true)@RequestBody List<Long> ids) {
         return Result.success("删除成功",sysMenuService.removeMenuByIds(ids));
     }
@@ -85,6 +86,7 @@ public class SysMenuController {
      */
     @PutMapping("update")
     @Operation(operationId = "4",summary = "修改菜单")
+    @SaCheckPermission("sys:menu:update")
     public Result<Boolean> update(@RequestBody SysMenuFormDTO sysMenu) {
         return Result.success("修改成功!",sysMenuService.updateMenu(sysMenu));
     }
@@ -96,6 +98,7 @@ public class SysMenuController {
      */
     @GetMapping("list")
     @Operation(operationId = "5",summary = "查询所有菜单")
+    @SaCheckPermission("sys:menu:list")
     public Result<List<SysMenu>> list() {
         return Result.success("请求成功",sysMenuService.list());
     }
@@ -108,6 +111,7 @@ public class SysMenuController {
      */
     @GetMapping("getInfo/{id}")
     @Operation(operationId = "6",summary = "获取菜单详细")
+    @SaCheckPermission("sys:menu:info")
     public Result<SysMenu> getInfo(@PathVariable Serializable id) {
         return Result.success("请求成功",sysMenuService.getById(id));
     }
@@ -120,6 +124,7 @@ public class SysMenuController {
      */
     @GetMapping("page")
     @Operation(operationId = "7",summary = "获取菜单列表(分页)")
+    @SaCheckPermission("sys:menu:page")
     public Result<RPage<SysMenuVO>> page(@Parameter(description = "分页对象", required = true) PageQuery query) {
         return Result.data(sysMenuService.getMenuList(query));
     }
@@ -129,6 +134,7 @@ public class SysMenuController {
      */
     @GetMapping("getAllPages")
     @Operation(operationId = "8",summary = "获取所有菜单")
+    @SaCheckPermission("sys:menu:getAllPages")
     public Result<List<String>> getAllPages() {
         return Result.success("请求成功",sysMenuService.getAllPages());
     }
@@ -138,6 +144,7 @@ public class SysMenuController {
      */
     @GetMapping("getMenuTree")
     @Operation(operationId = "9",summary = "获取菜单树")
+    @SaCheckPermission("sys:menu:getMenuTree")
     public Result<List<SysMenuTreeVO>> getMenuTree() {
         return Result.success("请求成功",sysMenuService.getMenuTree());
     }

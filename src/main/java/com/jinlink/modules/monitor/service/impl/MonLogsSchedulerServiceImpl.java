@@ -24,6 +24,9 @@ public class MonLogsSchedulerServiceImpl extends ServiceImpl<MonLogsSchedulerMap
 
     @Override
     public Page<MonLogsScheduler> listMonLogsSchedulerPage(PageQuery query, MonLogsSchedulerSearchDTO monLogsSchedulerSearchDTO) {
-        return monLogsSchedulerMapper.paginate(query.getCurrent(), query.getSize(), new QueryWrapper().eq("job_name", monLogsSchedulerSearchDTO.getJobName()));
+        Page<MonLogsScheduler> paginate = monLogsSchedulerMapper.paginate(query.getCurrent(), query.getSize(), new QueryWrapper()
+                .eq("job_name", monLogsSchedulerSearchDTO.getJobName())
+                .orderBy("create_time", false));
+        return paginate;
     }
 }

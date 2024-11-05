@@ -1,11 +1,12 @@
 package com.jinlink.controller.monitor;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.jinlink.common.api.Result;
 import com.jinlink.common.page.PageQuery;
 import com.jinlink.common.page.RPage;
 import com.jinlink.modules.monitor.entity.dto.MonLogsOperationSearchDTO;
 import com.jinlink.modules.monitor.entity.vo.MonLogsOperationVO;
-import com.mybatisflex.core.paginate.Page;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.beans.factory.annotation.Autowired;
 import com.jinlink.modules.monitor.entity.MonLogsOperation;
 import com.jinlink.modules.monitor.service.MonLogsOperationService;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,8 +47,10 @@ public class MonLogsOperationController {
      * @return {@code true} 添加成功，{@code false} 添加失败
      */
     @PostMapping("save")
-    public boolean save(@RequestBody MonLogsOperation monLogsOperation) {
-        return monLogsOperationService.save(monLogsOperation);
+    @Operation(operationId = "1",summary = "新增操作日志")
+    @SaCheckPermission("mon:monLogsOperation:save")
+    public Result<Boolean> save(@Parameter(description = "操作日志对象", required = true)@RequestBody MonLogsOperation monLogsOperation) {
+        return Result.success("请求成功",monLogsOperationService.save(monLogsOperation));
     }
 
     /**
@@ -58,8 +60,10 @@ public class MonLogsOperationController {
      * @return {@code true} 删除成功，{@code false} 删除失败
      */
     @DeleteMapping("remove/{id}")
-    public boolean remove(@PathVariable Serializable id) {
-        return monLogsOperationService.removeById(id);
+    @Operation(operationId = "2",summary = "删除操作日志")
+    @SaCheckPermission("mon:monLogsOperation:delete")
+    public Result<Boolean> remove(@Parameter(description = "日志ID", required = true)@PathVariable Serializable id) {
+        return Result.success("请求成功",monLogsOperationService.removeById(id));
     }
 
     /**
@@ -69,8 +73,10 @@ public class MonLogsOperationController {
      * @return {@code true} 更新成功，{@code false} 更新失败
      */
     @PutMapping("update")
-    public boolean update(@RequestBody MonLogsOperation monLogsOperation) {
-        return monLogsOperationService.updateById(monLogsOperation);
+    @Operation(operationId = "3",summary = "修改操作日志")
+    @SaCheckPermission("mon:monLogsOperation:update")
+    public Result<Boolean> update(@Parameter(description = "操作日志对象", required = true)@RequestBody MonLogsOperation monLogsOperation) {
+        return Result.success("请求成功",monLogsOperationService.updateById(monLogsOperation));
     }
 
     /**
@@ -79,8 +85,10 @@ public class MonLogsOperationController {
      * @return 所有数据
      */
     @GetMapping("list")
-    public List<MonLogsOperation> list() {
-        return monLogsOperationService.list();
+    @Operation(operationId = "4",summary = "查询所有操作日志")
+    @SaCheckPermission("mon:monLogsOperation:list")
+    public Result<List<MonLogsOperation>> list() {
+        return Result.success("请求成功",monLogsOperationService.list());
     }
 
     /**
@@ -90,8 +98,10 @@ public class MonLogsOperationController {
      * @return 操作日志详情
      */
     @GetMapping("getInfo/{id}")
-    public MonLogsOperation getInfo(@PathVariable Serializable id) {
-        return monLogsOperationService.getById(id);
+    @Operation(operationId = "5",summary = "查询操作日志详细信息")
+    @SaCheckPermission("mon:monLogsOperation:info")
+    public Result<MonLogsOperation> getInfo(@Parameter(description = "日志ID", required = true)@PathVariable Serializable id) {
+        return Result.success("请求成功",monLogsOperationService.getById(id));
     }
 
     /**
@@ -101,6 +111,8 @@ public class MonLogsOperationController {
      * @return 分页对象
      */
     @GetMapping("page")
+    @Operation(operationId = "6",summary = "分页查询操作日志管理")
+    @SaCheckPermission("mon:monLogsOperation:page")
     public Result<RPage<MonLogsOperationVO>> page(@Parameter(description = "分页对象", required = true) @Valid PageQuery pageQuery,
                                                   @Parameter(description = "查询对象") MonLogsOperationSearchDTO monLogsOperationSearchDTO) {
         RPage<MonLogsOperationVO> monLogsOperationPage= monLogsOperationService.listMonLogsOperationPage(pageQuery,monLogsOperationSearchDTO);

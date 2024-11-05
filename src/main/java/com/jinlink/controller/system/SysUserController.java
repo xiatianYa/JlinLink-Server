@@ -1,7 +1,6 @@
 package com.jinlink.controller.system;
 
-import cn.dev33.satoken.annotation.SaCheckOr;
-import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.jinlink.common.api.Result;
 import com.jinlink.common.domain.Options;
 import com.jinlink.common.page.PageQuery;
@@ -9,7 +8,6 @@ import com.jinlink.common.page.RPage;
 import com.jinlink.modules.system.entity.dto.SysUserFormDTO;
 import com.jinlink.modules.system.entity.dto.SysUserSearchDTO;
 import com.jinlink.modules.system.entity.vo.SysUserVO;
-import com.mybatisflex.core.paginate.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -38,7 +36,6 @@ import java.util.List;
 @Tag(name = "用户管理")
 @RequiredArgsConstructor
 @RequestMapping("/sysUser")
-@SaCheckOr(role = @SaCheckRole("R_SUPER"))
 public class SysUserController {
 
     @NonNull
@@ -52,6 +49,7 @@ public class SysUserController {
      */
     @PostMapping("save")
     @Operation(operationId = "1",summary = "添加用户")
+    @SaCheckPermission("sys:user:save")
     public Result<Boolean> save(@Parameter(description = "添加对象", required = true)@RequestBody SysUserFormDTO sysUser) {
         return Result.success("请求成功",sysUserService.saveUser(sysUser));
     }
@@ -64,6 +62,7 @@ public class SysUserController {
      */
     @DeleteMapping("removeByIds")
     @Operation(operationId = "2",summary = "删除多个用户")
+    @SaCheckPermission("sys:user:delete")
     public Result<Boolean> removeByIds(@Parameter(description = "用户IDS", required = true)@RequestBody List<Long> ids) {
         return Result.success("请求成功!",sysUserService.removeByIds(ids)) ;
     }
@@ -76,6 +75,7 @@ public class SysUserController {
      */
     @DeleteMapping("remove/{id}")
     @Operation(operationId = "3",summary = "删除单个用户")
+    @SaCheckPermission("sys:user:delete")
     public Result<Boolean> remove(@Parameter(description = "用户ID", required = true)@PathVariable Long id) {
         return Result.success("请求成功", sysUserService.removeById(id)) ;
     }
@@ -88,6 +88,7 @@ public class SysUserController {
      */
     @PutMapping("update")
     @Operation(operationId = "4",summary = "修改用户对象")
+    @SaCheckPermission("sys:user:update")
     public Result<Boolean> update(@Parameter(description = "修改对象", required = true)@RequestBody SysUserFormDTO sysUser) {
         return Result.success("请求成功!",sysUserService.updateUser(sysUser));
     }
@@ -99,6 +100,7 @@ public class SysUserController {
      */
     @GetMapping("list")
     @Operation(operationId = "5",summary = "查询全部用户")
+    @SaCheckPermission("sys:user:list")
     public Result<List<SysUser>> list() {
         return Result.success("请求成功",sysUserService.list());
     }
@@ -111,6 +113,7 @@ public class SysUserController {
      */
     @GetMapping("getInfo/{id}")
     @Operation(operationId = "6",summary = "查询用户详细")
+    @SaCheckPermission("sys:user:info")
     public Result<SysUser> getInfo(@Parameter(description = "用户ID", required = true)@PathVariable Serializable id) {
         return Result.success("请求成功",sysUserService.getById(id));
     }
@@ -123,6 +126,7 @@ public class SysUserController {
      */
     @GetMapping("page")
     @Operation(operationId = "7",summary = "查询用户(分页)")
+    @SaCheckPermission("sys:user:page")
     public Result<RPage<SysUserVO>> page(@Parameter(description = "分页对象", required = true) PageQuery query,
                               @Parameter(description = "查询对象", required = true) SysUserSearchDTO sysUserSearchDTO) {
         return Result.data(RPage.build(sysUserService.listUserPage(query, sysUserSearchDTO)));
@@ -133,6 +137,7 @@ public class SysUserController {
      */
     @GetMapping("allUserNames")
     @Operation(operationId = "8",summary = "查询全部调度任务名称")
+    @SaCheckPermission("sys:user:allUserNames")
     public Result<List<Options<String>>> allJobNames() {
         return Result.success("请求成功",sysUserService.getAllUserNames());
     }

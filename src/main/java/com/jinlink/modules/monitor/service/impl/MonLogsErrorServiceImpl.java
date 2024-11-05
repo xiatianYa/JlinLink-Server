@@ -42,7 +42,8 @@ public class MonLogsErrorServiceImpl extends ServiceImpl<MonLogsErrorMapper, Mon
         //查询全部用户名称
         List<Options<String>> allUserNames = sysUserService.getAllUserNames();
         Page<MonLogsError> paginate = monLogsErrorMapper.paginate(pageQuery.getCurrent(), pageQuery.getSize(),new QueryWrapper()
-                .eq("create_user_id",monLogsOperationSearchDTO.getCreateUser()));
+                .eq("create_user_id",monLogsOperationSearchDTO.getCreateUser())
+                .orderBy("create_time",false));
         List<MonLogsError> records = paginate.getRecords();
         List<MonLogsErrorVO> monLogsErrorVOS = BeanUtil.copyToList(records, MonLogsErrorVO.class);
         monLogsErrorVOS.forEach(item->{
@@ -53,6 +54,6 @@ public class MonLogsErrorServiceImpl extends ServiceImpl<MonLogsErrorMapper, Mon
             //如果找到了
             sysUserName.ifPresent(stringOptions -> item.setCreateUser(stringOptions.getLabel()));
         });
-        return RPage.build(new Page<>(monLogsErrorVOS, paginate.getPageNumber(), paginate.getPageSize(),monLogsErrorVOS.size()));
+        return RPage.build(new Page<>(monLogsErrorVOS, paginate.getPageNumber(), paginate.getPageSize(),paginate.getTotalRow()));
     }
 }

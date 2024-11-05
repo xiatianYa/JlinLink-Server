@@ -39,5 +39,11 @@ public interface SysDictService extends IService<SysDict> {
      * 删除字典
      */
     @Transactional
-    boolean removeDictById(Serializable id);
+    Boolean removeDictById(Serializable id);
+
+    /**
+     * 修改字典
+     */
+    @Transactional
+    Boolean updateDictById(SysDict sysDict);
 }

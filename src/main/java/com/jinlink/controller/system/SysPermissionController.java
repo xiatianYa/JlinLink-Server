@@ -1,7 +1,6 @@
 package com.jinlink.controller.system;
 
-import cn.dev33.satoken.annotation.SaCheckOr;
-import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.jinlink.common.api.Result;
 import com.jinlink.common.page.RPage;
 import com.jinlink.modules.system.entity.vo.SysPermissionTreeVo;
@@ -34,7 +33,6 @@ import java.util.List;
 @Tag(name = "按钮权限管理")
 @RequiredArgsConstructor
 @RequestMapping("/sysPermission")
-@SaCheckOr(role = @SaCheckRole("R_SUPER"))
 public class SysPermissionController {
 
     @NonNull
@@ -48,6 +46,7 @@ public class SysPermissionController {
      */
     @PostMapping("save")
     @Operation(operationId = "1",summary = "添加按钮权限")
+    @SaCheckPermission("sys:permission:save")
     public Result<Boolean> save(@Parameter(description = "添加对象", required = true)@RequestBody SysPermission sysPermission) {
         return Result.success("请求成功",sysPermissionService.save(sysPermission));
     }
@@ -60,6 +59,7 @@ public class SysPermissionController {
      */
     @DeleteMapping("remove/{id}")
     @Operation(operationId = "2",summary = "删除按钮权限")
+    @SaCheckPermission("sys:permission:delete")
     public Result<Boolean> remove(@Parameter(description = "按钮权限ID", required = true)@PathVariable Serializable id) {
         return Result.success("请求成功",sysPermissionService.removeById(id));
     }
@@ -72,6 +72,7 @@ public class SysPermissionController {
      */
     @PutMapping("update")
     @Operation(operationId = "3",summary = "修改按钮权限")
+    @SaCheckPermission("sys:permission:update")
     public Result<Boolean> update(@Parameter(description = "修改对象", required = true)@RequestBody SysPermission sysPermission) {
         return Result.success("请求成功",sysPermissionService.updateById(sysPermission));
     }
@@ -83,6 +84,7 @@ public class SysPermissionController {
      */
     @GetMapping("list")
     @Operation(operationId = "4",summary = "查询全部按钮权限")
+    @SaCheckPermission("sys:permission:list")
     public Result<List<SysPermission>> list() {
         return Result.success("请求成功",sysPermissionService.list());
     }
@@ -95,6 +97,7 @@ public class SysPermissionController {
      */
     @GetMapping("getInfo/{id}")
     @Operation(operationId = "5",summary = "查询按钮权限详细")
+    @SaCheckPermission("sys:permission:info")
     public Result<SysPermission> getInfo(@Parameter(description = "按钮权限ID", required = true)@PathVariable Serializable id) {
         return Result.success("请求成功",sysPermissionService.getById(id));
     }
@@ -107,6 +110,7 @@ public class SysPermissionController {
      */
     @GetMapping("page")
     @Operation(operationId = "6",summary = "查询按钮权限(分页)")
+    @SaCheckPermission("sys:permission:page")
     public Result<RPage<SysPermission>> page(@Parameter(description = "分页查询对象", required = true)Page<SysPermission> page) {
         return Result.data(RPage.build(sysPermissionService.page(page)));
     }
@@ -117,6 +121,7 @@ public class SysPermissionController {
      */
     @GetMapping("getPermissionTree")
     @Operation(operationId = "7",summary = "查询全部按钮权限列表")
+    @SaCheckPermission("sys:permission:getPermissionTree")
     public Result<List<SysPermissionTreeVo>> listAll() {
         return Result.success("获取成功!",sysPermissionService.getPermissionTree());
     }

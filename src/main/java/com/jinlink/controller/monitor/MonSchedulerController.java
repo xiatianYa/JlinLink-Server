@@ -1,10 +1,8 @@
 package com.jinlink.controller.monitor;
 
-import cn.dev33.satoken.annotation.SaCheckOr;
-import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.jinlink.common.api.Result;
 import com.jinlink.common.domain.Options;
-import com.jinlink.common.exception.JinLinkException;
 import com.jinlink.common.page.PageQuery;
 import com.jinlink.common.page.RPage;
 import com.jinlink.modules.monitor.entity.dto.MonSchedulerSearchDTO;
@@ -37,7 +35,6 @@ import java.util.List;
 @Tag(name = "定时任务管理")
 @RequiredArgsConstructor
 @RequestMapping("/monScheduler")
-@SaCheckOr(role = @SaCheckRole("R_SUPER"))
 public class MonSchedulerController {
 
     @NonNull
@@ -51,6 +48,7 @@ public class MonSchedulerController {
      */
     @PostMapping("save")
     @Operation(operationId = "1",summary = "新增定时任务")
+    @SaCheckPermission("mon:scheduler:save")
     public Result<Boolean> save(@Parameter(description = "定时任务对象", required = true)@RequestBody MonScheduler monScheduler) {
         return Result.success("请求成功",monSchedulerService.saveScheduler(monScheduler));
     }
@@ -63,6 +61,7 @@ public class MonSchedulerController {
      */
     @DeleteMapping("remove/{id}")
     @Operation(operationId = "2",summary = "删除定时任务")
+    @SaCheckPermission("mon:scheduler:delete")
     public Result<Boolean> remove(@Parameter(description = "定时任务ID", required = true)@PathVariable Serializable id) {
         return Result.success("请求成功",monSchedulerService.removeSchedulerById(id));
     }
@@ -75,6 +74,7 @@ public class MonSchedulerController {
      */
     @PutMapping("update")
     @Operation(operationId = "3",summary = "修改定时任务")
+    @SaCheckPermission("mon:scheduler:update")
     public Result<Boolean> update(@Parameter(description = "定时任务对象", required = true)@RequestBody MonScheduler monScheduler) {
         return Result.success("请求成功!",monSchedulerService.updateSchedulerById(monScheduler)) ;
     }
@@ -86,6 +86,7 @@ public class MonSchedulerController {
      */
     @GetMapping("list")
     @Operation(operationId = "4",summary = "查询所有调度管理")
+    @SaCheckPermission("mon:scheduler:list")
     public Result<List<MonScheduler>> list() {
         return Result.success("请求成功",monSchedulerService.list());
     }
@@ -98,6 +99,7 @@ public class MonSchedulerController {
      */
     @GetMapping("getInfo/{id}")
     @Operation(operationId = "5",summary = "根据调度管理主键获取详细信息")
+    @SaCheckPermission("mon:scheduler:info")
     public Result<MonScheduler> getInfo(@Parameter(description = "定时任务ID", required = true)@PathVariable Serializable id) {
         return Result.success("请求成功",monSchedulerService.getById(id));
     }
@@ -110,6 +112,7 @@ public class MonSchedulerController {
      */
     @GetMapping("page")
     @Operation(operationId = "6",summary = "分页查询调度管理")
+    @SaCheckPermission("mon:scheduler:page")
     public Result<RPage<MonSchedulerVo>> page(@Parameter(description = "分页对象", required = true) PageQuery query, @Parameter(description = "查询对象", required = true) MonSchedulerSearchDTO monSchedulerSearchDTO) {
         return Result.data(monSchedulerService.listMonSchedulerPage(query,monSchedulerSearchDTO));
     }
@@ -122,6 +125,7 @@ public class MonSchedulerController {
      */
     @DeleteMapping("removeByIds")
     @Operation(operationId = "7",summary = "删除多个定时任务")
+    @SaCheckPermission("mon:scheduler:delete")
     public Result<Boolean> removeByIds(@Parameter(description = "定时任务IDS", required = true)@RequestBody List<Long> ids) {
         return Result.success("删除成功",monSchedulerService.removeSchedulerByIds(ids));
     }
@@ -131,6 +135,7 @@ public class MonSchedulerController {
      */
     @GetMapping("allJobNames")
     @Operation(operationId = "8",summary = "查询全部调度任务名称")
+    @SaCheckPermission("mon:scheduler:allJobNames")
     public Result<List<Options<String>>> allJobNames() {
         return Result.success("请求成功",monSchedulerService.allJobNames());
     }

@@ -108,8 +108,8 @@
     通过将记录器的additivity标志设置为false，可以覆盖此默认行为，以便不再添加appender累积-->
     <!-- configuration中最多允许一个root，别的logger如果没有设置级别则从父级别root继承 -->
     <root level="INFO">
-        <appender-ref ref="STDOUT"/>
-        <appender-ref ref="INFO_LOG"/>
+<!--        <appender-ref ref="STDOUT"/>-->
+<!--        <appender-ref ref="INFO_LOG"/>-->
         <appender-ref ref="ERROR_LOG"/>
     </root>
 

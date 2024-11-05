@@ -1,6 +1,7 @@
 package com.jinlink.modules.system.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
+import com.jinlink.common.exception.JinLinkException;
 import com.jinlink.modules.system.entity.SysPermission;
 import com.jinlink.modules.system.entity.SysUserRole;
 import com.jinlink.modules.system.entity.dto.SysRolePermissionFormDTO;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 角色权限管理 服务层实现。
@@ -54,21 +56,39 @@ public class SysRolePermissionServiceImpl extends ServiceImpl<SysRolePermissionM
     @Override
     public Boolean updateByRoleId(SysRolePermissionFormDTO sysRolePermissionFormDTO) {
         Long roleId = sysRolePermissionFormDTO.getRoleId();
-        //删除当前角色用户的权限按钮
-        QueryWrapper deleteQuery = new QueryWrapper();
-        deleteQuery.eq("role_id",roleId);
-        LogicDeleteManager.execWithoutLogicDelete(()->
-                sysRolePermissionMapper.deleteByQuery(deleteQuery)
-        );
-        //新增权限按钮
-        List<Long> permissionList = sysRolePermissionFormDTO.getPermissionList();
-        permissionList.forEach(item->{
-            SysRolePermission sysRolePermission = SysRolePermission.builder()
-                    .roleId(roleId)
-                    .permissionId(item)
-                    .build();
-            sysRolePermissionMapper.insert(sysRolePermission);
-        });
+        if (ObjectUtil.isNull(roleId)){
+            throw new JinLinkException("非法参数");
+        }
+        //查询出当前角色拥有那些按钮权限
+        List<Long> sysRoleListOne = sysRolePermissionMapper.selectListByQuery(new QueryWrapper()
+                        .eq("role_id", roleId))
+                .stream().map(SysRolePermission::getPermissionId).toList();
+        //前端传递过来的新的按钮Id列表
+        List<Long> sysRoleListTwo = sysRolePermissionFormDTO.getPermissionList();
+
+        // 计算需要删除的按钮ID列表（即当前角色拥有但表单中未提交的权限ID）
+        List<Long> permissionIdsToRemove = sysRoleListOne.stream()
+                .filter(permissionId -> !sysRoleListTwo.contains(permissionId))
+                .toList();
+
+        //查询出需要删除的Ids
+        List<Long> sysRolePermissionRemoveList = sysRolePermissionMapper.selectListByQuery(new QueryWrapper()
+                        .in("permission_id", permissionIdsToRemove))
+                .stream().map(SysRolePermission::getId).toList();
+        if (ObjectUtil.isNotEmpty(sysRolePermissionRemoveList) && ObjectUtil.isNotEmpty(permissionIdsToRemove))
+            LogicDeleteManager.execWithoutLogicDelete(()-> sysRolePermissionMapper.deleteBatchByIds(sysRolePermissionRemoveList));
+
+        // 计算需要添加的按钮ID列表（即当前角色拥有但表单中未提交的权限ID）
+        List<Long> permissionIdsToAdd = sysRoleListTwo.stream()
+                .filter(permissionId -> !sysRoleListOne.contains(permissionId))
+                .toList();
+        List<SysRolePermission> sysRolePermissionAddList = permissionIdsToAdd.stream().map(item -> {
+            SysRolePermission sysRolePermission = new SysRolePermission();
+            sysRolePermission.setPermissionId(item);
+            sysRolePermission.setRoleId(roleId);
+            return sysRolePermission;
+        }).toList();
+        if (ObjectUtil.isNotEmpty(sysRolePermissionAddList)) sysRolePermissionMapper.insertBatch(sysRolePermissionAddList);
         return true;
     }
 

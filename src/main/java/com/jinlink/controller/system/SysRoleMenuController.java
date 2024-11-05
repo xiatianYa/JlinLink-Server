@@ -1,7 +1,6 @@
 package com.jinlink.controller.system;
 
-import cn.dev33.satoken.annotation.SaCheckOr;
-import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.jinlink.common.api.Result;
 import com.jinlink.common.page.RPage;
 import com.jinlink.modules.system.entity.dto.SysRoleMenuUpdateDTO;
@@ -28,7 +27,6 @@ import java.util.List;
 @Tag(name = "菜单角色关联管理")
 @RequiredArgsConstructor
 @RequestMapping("/sysRoleMenu")
-@SaCheckOr(role = @SaCheckRole("R_SUPER"))
 public class SysRoleMenuController {
 
     @NonNull
@@ -42,6 +40,7 @@ public class SysRoleMenuController {
      */
     @PostMapping("save")
     @Operation(operationId = "1",summary = "添加菜单角色对象")
+    @SaCheckPermission("sys:role:menu:save")
     public Result<Boolean> save(@Parameter(description = "菜单角色", required = true)@RequestBody SysRoleMenu sysRoleMenu) {
         return Result.success("请求成功",sysRoleMenuService.save(sysRoleMenu));
     }
@@ -54,6 +53,7 @@ public class SysRoleMenuController {
      */
     @DeleteMapping("remove/{id}")
     @Operation(operationId = "2",summary = "删除单个菜单角色")
+    @SaCheckPermission("sys:role:menu:delete")
     public Result<Boolean> remove(@Parameter(description = "菜单角色ID", required = true)@PathVariable Serializable id) {
         return Result.success("请求成功",sysRoleMenuService.removeById(id));
     }
@@ -66,6 +66,7 @@ public class SysRoleMenuController {
      */
     @PutMapping("update")
     @Operation(operationId = "3",summary = "修改菜单角色")
+    @SaCheckPermission("sys:role:menu:update")
     public Result<Boolean> update(@Parameter(description = "菜单角色", required = true)@RequestBody SysRoleMenu sysRoleMenu) {
         return Result.success("请求成功",sysRoleMenuService.updateById(sysRoleMenu));
     }
@@ -77,6 +78,7 @@ public class SysRoleMenuController {
      */
     @GetMapping("list")
     @Operation(operationId = "4",summary = "查询所有菜单角色列表")
+    @SaCheckPermission("sys:role:menu:list")
     public Result<List<SysRoleMenu>> list() {
         return Result.success("请求成功",sysRoleMenuService.list());
     }
@@ -88,6 +90,7 @@ public class SysRoleMenuController {
      */
     @GetMapping("getRoleByRoleId/{roleId}")
     @Operation(operationId = "5",summary = "查询权限菜单列表")
+    @SaCheckPermission("sys:role:menu:getRoleByRoleId")
     public Result<List<Long>> getRoleMenuByRoleId(@Parameter(description = "权限Id", required = true)@PathVariable Long roleId) {
         return Result.success("请求成功",sysRoleMenuService.getRoleMenuByRoleId(roleId));
     }
@@ -100,6 +103,7 @@ public class SysRoleMenuController {
      */
     @GetMapping("getInfo/{id}")
     @Operation(operationId = "6",summary = "查询菜单角色详细")
+    @SaCheckPermission("sys:role:menu:info")
     public Result<SysRoleMenu> getInfo(@Parameter(description = "菜单角色ID", required = true)@PathVariable Serializable id) {
         return Result.success("请求成功",sysRoleMenuService.getById(id));
     }
@@ -112,6 +116,7 @@ public class SysRoleMenuController {
      */
     @GetMapping("page")
     @Operation(operationId = "7",summary = "查询菜单角色(分页)")
+    @SaCheckPermission("sys:role:menu:page")
     public Result<RPage<SysRoleMenu>> page(@Parameter(description = "菜单角色分页对象", required = true)Page<SysRoleMenu> page) {
         return Result.data(RPage.build(sysRoleMenuService.page(page)));
     }
@@ -124,6 +129,7 @@ public class SysRoleMenuController {
      */
     @PutMapping("updateRoleMenu")
     @Operation(operationId = "8",summary = "修改角色的菜单权限")
+    @SaCheckPermission("sys:role:menu:updateRoleMenu")
     public Result<Boolean> updateRoleMenu(@Parameter(description = "角色菜单修改对象", required = true)@RequestBody SysRoleMenuUpdateDTO sysRoleMenuUpdateDTO) {
         return Result.success("修改成功!",sysRoleMenuService.updateRoleMenu(sysRoleMenuUpdateDTO));
     }

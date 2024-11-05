@@ -1,5 +1,7 @@
 package com.jinlink.controller.system;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.jinlink.common.api.Result;
 import com.jinlink.common.page.RPage;
 import com.jinlink.modules.system.entity.dto.SysDictItemDeleteDTO;
@@ -48,6 +50,7 @@ public class SysDictController {
      */
     @PostMapping("save")
     @Operation(operationId = "1",summary = "添加字典")
+    @SaCheckPermission("sys:dict:save")
     public Result<Boolean> save(@Parameter(description = "字典对象", required = true)@RequestBody SysDict sysDict) {
         return Result.success("请求成功",sysDictService.save(sysDict));
     }
@@ -60,6 +63,7 @@ public class SysDictController {
      */
     @DeleteMapping("remove/{id}")
     @Operation(operationId = "2",summary = "删除字典")
+    @SaCheckPermission("sys:dict:delete")
     public Result<Boolean> remove(@Parameter(description = "主键ID", required = true)@PathVariable Serializable id) {
         return Result.success("请求成功",sysDictService.removeDictById(id));
     }
@@ -72,8 +76,9 @@ public class SysDictController {
      */
     @PutMapping("update")
     @Operation(operationId = "3",summary = "修改字典")
+    @SaCheckPermission("sys:dict:update")
     public Result<Boolean> update(@Parameter(description = "字典对象", required = true)@RequestBody SysDict sysDict) {
-        return Result.success("请求成功",sysDictService.updateById(sysDict));
+        return Result.success("请求成功",sysDictService.updateDictById(sysDict));
     }
 
     /**
@@ -83,6 +88,7 @@ public class SysDictController {
      */
     @GetMapping("list")
     @Operation(operationId = "4",summary = "查询所有字典")
+    @SaCheckPermission("sys:dict:list")
     public Result<List<SysDict>> list() {
         return Result.success("请求成功",sysDictService.list());
     }
@@ -95,6 +101,7 @@ public class SysDictController {
      */
     @GetMapping("getInfo/{id}")
     @Operation(operationId = "5",summary = "查询字典详细信息")
+    @SaCheckPermission("sys:dict:info")
     public Result<SysDictVO> getInfo(@PathVariable Serializable id) {
         return Result.success("请求成功",sysDictService.getInfo(id));
     }
@@ -107,6 +114,7 @@ public class SysDictController {
      */
     @GetMapping("page")
     @Operation(operationId = "6",summary = "查询字典分页")
+    @SaCheckPermission("sys:dict:page")
     public Result<RPage<SysDict>> page(Page<SysDict> page) {
         return Result.data(RPage.build(sysDictService.page(page)));
     }
@@ -116,6 +124,7 @@ public class SysDictController {
      */
     @GetMapping("/allDict")
     @Operation(operationId = "7", summary = "查询所有的数据字典子项 Map 结构")
+    @SaCheckLogin
     public Result<Map<String, List<SysDictItemOptionsVO>>> queryAllDictItemMap() {
         return Result.data(sysDictService.queryAllDictMap());
     }
@@ -125,6 +134,7 @@ public class SysDictController {
      */
     @DeleteMapping
     @Operation(operationId = "8", summary = "批量删除数据字典信息")
+    @SaCheckPermission("sys:dict:delete")
     public Result<Boolean> batchDelete(@Parameter(description = "删除对象") @RequestBody SysDictItemDeleteDTO sysDictItemDeleteDTO) {
         return Result.success("请求成功",sysDictService.removeDictByIds(sysDictItemDeleteDTO.getIds()));
     }

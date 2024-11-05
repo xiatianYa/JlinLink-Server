@@ -1,5 +1,6 @@
 package com.jinlink.controller.system;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.jinlink.common.api.Result;
 import com.jinlink.common.page.RPage;
 import com.jinlink.modules.system.entity.dto.SysRolePermissionFormDTO;
@@ -45,6 +46,7 @@ public class SysRolePermissionController {
      */
     @PostMapping("save")
     @Operation(operationId = "1",summary = "添加按钮权限角色")
+    @SaCheckPermission("sys:role:permission:save")
     public Result<Boolean> save(@Parameter(description = "添加对象", required = true)@RequestBody SysRolePermission sysRolePermission) {
         return Result.success("请求成功",sysRolePermissionService.save(sysRolePermission));
     }
@@ -57,6 +59,7 @@ public class SysRolePermissionController {
      */
     @DeleteMapping("remove/{id}")
     @Operation(operationId = "2",summary = "删除按钮权限角色")
+    @SaCheckPermission("sys:role:permission:delete")
     public Result<Boolean> remove(@Parameter(description = "按钮权限角色ID", required = true)@PathVariable Serializable id) {
         return Result.success("请求成功",sysRolePermissionService.removeById(id));
     }
@@ -69,6 +72,7 @@ public class SysRolePermissionController {
      */
     @PutMapping("update")
     @Operation(operationId = "3",summary = "修改按钮权限角色")
+    @SaCheckPermission("sys:role:permission:update")
     public Result<Boolean> update(@Parameter(description = "修改对象", required = true)@RequestBody SysRolePermission sysRolePermission) {
         return Result.success("请求成功",sysRolePermissionService.updateById(sysRolePermission));
     }
@@ -80,6 +84,7 @@ public class SysRolePermissionController {
      */
     @GetMapping("list")
     @Operation(operationId = "4",summary = "查询全部按钮权限角色")
+    @SaCheckPermission("sys:role:permission:list")
     public Result<List<SysRolePermission>> list() {
         return Result.success("请求成功",sysRolePermissionService.list());
     }
@@ -92,6 +97,7 @@ public class SysRolePermissionController {
      */
     @GetMapping("getInfo/{id}")
     @Operation(operationId = "5",summary = "查询按钮权限角色详细")
+    @SaCheckPermission("sys:role:permission:info")
     public Result<SysRolePermission> getInfo(@Parameter(description = "按钮权限角色ID", required = true)@PathVariable Serializable id) {
         return Result.success("请求成功",sysRolePermissionService.getById(id));
     }
@@ -104,6 +110,7 @@ public class SysRolePermissionController {
      */
     @GetMapping("page")
     @Operation(operationId = "6",summary = "查询按钮权限角色(分页)")
+    @SaCheckPermission("sys:role:permission:page")
     public Result<RPage<SysRolePermission>> page(@Parameter(description = "分页查询对象", required = true)Page<SysRolePermission> page) {
         return Result.data(RPage.build(sysRolePermissionService.page(page)));
     }
@@ -114,6 +121,7 @@ public class SysRolePermissionController {
      */
     @GetMapping("getPermissionByRoleId/{roleId}")
     @Operation(operationId = "7",summary = "查询角色拥有的按钮权限列表")
+    @SaCheckPermission("sys:role:permission:getPermissionByRoleId")
     public Result<List<Long>> getPermissionByRoleId(@Parameter(description = "按钮权限角色ID", required = true)@PathVariable Long roleId) {
         return Result.success("操作成功!",sysRolePermissionService.getPermissionByRoleId(roleId));
     }
@@ -126,6 +134,7 @@ public class SysRolePermissionController {
      */
     @PutMapping("updateByRoleId")
     @Operation(operationId = "8",summary = "修改按钮权限角色(多个)")
+    @SaCheckPermission("sys:role:permission:updateByRoleId")
     public Result<Boolean> updateByRoleId(@Parameter(description = "修改对象", required = true)@RequestBody SysRolePermissionFormDTO sysRolePermissionFormDTO) {
         return Result.success("修改成功!",sysRolePermissionService.updateByRoleId(sysRolePermissionFormDTO));
     }

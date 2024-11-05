@@ -41,6 +41,7 @@
         <quartz.version>2.3.2</quartz.version>
         <oshi.version>6.6.1</oshi.version>
         <ip2region.version>2.7.0</ip2region.version>
+        <commons.io.version>2.16.1</commons.io.version>
     </properties>
     <dependencies>
         <!-- SpringBoot -->
@@ -63,6 +64,26 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <!-- SpringBootCache -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+        <!-- SpringBootRedis -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        <!-- SpringBootAop -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+        <!-- SpringBooWebSocket -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
         </dependency>
         <!-- Mybatis-flex -->
         <dependency>
@@ -112,7 +133,6 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-pool2</artifactId>
         </dependency>
-
         <!-- commons-codec -->
         <dependency>
             <groupId>commons-codec</groupId>
@@ -167,10 +187,11 @@
             <artifactId>ip2region</artifactId>
             <version>${ip2region.version}</version>
         </dependency>
-        <!-- aop -->
+        <!-- commonsIo -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-aop</artifactId>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons.io.version}</version>
         </dependency>
     </dependencies>
 

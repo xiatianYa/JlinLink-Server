@@ -1,7 +1,6 @@
 package com.jinlink.controller.system;
 
-import cn.dev33.satoken.annotation.SaCheckOr;
-import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.jinlink.common.api.Result;
 import com.jinlink.common.page.PageQuery;
 import com.jinlink.common.page.RPage;
@@ -37,7 +36,6 @@ import java.util.List;
 @Tag(name = "角色管理")
 @RequiredArgsConstructor
 @RequestMapping("/sysRole")
-@SaCheckOr(role = @SaCheckRole("R_SUPER"))
 public class SysRoleController {
 
     @NonNull
@@ -51,6 +49,7 @@ public class SysRoleController {
      */
     @PostMapping("save")
     @Operation(operationId = "1",summary = "添加角色")
+    @SaCheckPermission("sys:role:save")
     public Result<Boolean> save(@Parameter(description = "添加对象", required = true)@RequestBody SysRoleFormDTO sysRoleFormDTO) {
         return Result.success("添加成功!",sysRoleService.saveRole(sysRoleFormDTO));
     }
@@ -63,6 +62,7 @@ public class SysRoleController {
      */
     @DeleteMapping("remove/{id}")
     @Operation(operationId = "2",summary = "删除角色")
+    @SaCheckPermission("sys:role:delete")
     public Result<Boolean> remove(@Parameter(description = "角色ID", required = true)@PathVariable Serializable id) {
         return Result.success("操作成功",sysRoleService.removeById(id));
     }
@@ -75,6 +75,7 @@ public class SysRoleController {
      */
     @DeleteMapping("removeByIds")
     @Operation(operationId = "3",summary = "删除多个角色")
+    @SaCheckPermission("sys:role:delete")
     public Result<Boolean> removeByIds(@Parameter(description = "用户IDS", required = true)@RequestBody List<Long> ids) {
         return Result.success("删除成功!",sysRoleService.deleteByIds(ids));
     }
@@ -86,7 +87,8 @@ public class SysRoleController {
      * @return {@code true} 更新成功，{@code false} 更新失败
      */
     @PutMapping("update")
-    @Operation(operationId = "4",summary = "修改用户")
+    @Operation(operationId = "4",summary = "修改角色")
+    @SaCheckPermission("sys:role:update")
     public Result<Boolean> update(@Parameter(description = "修改对象", required = true)@RequestBody SysRoleFormDTO sysRoleFormDTO) {
         return Result.success("修改成功!",sysRoleService.updateRole(sysRoleFormDTO));
     }
@@ -98,6 +100,7 @@ public class SysRoleController {
      */
     @GetMapping("list")
     @Operation(operationId = "5",summary = "查询全部角色")
+    @SaCheckPermission("sys:role:list")
     public Result<List<SysRole>> list() {
         return Result.success("请求成功",sysRoleService.list());
     }
@@ -110,6 +113,7 @@ public class SysRoleController {
      */
     @GetMapping("getInfo/{id}")
     @Operation(operationId = "6",summary = "查询角色详细")
+    @SaCheckPermission("sys:role:info")
     public Result<SysRole> getInfo(@Parameter(description = "角色ID", required = true)@PathVariable Serializable id) {
         return Result.success("请求成功",sysRoleService.getById(id));
     }
@@ -122,6 +126,7 @@ public class SysRoleController {
      */
     @GetMapping("page")
     @Operation(operationId = "7",summary = "查询角色(分页)")
+    @SaCheckPermission("sys:role:page")
     public Result<RPage<SysRole>> page(@Parameter(description = "分页对象", required = true) PageQuery query,
                               @Parameter(description = "查询对象", required = true) SysRoleSearchDTO sysRoleSearchDTO) {
         Page<SysRole> sysRolePage = sysRoleService.listRolePage(query, sysRoleSearchDTO);
@@ -132,6 +137,7 @@ public class SysRoleController {
      * 获取所有角色
      */
     @GetMapping("getAllRoles")
+    @SaCheckPermission("sys:role:getAllRoles")
     @Operation(operationId = "8",summary = "获取所有角色")
     public Result<List<SysRoleOptionVO>> getAllRoles() {
         return Result.success("请求成功",sysRoleService.getAllRoles());

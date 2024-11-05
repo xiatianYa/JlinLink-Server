@@ -1,7 +1,6 @@
 package com.jinlink.controller.monitor;
 
-import cn.dev33.satoken.annotation.SaCheckOr;
-import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.jinlink.common.api.Result;
 import com.jinlink.common.page.PageQuery;
 import com.jinlink.common.page.RPage;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.beans.factory.annotation.Autowired;
 import com.jinlink.modules.monitor.entity.MonLogsLogin;
 import com.jinlink.modules.monitor.service.MonLogsLoginService;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,7 +34,6 @@ import java.util.List;
 @Tag(name = "登录日志管理")
 @RequiredArgsConstructor
 @RequestMapping("/monLogsLogin")
-@SaCheckOr(role = @SaCheckRole("R_SUPER"))
 public class MonLogsLoginController {
 
     @NonNull
@@ -50,6 +47,7 @@ public class MonLogsLoginController {
      */
     @PostMapping("save")
     @Operation(operationId = "1",summary = "新增登录日志")
+    @SaCheckPermission("mon:monLogsLogin:save")
     public Result<Boolean> save(@Parameter(description = "登录日志对象", required = true)@RequestBody MonLogsLogin monLogsLogin) {
         return Result.success("请求成功",monLogsLoginService.save(monLogsLogin));
     }
@@ -62,6 +60,7 @@ public class MonLogsLoginController {
      */
     @DeleteMapping("remove/{id}")
     @Operation(operationId = "2",summary = "删除登录日志")
+    @SaCheckPermission("mon:monLogsLogin:delete")
     public Result<Boolean> remove(@Parameter(description = "日志ID", required = true)@PathVariable Serializable id) {
         return Result.success("请求成功",monLogsLoginService.removeById(id));
     }
@@ -74,6 +73,7 @@ public class MonLogsLoginController {
      */
     @PutMapping("update")
     @Operation(operationId = "3",summary = "修改登录日志")
+    @SaCheckPermission("mon:monLogsLogin:update")
     public Result<Boolean> update(@Parameter(description = "登录日志对象", required = true)@RequestBody MonLogsLogin monLogsLogin) {
         return Result.success("请求成功",monLogsLoginService.updateById(monLogsLogin));
     }
@@ -85,6 +85,7 @@ public class MonLogsLoginController {
      */
     @GetMapping("list")
     @Operation(operationId = "4",summary = "查询所有登录日志")
+    @SaCheckPermission("mon:monLogsLogin:list")
     public Result<List<MonLogsLogin>> list() {
         return Result.success("请求成功",monLogsLoginService.list());
     }
@@ -97,6 +98,7 @@ public class MonLogsLoginController {
      */
     @GetMapping("getInfo/{id}")
     @Operation(operationId = "5",summary = "根据登录日志主键获取详细信息")
+    @SaCheckPermission("mon:monLogsLogin:info")
     public Result<MonLogsLogin> getInfo(@Parameter(description = "日志ID", required = true)@PathVariable Serializable id) {
         return Result.success("请求成功",monLogsLoginService.getById(id));
     }
@@ -109,6 +111,7 @@ public class MonLogsLoginController {
      */
     @GetMapping("page")
     @Operation(operationId = "6",summary = "分页查询登录日志")
+    @SaCheckPermission("mon:monLogsLogin:page")
     public Result<RPage<MonLogsLogin>> page(@Parameter(description = "分页对象", required = true) PageQuery query,@Parameter(description = "查询对象", required = true) MonLogsLoginSearchDTO monLogsLoginSearchDTO) {
         Page<MonLogsLogin> monLogsLoginPage = monLogsLoginService.listMonLogsLoginPage(query,monLogsLoginSearchDTO);
         return Result.data(RPage.build(monLogsLoginPage));
