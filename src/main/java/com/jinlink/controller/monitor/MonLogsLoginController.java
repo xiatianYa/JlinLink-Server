@@ -119,4 +119,13 @@ public class MonLogsLoginController {
         return Result.data(RPage.build(monLogsLoginPage));
     }
 
+    /**
+     * 清空登录日志。
+     */
+    @DeleteMapping("clearAll")
+    @Operation(operationId = "7",summary = "清空异常日志")
+    @SaCheckPermission("mon:monLogsLogin:delete")
+    public Result<Boolean> clearAll() {
+        return Result.data(monLogsLoginService.clearAll());
+    }
 }

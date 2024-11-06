@@ -16,4 +16,10 @@ import com.jinlink.modules.monitor.entity.MonLogsScheduler;
 public interface MonLogsSchedulerService extends IService<MonLogsScheduler> {
 
     Page<MonLogsSchedulerVo> listMonLogsSchedulerPage(PageQuery query, MonLogsSchedulerSearchDTO monLogsSchedulerSearchDTO);
+
+
+    /**
+     * 清空调度日志。
+     */
+    Boolean clearAll();
 }

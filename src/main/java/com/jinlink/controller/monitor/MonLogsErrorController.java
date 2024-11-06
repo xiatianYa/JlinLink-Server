@@ -120,4 +120,13 @@ public class MonLogsErrorController {
         return Result.data(monLogsOperationPage);
     }
 
+    /**
+     * 清空异常日志。
+     */
+    @DeleteMapping("clearAll")
+    @Operation(operationId = "7",summary = "清空异常日志")
+    @SaCheckPermission("mon:monLogsError:delete")
+    public Result<Boolean> clearAll() {
+        return Result.data(monLogsErrorService.clearAll());
+    }
 }

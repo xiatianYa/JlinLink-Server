@@ -7,8 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.io.Serial;
-
 /**
  * 数据字典管理 VO 展示类
  */

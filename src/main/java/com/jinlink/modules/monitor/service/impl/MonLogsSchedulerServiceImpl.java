@@ -35,4 +35,13 @@ public class MonLogsSchedulerServiceImpl extends ServiceImpl<MonLogsSchedulerMap
         List<MonLogsSchedulerVo> monLogsSchedulerVos = BeanUtil.copyToList(records, MonLogsSchedulerVo.class);
         return new Page<>(monLogsSchedulerVos,paginate.getPageNumber(),paginate.getPageSize(),paginate.getTotalRow());
     }
+
+    /**
+     * 清空调度日志。
+     */
+    @Override
+    public Boolean clearAll() {
+        List<Long> Ids = monLogsSchedulerMapper.selectAll().stream().map(MonLogsScheduler::getId).toList();
+        return removeByIds(Ids);
+    }
 }

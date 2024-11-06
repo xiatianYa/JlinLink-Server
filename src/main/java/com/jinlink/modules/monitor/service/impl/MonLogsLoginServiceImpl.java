@@ -33,6 +33,15 @@ public class MonLogsLoginServiceImpl extends ServiceImpl<MonLogsLoginMapper, Mon
                 .orderBy("create_time", false));
         List<MonLogsLogin> records = paginate.getRecords();
         List<MonLogsLoginVo> monLogsLoginVos = BeanUtil.copyToList(records, MonLogsLoginVo.class);
-        return new Page<>(monLogsLoginVos,paginate.getPageNumber(),paginate.getPageNumber(),paginate.getTotalRow());
+        return new Page<>(monLogsLoginVos,paginate.getPageNumber(),paginate.getPageSize(),paginate.getTotalRow());
+    }
+
+    /**
+     * 清空登录日志。
+     */
+    @Override
+    public Boolean clearAll() {
+        List<Long> Ids = monLogsLoginMapper.selectAll().stream().map(MonLogsLogin::getId).toList();
+        return removeByIds(Ids);
     }
 }

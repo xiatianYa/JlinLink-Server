@@ -54,4 +54,14 @@ public class MonLogsErrorServiceImpl extends ServiceImpl<MonLogsErrorMapper, Mon
         });
         return RPage.build(new Page<>(monLogsErrorVOS, paginate.getPageNumber(), paginate.getPageSize(),paginate.getTotalRow()));
     }
+
+
+    /**
+     * 清空异常日志。
+     */
+    @Override
+    public Boolean clearAll() {
+        List<Long> Ids = monLogsErrorMapper.selectAll().stream().map(MonLogsError::getId).toList();
+        return removeByIds(Ids);
+    }
 }

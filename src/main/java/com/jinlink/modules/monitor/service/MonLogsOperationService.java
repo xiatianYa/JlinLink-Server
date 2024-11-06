@@ -19,4 +19,9 @@ public interface MonLogsOperationService extends IService<MonLogsOperation> {
      * 分页查询操作日志。
      */
     RPage<MonLogsOperationVo> listMonLogsOperationPage(PageQuery pageQuery, MonLogsOperationSearchDTO monLogsOperationSearchDTO);
+
+    /**
+     * 清空操作日志。
+     */
+    Boolean clearAll();
 }

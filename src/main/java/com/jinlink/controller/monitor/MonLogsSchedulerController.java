@@ -118,4 +118,14 @@ public class MonLogsSchedulerController {
         Page<MonLogsSchedulerVo> monLogsSchedulerPage = monLogsSchedulerService.listMonLogsSchedulerPage(query,monLogsSchedulerSearchDTO);
         return Result.data(RPage.build(monLogsSchedulerPage));
     }
+
+    /**
+     * 清空调度日志。
+     */
+    @DeleteMapping("clearAll")
+    @Operation(operationId = "7",summary = "清空异常日志")
+    @SaCheckPermission("mon:monLogsScheduler:delete")
+    public Result<Boolean> clearAll() {
+        return Result.data(monLogsSchedulerService.clearAll());
+    }
 }

@@ -18,4 +18,10 @@ public interface MonLogsErrorService extends IService<MonLogsError> {
      * 分页查询错误异常日志。
      */
     RPage<MonLogsErrorVo> listMonLogsErrorPage(PageQuery pageQuery, MonLogsOperationSearchDTO monLogsOperationSearchDTO);
+
+
+    /**
+     * 清空异常日志。
+     */
+    Boolean clearAll();
 }

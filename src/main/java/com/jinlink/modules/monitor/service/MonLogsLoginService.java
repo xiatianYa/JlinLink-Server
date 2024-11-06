@@ -19,4 +19,9 @@ import org.springframework.stereotype.Service;
 public interface MonLogsLoginService extends IService<MonLogsLogin> {
 
     Page<MonLogsLoginVo> listMonLogsLoginPage(PageQuery query, MonLogsLoginSearchDTO monLogsLoginSearchDTO);
+
+    /**
+     * 清空登录日志。
+     */
+    Boolean clearAll();
 }

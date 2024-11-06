@@ -54,4 +54,10 @@ public class MonLogsOperationServiceImpl extends ServiceImpl<MonLogsOperationMap
         });
         return RPage.build(new Page<>(monLogsOperationVos, paginate.getPageNumber(), paginate.getPageSize(),paginate.getTotalRow()));
     }
+
+    @Override
+    public Boolean clearAll() {
+        List<Long> ids = monLogsOperationMapper.selectAll().stream().map(MonLogsOperation::getId).toList();
+        return removeByIds(ids);
+    }
 }

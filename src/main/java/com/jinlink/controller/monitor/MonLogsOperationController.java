@@ -120,4 +120,13 @@ public class MonLogsOperationController {
         return Result.data(monLogsOperationPage);
     }
 
+    /**
+     * 清空操作日志。
+     */
+    @DeleteMapping("clearAll")
+    @Operation(operationId = "7",summary = "清空操作日志")
+    @SaCheckPermission("mon:monLogsOperation:delete")
+    public Result<Boolean> clearAll() {
+        return Result.data(monLogsOperationService.clearAll());
+    }
 }
