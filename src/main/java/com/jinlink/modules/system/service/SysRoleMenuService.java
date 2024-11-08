@@ -1,13 +1,11 @@
 package com.jinlink.modules.system.service;
 
-import com.jinlink.common.api.Result;
-import com.jinlink.common.page.PageQuery;
+import com.jinlink.core.page.PageQuery;
 import com.jinlink.modules.system.entity.dto.SysRoleMenuUpdateDTO;
 import com.jinlink.modules.system.entity.vo.SysRoleMenuVo;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.service.IService;
 import com.jinlink.modules.system.entity.SysRoleMenu;
-import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

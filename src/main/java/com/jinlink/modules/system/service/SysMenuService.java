@@ -1,7 +1,7 @@
 package com.jinlink.modules.system.service;
 
-import com.jinlink.common.page.PageQuery;
-import com.jinlink.common.page.RPage;
+import com.jinlink.core.page.PageQuery;
+import com.jinlink.core.page.RPage;
 import com.jinlink.modules.system.entity.dto.SysMenuFormDTO;
 import com.jinlink.modules.system.entity.vo.SysMenuTreeVo;
 import com.jinlink.modules.system.entity.vo.SysMenuVo;

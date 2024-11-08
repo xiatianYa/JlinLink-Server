@@ -1,7 +1,6 @@
 package com.jinlink.modules.system.service;
 
-import com.jinlink.common.api.Result;
-import com.jinlink.common.page.PageQuery;
+import com.jinlink.core.page.PageQuery;
 import com.jinlink.modules.system.entity.dto.SysRolePermissionFormDTO;
 import com.jinlink.modules.system.entity.vo.SysRolePermissionVo;
 import com.mybatisflex.core.paginate.Page;
@@ -35,7 +34,7 @@ public interface SysRolePermissionService extends IService<SysRolePermission> {
     /**
      * 获取用户按钮列表
      */
-    String[] getUserPermissions(Long id);
+    List<String> getUserPermissions(Long id);
 
     /**
      * 分页查询角色权限管理。

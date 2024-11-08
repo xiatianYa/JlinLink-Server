@@ -1,7 +1,7 @@
 package com.jinlink.modules.system.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.jinlink.common.page.PageQuery;
+import com.jinlink.core.page.PageQuery;
 import com.jinlink.modules.system.entity.SysDictItem;
 import com.jinlink.modules.system.entity.vo.SysDictItemOptionsVo;
 import com.jinlink.modules.system.entity.vo.SysDictVo;

@@ -1,7 +1,7 @@
 package com.jinlink.modules.system.entity.dto;
 
 import com.jinlink.common.domain.BTPairs;
-import com.jinlink.common.domain.BaseEntity;
+import com.jinlink.core.domain.BaseEntity;
 import com.jinlink.common.domain.KVPairs;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;

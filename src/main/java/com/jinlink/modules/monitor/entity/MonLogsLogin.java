@@ -1,10 +1,9 @@
 package com.jinlink.modules.monitor.entity;
 
-import com.jinlink.common.domain.BaseEntity;
+import com.jinlink.core.domain.BaseEntity;
 import com.mybatisflex.annotation.Table;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;

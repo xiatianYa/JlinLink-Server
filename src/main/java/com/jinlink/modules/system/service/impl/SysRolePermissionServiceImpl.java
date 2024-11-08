@@ -3,7 +3,7 @@ package com.jinlink.modules.system.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.jinlink.common.exception.JinLinkException;
-import com.jinlink.common.page.PageQuery;
+import com.jinlink.core.page.PageQuery;
 import com.jinlink.modules.system.entity.SysPermission;
 import com.jinlink.modules.system.entity.SysUserRole;
 import com.jinlink.modules.system.entity.dto.SysRolePermissionFormDTO;
@@ -21,9 +21,9 @@ import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * 角色权限管理 服务层实现。
@@ -100,7 +100,7 @@ public class SysRolePermissionServiceImpl extends ServiceImpl<SysRolePermissionM
      * 获取用户按钮列表
      */
     @Override
-    public String[] getUserPermissions(Long id) {
+    public List<String> getUserPermissions(Long id) {
         //获取用户角色信息
         List<Long> userRoleIds = sysUserRoleService.list(new QueryWrapper().eq("user_id", id)).stream()
                 .map(SysUserRole::getUserId).toList();
@@ -109,9 +109,9 @@ public class SysRolePermissionServiceImpl extends ServiceImpl<SysRolePermissionM
         List<Long> userPermissionIds = sysRolePermissionMapper.selectListByQuery(new QueryWrapper().in("role_id", userRoleIds)).stream()
                 .map(SysRolePermission::getPermissionId).toList();
         //获取用户拥有的按钮
-        if (ObjectUtil.isEmpty(userPermissionIds)) return new String[0];
+        if (ObjectUtil.isEmpty(userPermissionIds)) return new ArrayList<>();
         return sysPermissionService.listByIds(userPermissionIds).stream()
-                .map(SysPermission::getCode).toArray(String[]::new);
+                .map(SysPermission::getCode).toList();
     }
 
 

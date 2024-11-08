@@ -1,8 +1,8 @@
 package com.jinlink.modules.monitor.service;
 
 import com.jinlink.common.domain.Options;
-import com.jinlink.common.page.PageQuery;
-import com.jinlink.common.page.RPage;
+import com.jinlink.core.page.PageQuery;
+import com.jinlink.core.page.RPage;
 import com.jinlink.modules.monitor.entity.dto.MonSchedulerSearchDTO;
 import com.jinlink.modules.monitor.entity.vo.MonSchedulerVo;
 import com.mybatisflex.core.service.IService;

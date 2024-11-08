@@ -1,6 +1,6 @@
 package com.jinlink.modules.system.service;
 
-import com.jinlink.common.page.PageQuery;
+import com.jinlink.core.page.PageQuery;
 import com.jinlink.modules.system.entity.vo.SysDictItemOptionsVo;
 import com.jinlink.modules.system.entity.vo.SysDictVo;
 import com.mybatisflex.core.paginate.Page;

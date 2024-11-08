@@ -1,18 +1,12 @@
 package com.jinlink.modules.monitor.entity;
 
-import com.jinlink.common.domain.BaseEntity;
-import com.mybatisflex.annotation.Id;
+import com.jinlink.core.domain.BaseEntity;
 import com.mybatisflex.annotation.Table;
-import java.io.Serializable;
-import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-
-import java.io.Serial;
 
 /**
  * 调度日志 实体类。

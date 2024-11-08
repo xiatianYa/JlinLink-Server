@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -54,10 +55,10 @@ public class AuthenticationFacadeImpl implements IAuthenticationFacade {
         sysUserInfoVo.setUserId(sysUser.getId());
         sysUserInfoVo.setUserName(sysUser.getNickName());
 
-        String[] userRoles = sysUserRoleService.getUserRoles(sysUser.getId());
+        List<String> userRoles = sysUserRoleService.getUserRoleCodes(sysUser.getId());
         sysUserInfoVo.setRoles(userRoles);
         //用户拥有角色的按钮权限
-        String[] buttons = sysRolePermissionService.getUserPermissions(sysUser.getId());
+        List<String> buttons = sysRolePermissionService.getUserPermissions(sysUser.getId());
         sysUserInfoVo.setButtons(buttons);
         return sysUserInfoVo;
     }

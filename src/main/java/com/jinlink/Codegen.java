@@ -40,7 +40,7 @@ public class Codegen {
 
         //设置表前缀和只生成哪些表
         globalConfig.setTablePrefix("tb_");
-        globalConfig.setGenerateTable("mon_logs_error");
+        globalConfig.setGenerateTable("mon_logs_file");
 
         //设置生成 entity 并启用 Lombok
         globalConfig.setEntityGenerateEnable(true);
@@ -77,7 +77,7 @@ public class Codegen {
         ColumnConfig columnConfig = new ColumnConfig();
         columnConfig.setLarge(true);
         columnConfig.setVersion(true);
-        globalConfig.setColumnConfig("mon_logs_error", columnConfig);
+        globalConfig.setColumnConfig("mon_logs_file", columnConfig);
 
         return globalConfig;
     }

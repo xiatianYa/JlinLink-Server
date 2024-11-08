@@ -1,13 +1,23 @@
 package com.jinlink.modules.file.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
+import com.jinlink.common.domain.LoginUser;
 import com.jinlink.common.util.file.FileUploadUtils;
+import com.jinlink.common.util.file.FileUtils;
+import com.jinlink.core.holder.GlobalUserHolder;
 import com.jinlink.modules.file.service.SysFileService;
+import com.jinlink.modules.monitor.entity.MonLogsFile;
+import com.jinlink.modules.monitor.service.MonLogsFileService;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class SysFileServiceImpl implements SysFileService {
+    @Resource
+    private MonLogsFileService monLogsFileService;
+
     /**
      * 资源映射路径 前缀
      */
@@ -27,8 +37,38 @@ public class SysFileServiceImpl implements SysFileService {
     private String localFilePath;
 
     @Override
-    public String uploadFile(MultipartFile file) throws Exception {
-        String name = FileUploadUtils.upload(localFilePath, file);
-        return domain + localFilePrefix + name;
+    public String uploadFile(MultipartFile file) {
+        String fielUrl = "";
+        try {
+            fielUrl = FileUploadUtils.upload(localFilePath, file);
+            initFileLog(file,domain + localFilePrefix + fielUrl,null);
+            return domain + localFilePrefix + fielUrl;
+        }catch (Exception e){
+            initFileLog(file,domain + localFilePrefix + fielUrl,e);
+        }
+        return "";
+    }
+
+    private void initFileLog(MultipartFile file,String fileUrl,Exception e) {
+        LoginUser loginUser = GlobalUserHolder.getUser();
+        MonLogsFile monLogsFile;
+        if (ObjectUtil.isNull(e)){
+            monLogsFile = MonLogsFile.builder()
+                    .userId(loginUser.getId())
+                    .userName(loginUser.getUserName())
+                    .fileSize(FileUtils.getFileSizeInMB(file))
+                    .fileUrl(fileUrl)
+                    .status("1")
+                    .build();
+        }else{
+            monLogsFile = MonLogsFile.builder()
+                    .userId(loginUser.getId())
+                    .userName(loginUser.getUserName())
+                    .fileSize(FileUtils.getFileSizeInMB(file))
+                    .fileUrl(fileUrl)
+                    .status("0")
+                    .build();
+        }
+        monLogsFileService.save(monLogsFile);
     }
 }

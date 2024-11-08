@@ -5,7 +5,7 @@ import com.jinlink.common.exception.file.FileNameLengthLimitExceededException;
 import com.jinlink.common.exception.file.FileSizeLimitExceededException;
 import com.jinlink.common.exception.file.InvalidExtensionException;
 import com.jinlink.common.util.DateUtils;
-import com.jinlink.common.util.SeqUtils;
+import com.jinlink.core.util.SeqUtils;
 import com.jinlink.common.util.StringUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.web.multipart.MultipartFile;

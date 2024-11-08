@@ -1,7 +1,7 @@
 package com.jinlink.modules.system.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.jinlink.common.page.PageQuery;
+import com.jinlink.core.page.PageQuery;
 import com.jinlink.modules.system.entity.dto.SysRoleMenuUpdateDTO;
 import com.jinlink.modules.system.entity.vo.SysRoleMenuVo;
 import com.mybatisflex.core.logicdelete.LogicDeleteManager;
@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 角色菜单管理 服务层实现。

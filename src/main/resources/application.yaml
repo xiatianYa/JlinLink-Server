@@ -64,6 +64,13 @@ spring:
             threadCount: 10
             threadPriority: 5
             threadsInheritContextClassLoaderOfInitializingThread: true
+  banner:
+    charset: UTF-8
+    location: banner.txt
+  servlet:
+    multipart:
+      max-file-size: 512MB
+      max-request-size: 1024MB
 
 # Sa-Token 配置
 sa-token:
@@ -120,10 +127,10 @@ mybatis-flex:
   type-handlers-package: com.jinlink.modules
 logging:
   level:
-    default: error
+    root: debug
 
 # 本地文件上传
 file:
-  domain: https://bluearchive.top
-  path: D:/blueArchive/uploadPath
+  domain: http://127.0.0.1:8080
+  path: D:/jinLink/uploadPath
   prefix: /statics

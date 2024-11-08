@@ -1,14 +1,13 @@
 package com.jinlink.modules.system.entity.vo;
 
-import com.jinlink.common.domain.BaseVO;
+import com.jinlink.core.domain.BaseVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.io.Serial;
-import java.io.Serializable;
+import java.util.List;
 
 /**
  * 用户信息 VO 展示类
@@ -35,10 +34,10 @@ public class SysUserInfoVo extends BaseVO {
      * 用户权限列表
      */
     @Schema(description = "用户权限列表")
-    private String[] roles;
+    private List<String> roles;
     /**
      * 用户权限按钮列表
      */
     @Schema(description = "用户权限按钮列表")
-    private String[] buttons;
+    private List<String> buttons;
 }

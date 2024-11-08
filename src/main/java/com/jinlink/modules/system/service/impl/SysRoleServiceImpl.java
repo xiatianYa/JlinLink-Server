@@ -3,7 +3,7 @@ package com.jinlink.modules.system.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.jinlink.common.exception.JinLinkException;
-import com.jinlink.common.page.PageQuery;
+import com.jinlink.core.page.PageQuery;
 import com.jinlink.modules.system.entity.dto.SysRoleFormDTO;
 import com.jinlink.modules.system.entity.dto.SysRoleSearchDTO;
 import com.jinlink.modules.system.entity.vo.SysRoleOptionVo;

@@ -1,6 +1,6 @@
 package com.jinlink.modules.monitor.entity.vo;
 
-import com.jinlink.common.domain.BaseVO;
+import com.jinlink.core.domain.BaseVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;

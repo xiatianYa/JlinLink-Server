@@ -1,6 +1,6 @@
 package com.jinlink.modules.monitor.service.impl;
 
-import com.jinlink.common.config.redis.service.RedisService;
+import com.jinlink.core.config.redis.service.RedisService;
 import com.jinlink.common.pool.StringPools;
 import com.jinlink.modules.monitor.entity.vo.MonCacheRedisVo;
 import com.jinlink.modules.monitor.service.IMonCacheFacade;

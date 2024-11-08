@@ -1,10 +1,6 @@
 package com.jinlink.modules.system.entity;
 
-import com.jinlink.common.domain.BaseEntity;
-import com.jinlink.common.listener.MyInsertListener;
-import com.jinlink.common.listener.MyUpdateListener;
-import com.mybatisflex.annotation.Id;
-import com.mybatisflex.annotation.KeyType;
+import com.jinlink.core.domain.BaseEntity;
 import com.mybatisflex.annotation.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;

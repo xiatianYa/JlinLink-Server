@@ -1,6 +1,6 @@
 package com.jinlink.modules.system.service;
 
-import com.jinlink.common.page.PageQuery;
+import com.jinlink.core.page.PageQuery;
 import com.jinlink.modules.system.entity.dto.SysRoleFormDTO;
 import com.jinlink.modules.system.entity.dto.SysRoleSearchDTO;
 import com.jinlink.modules.system.entity.vo.SysRoleOptionVo;

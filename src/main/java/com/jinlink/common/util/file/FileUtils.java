@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.net.URLEncoder;
@@ -208,5 +209,21 @@ public class FileUtils {
     public static String percentEncode(String s) throws UnsupportedEncodingException {
         String encode = URLEncoder.encode(s, StandardCharsets.UTF_8.toString());
         return encode.replaceAll("\\+", "%20");
+    }
+
+    /**
+     * 获取文件大小
+     *
+     * @param file 文件
+     * @return 文件大小KB
+     */
+    public static String getFileSizeInMB(MultipartFile file) {
+        if (file.isEmpty()) {
+            return ""; // 或者抛出异常，根据你的需求
+        }
+
+        long sizeInBytes = file.getSize();
+
+        return String.valueOf(sizeInBytes / (1024.0 * 1024.0));
     }
 }

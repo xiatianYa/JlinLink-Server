@@ -5,12 +5,13 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.extra.servlet.JakartaServletUtil;
 import com.jinlink.common.constants.RequestConstant;
+import com.jinlink.common.domain.LoginUser;
 import com.jinlink.common.domain.Options;
 import com.jinlink.common.exception.JinLinkException;
-import com.jinlink.common.page.PageQuery;
+import com.jinlink.core.page.PageQuery;
 import com.jinlink.common.pool.StringPools;
 import com.jinlink.common.util.IPUtil;
-import com.jinlink.common.util.ServletHolderUtil;
+import com.jinlink.core.util.ServletHolderUtil;
 import com.jinlink.modules.monitor.entity.MonLogsLogin;
 import com.jinlink.modules.monitor.service.MonLogsLoginService;
 import com.jinlink.modules.system.entity.SysRole;
@@ -84,6 +85,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             StpUtil.login(userForUserName.getId());
             // 更新用户登录时间
             userForUserName.setLastLoginTime(LocalDateTime.now());
+            saveUserToSession(userForUserName, false);
             // 操作用户登录日志
             loginLogs.setUserId(userForUserName.getId());
             super.updateById(userForUserName);
@@ -95,6 +97,21 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             monLogsLoginService.save(loginLogs);
         }
         return Map.of("token", StpUtil.getTokenValue(),"refreshToken", StpUtil.getTokenValue());
+    }
+
+    private void saveUserToSession(SysUser sysUser, boolean needCheck) {
+        if (needCheck) {
+            sysUser = super.getById(sysUser.getId());
+        }
+        // 用户转换
+        LoginUser loginUser = BeanUtil.copyProperties(sysUser, LoginUser.class);
+        // 获取用户角色
+        List<Long> userRoleIds = sysUserRoleService.getUserRoleIds(loginUser.getId());
+        List<String> userRoleNames = sysUserRoleService.getUserRoleCodes(loginUser.getId());
+        loginUser.setRoleIds(userRoleIds);
+        loginUser.setRoleCodes(userRoleNames);
+        // Session 放入用户对象
+        StpUtil.getSessionByLoginId(sysUser.getId()).set("user", loginUser);
     }
 
     /**
@@ -229,8 +246,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      *
      * @param loginFormDTO 用户对象
      * @return {@linkplain MonLogsLogin} 登录日志对象
-     * @author payne.zhuang
-     * @CreateTime 2024-05-05 18:44
      */
     private MonLogsLogin initLoginLog(LoginFormDTO loginFormDTO) {
         String ip = JakartaServletUtil.getClientIP(ServletHolderUtil.getRequest());

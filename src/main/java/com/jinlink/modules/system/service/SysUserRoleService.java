@@ -1,7 +1,6 @@
 package com.jinlink.modules.system.service;
 
-import com.jinlink.common.api.Result;
-import com.jinlink.common.page.PageQuery;
+import com.jinlink.core.page.PageQuery;
 import com.jinlink.modules.system.entity.vo.SysUserRoleVo;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.service.IService;
@@ -34,10 +33,15 @@ public interface SysUserRoleService extends IService<SysUserRole> {
     /**
      * 获取用户角色列表
      */
-    String[] getUserRoles(Long id);
+    List<String> getUserRoleCodes(Long id);
 
     /**
      * 分页查询用户角色管理。
      */
     Page<SysUserRoleVo> listSysUserRolePage(PageQuery query);
+
+    /**
+     * 获取用户角色Code列表
+     */
+    List<Long> getUserRoleIds(Long id);
 }

@@ -3,7 +3,7 @@ package com.jinlink.modules.system.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
-import com.jinlink.common.page.PageQuery;
+import com.jinlink.core.page.PageQuery;
 import com.jinlink.modules.system.entity.SysMenu;
 import com.jinlink.modules.system.entity.vo.SysPermissionTreeVo;
 import com.jinlink.modules.system.entity.vo.SysPermissionVo;

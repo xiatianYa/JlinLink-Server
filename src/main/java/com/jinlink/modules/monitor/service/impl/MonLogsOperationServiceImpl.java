@@ -2,8 +2,8 @@ package com.jinlink.modules.monitor.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.jinlink.common.domain.Options;
-import com.jinlink.common.page.PageQuery;
-import com.jinlink.common.page.RPage;
+import com.jinlink.core.page.PageQuery;
+import com.jinlink.core.page.RPage;
 import com.jinlink.modules.monitor.entity.dto.MonLogsOperationSearchDTO;
 import com.jinlink.modules.monitor.entity.vo.MonLogsOperationVo;
 import com.jinlink.modules.system.service.SysUserService;

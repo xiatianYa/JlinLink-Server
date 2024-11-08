@@ -1,7 +1,6 @@
 package com.jinlink.modules.system.service;
 
-import com.jinlink.common.api.Result;
-import com.jinlink.common.page.PageQuery;
+import com.jinlink.core.page.PageQuery;
 import com.jinlink.modules.system.entity.vo.SysPermissionTreeVo;
 import com.jinlink.modules.system.entity.vo.SysPermissionVo;
 import com.mybatisflex.core.paginate.Page;

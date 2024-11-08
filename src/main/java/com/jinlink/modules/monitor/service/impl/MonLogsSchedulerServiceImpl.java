@@ -1,7 +1,7 @@
 package com.jinlink.modules.monitor.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.jinlink.common.page.PageQuery;
+import com.jinlink.core.page.PageQuery;
 import com.jinlink.modules.monitor.entity.dto.MonLogsSchedulerSearchDTO;
 import com.jinlink.modules.monitor.entity.vo.MonLogsSchedulerVo;
 import com.mybatisflex.core.paginate.Page;
