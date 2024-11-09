@@ -5,6 +5,7 @@ import cn.hutool.core.bean.BeanUtil;
 import com.jinlink.common.api.Result;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
+import com.jinlink.modules.file.entity.dto.MonLogsFileSearchDTO;
 import com.jinlink.modules.monitor.entity.MonLogsLogin;
 import com.jinlink.modules.monitor.entity.vo.MonLogsFileVo;
 import io.swagger.v3.oas.annotations.Operation;
@@ -114,8 +115,8 @@ public class MonLogsFileController {
     @GetMapping("page")
     @Operation(operationId = "6",summary = "分页查询文件上传日志管理")
     @SaCheckPermission("mon:monLogsFile:page")
-    public Result<RPage<MonLogsFileVo>> page(@Parameter(description = "分页对象", required = true)@Valid PageQuery pageQuery) {
-        RPage<MonLogsFileVo> monLogsFileVoRPage = monLogsFileService.listMonLogsFileVoPage(pageQuery);
+    public Result<RPage<MonLogsFileVo>> page(@Parameter(description = "分页对象", required = true)@Valid PageQuery pageQuery, MonLogsFileSearchDTO monLogsFileSearchDTO) {
+        RPage<MonLogsFileVo> monLogsFileVoRPage = monLogsFileService.listMonLogsFileVoPage(pageQuery,monLogsFileSearchDTO);
         return Result.data(monLogsFileVoRPage);
     }
 

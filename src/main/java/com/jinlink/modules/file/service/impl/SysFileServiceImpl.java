@@ -2,6 +2,7 @@ package com.jinlink.modules.file.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.jinlink.common.domain.LoginUser;
+import com.jinlink.common.exception.JinLinkException;
 import com.jinlink.common.util.file.FileUploadUtils;
 import com.jinlink.common.util.file.FileUtils;
 import com.jinlink.core.holder.GlobalUserHolder;
@@ -45,8 +46,8 @@ public class SysFileServiceImpl implements SysFileService {
             return domain + localFilePrefix + fielUrl;
         }catch (Exception e){
             initFileLog(file,domain + localFilePrefix + fielUrl,e);
+            throw new JinLinkException("文件上传失败"+e.getMessage());
         }
-        return "";
     }
 
     private void initFileLog(MultipartFile file,String fileUrl,Exception e) {

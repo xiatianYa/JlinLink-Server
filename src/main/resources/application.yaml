@@ -109,6 +109,9 @@ springdoc:
     - group: '文件管理'
       paths-to-match: '/**'
       packages-to-scan: com.jinlink.controller.file
+    - group: '游戏管理'
+      paths-to-match: '/**'
+      packages-to-scan: com.jinlink.controller.game
 
 # knife4j的增强配置,不需要增强可以不配
 knife4j:
@@ -127,7 +130,7 @@ mybatis-flex:
   type-handlers-package: com.jinlink.modules
 logging:
   level:
-    root: debug
+    default: info
 
 # 本地文件上传
 file:

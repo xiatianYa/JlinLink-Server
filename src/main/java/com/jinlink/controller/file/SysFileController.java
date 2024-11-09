@@ -18,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 文件请求处理
+ * @author Summer
+ * @since 1.0.0
  */
 @RestController
 @Tag(name = "文件管理")
@@ -36,16 +38,11 @@ public class SysFileController {
     @Operation(operationId = "1", summary = "文件上传")
     @SaCheckLogin
     public Result<SysFile> upload(MultipartFile file) {
-        try {
-            // 上传并返回访问地址
-            String url = sysFileService.uploadFile(file);
-            SysFile sysFile = new SysFile();
-            sysFile.setName(FileUtils.getName(url));
-            sysFile.setUrl(url);
-            return Result.success("请求成功",sysFile);
-        } catch (Exception e) {
-            log.error("上传文件失败", e);
-            return Result.failure(e.getMessage());
-        }
+        // 上传并返回访问地址
+        String url = sysFileService.uploadFile(file);
+        SysFile sysFile = new SysFile();
+        sysFile.setName(FileUtils.getName(url));
+        sysFile.setUrl(url);
+        return Result.success("请求成功",sysFile);
     }
 }

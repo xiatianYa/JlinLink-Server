@@ -17,38 +17,25 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @Schema(name = "MonLogsLoginVo", description = "登录日志 对象")
 public class MonLogsLoginVo extends BaseVO {
-    /**
-     * 用户ID
-     */
+
+    @Schema(description = "用户ID")
     private Long userId;
 
-    /**
-     * 用户名称
-     */
+    @Schema(description = "用户名称")
     private String userName;
 
-    /**
-     * IP
-     */
+    @Schema(description = "IP")
     private String ip;
 
-    /**
-     * IP所属地
-     */
+    @Schema(description = "IP所属地")
     private String ipAddr;
 
-    /**
-     * 登录代理
-     */
+    @Schema(description = "登录代理")
     private String userAgent;
 
-    /**
-     * 登录状态(0:失败 1:成功)
-     */
+    @Schema(description = "登录状态(0:失败 1:成功)")
     private String status;
 
-    /**
-     * 登录错误日志
-     */
+    @Schema(description = "登录错误日志")
     private String message;
 }

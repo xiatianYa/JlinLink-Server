@@ -3,6 +3,7 @@ package com.jinlink.modules.monitor.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
+import com.jinlink.modules.file.entity.dto.MonLogsFileSearchDTO;
 import com.jinlink.modules.monitor.entity.MonLogsLogin;
 import com.jinlink.modules.monitor.entity.vo.MonLogsFileVo;
 import com.jinlink.modules.monitor.entity.vo.MonLogsLoginVo;
@@ -32,8 +33,9 @@ public class MonLogsFileServiceImpl extends ServiceImpl<MonLogsFileMapper, MonLo
      * 分页查询文件上传日志。
      */
     @Override
-    public RPage<MonLogsFileVo> listMonLogsFileVoPage(PageQuery pageQuery) {
-        Page<MonLogsFile> paginate = monLogsFileMapper.paginate(pageQuery.getCurrent(), pageQuery.getSize(), new QueryWrapper());
+    public RPage<MonLogsFileVo> listMonLogsFileVoPage(PageQuery pageQuery, MonLogsFileSearchDTO monLogsFileSearchDTO) {
+        Page<MonLogsFile> paginate = monLogsFileMapper.paginate(pageQuery.getCurrent(), pageQuery.getSize(), new QueryWrapper()
+                .in("user_id",monLogsFileSearchDTO.getUserName()));
         List<MonLogsFile> records = paginate.getRecords();
         List<MonLogsFileVo> monLogsFileVos = BeanUtil.copyToList(records, MonLogsFileVo.class);
         return RPage.build(new Page<>(monLogsFileVos,paginate.getPageNumber(),paginate.getPageSize(),paginate.getTotalRow()));

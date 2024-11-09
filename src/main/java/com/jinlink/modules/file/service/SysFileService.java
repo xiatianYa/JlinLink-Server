@@ -9,5 +9,5 @@ public interface SysFileService {
     /**
      * 文件上传接口
      */
-    String uploadFile(MultipartFile file) throws Exception;
+    String uploadFile(MultipartFile file);
 }

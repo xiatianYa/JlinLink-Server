@@ -185,7 +185,7 @@ public class FileUtils {
      * @param realFileName 真实文件名
      * @return
      */
-    public static void setAttachmentResponseHeader(HttpServletResponse response, String realFileName) throws UnsupportedEncodingException {
+    public static void setAttachmentResponseHeader(HttpServletResponse response, String realFileName) {
         String percentEncodedFileName = percentEncode(realFileName);
 
         StringBuilder contentDispositionValue = new StringBuilder();
@@ -206,8 +206,8 @@ public class FileUtils {
      * @param s 需要百分号编码的字符串
      * @return 百分号编码后的字符串
      */
-    public static String percentEncode(String s) throws UnsupportedEncodingException {
-        String encode = URLEncoder.encode(s, StandardCharsets.UTF_8.toString());
+    public static String percentEncode(String s) {
+        String encode = URLEncoder.encode(s, StandardCharsets.UTF_8);
         return encode.replaceAll("\\+", "%20");
     }
 
@@ -215,7 +215,7 @@ public class FileUtils {
      * 获取文件大小
      *
      * @param file 文件
-     * @return 文件大小KB
+     * @return 文件大小MB，保留两位小数
      */
     public static String getFileSizeInMB(MultipartFile file) {
         if (file.isEmpty()) {
@@ -223,7 +223,9 @@ public class FileUtils {
         }
 
         long sizeInBytes = file.getSize();
+        double sizeInMB = sizeInBytes / (1024.0 * 1024.0);
 
-        return String.valueOf(sizeInBytes / (1024.0 * 1024.0));
+        // 使用String.format()保留两位小数
+        return String.format("%.2f", sizeInMB);
     }
 }
