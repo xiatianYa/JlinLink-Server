@@ -3,6 +3,7 @@ package com.jinlink.controller.game;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.bean.BeanUtil;
 import com.jinlink.common.api.Result;
+import com.jinlink.common.domain.Options;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
 import com.jinlink.modules.game.entity.vo.GameModeVo;
@@ -114,10 +115,19 @@ public class GameModeController {
      */
     @GetMapping("page")
     @Operation(operationId = "6",summary = "分页查询游戏模式")
-    @SaCheckPermission("game:gameMode:info")
+    @SaCheckPermission("game:gameMode:page")
     public Result<RPage<GameModeVo>> page(@Parameter(description = "分页对象", required = true) @Valid PageQuery pageQuery) {
         RPage<GameModeVo> gameModeVoRPage = gameModeService.listGameModeVoPage(pageQuery);
         return Result.data(gameModeVoRPage);
     }
 
+    /**
+     * 查询全部模式名称。
+     */
+    @GetMapping("allModeNames")
+    @Operation(operationId = "7",summary = "查询全部模式名称")
+    @SaCheckPermission("game:gameMode:allModeNames")
+    public Result<List<Options<String>>> allModeNames() {
+        return Result.success("请求成功",gameModeService.allModeNames());
+    }
 }

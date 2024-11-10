@@ -1,8 +1,10 @@
 package com.jinlink.modules.game.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.jinlink.common.domain.Options;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
+import com.jinlink.modules.game.entity.GameCommunity;
 import com.jinlink.modules.game.entity.vo.GameGameVo;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
@@ -35,5 +37,19 @@ public class GameGameServiceImpl extends ServiceImpl<GameGameMapper, GameGame> i
         List<GameGame> records = paginate.getRecords();
         List<GameGameVo> gameGameVos = BeanUtil.copyToList(records, GameGameVo.class);
         return RPage.build(new Page<>(gameGameVos,paginate.getPageNumber(),paginate.getPageSize(),paginate.getTotalRow()));
+    }
+
+    /**
+     * 查询全部游戏名称。
+     */
+    @Override
+    public List<Options<String>> getAllGameNames() {
+        List<GameGame> gameGames = gameGameMapper.selectAll();
+        return gameGames.stream()
+                .map(item -> Options.<String>builder()
+                        .label(item.getGameName())
+                        .value(String.valueOf(item.getId()))
+                        .build())
+                .toList();
     }
 }

@@ -2,6 +2,7 @@ package com.jinlink.modules.game.service;
 
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
+import com.jinlink.modules.game.entity.dto.GameServerSearchDTO;
 import com.jinlink.modules.game.entity.vo.GameServerVo;
 import com.mybatisflex.core.service.IService;
 import com.jinlink.modules.game.entity.GameServer;
@@ -17,5 +18,5 @@ public interface GameServerService extends IService<GameServer> {
     /**
      * 分页查询游戏服务器表。
      */
-    RPage<GameServerVo> listGameServerVoPage(PageQuery pageQuery);
+    RPage<GameServerVo> listGameServerVoPage(PageQuery pageQuery, GameServerSearchDTO gameServerSearchDTO);
 }

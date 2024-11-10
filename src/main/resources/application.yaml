@@ -8,6 +8,17 @@ spring:
     username: root
     password: sr2539195984
     driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 100  # 最大连接数
+      minimum-idle: 20        # 最小空闲连接数
+      idle-timeout: 30000    # 空闲连接保留时间（毫秒）
+      max-lifetime: 1800000  # 连接的最大生命周期（毫秒），建议小于MySQL的wait_timeout和interactive_timeout
+      connection-timeout: 30000  # 连接超时时间（毫秒）
+      pool-name: HikariPool-SpringBoot  # 连接池名称（可选）
+      auto-commit: true  # 是否自动提交事务（可选，默认为true）
+      # connection-test-query: SELECT 1  # 连接测试查询（可选，如果数据库支持isValid()方法，则不需要此配置）
+      validation-timeout: 5000  # 连接测试验证的最长时间（毫秒）（可选）
+      leak-detection-threshold: 15000  # 连接泄露检测阈值（毫秒）（可选，用于检测连接是否在规定时间内未关闭）
   data:
     redis:
       # Redis数据库索引（默认为0）

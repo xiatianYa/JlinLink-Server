@@ -18,13 +18,22 @@ import lombok.experimental.SuperBuilder;
 public class GameServerVo {
 
     @Schema(description = "社区ID")
-    private Long communityId;
+    private String communityId;
+
+    @Schema(description = "社区名称")
+    private String communityName;
 
     @Schema(description = "模式ID")
-    private Long modeId;
+    private String modeId;
+
+    @Schema(description = "模式名称")
+    private String modeName;
 
     @Schema(description = "游戏ID")
-    private Long gameId;
+    private String gameId;
+
+    @Schema(description = "游戏名称")
+    private String gameName;
 
     @Schema(description = "服务器IP")
     private String ip;

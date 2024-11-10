@@ -1,9 +1,11 @@
 package com.jinlink.modules.game.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.jinlink.common.domain.Options;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
 import com.jinlink.modules.game.entity.vo.GameCommunityVo;
+import com.jinlink.modules.system.entity.SysUser;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
@@ -35,5 +37,19 @@ public class GameCommunityServiceImpl extends ServiceImpl<GameCommunityMapper, G
         List<GameCommunity> records = paginate.getRecords();
         List<GameCommunityVo> gameCommunityVos = BeanUtil.copyToList(records, GameCommunityVo.class);
         return RPage.build(new Page<>(gameCommunityVos,paginate.getPageNumber(),paginate.getPageSize(),paginate.getTotalRow()));
+    }
+
+    /**
+     * 查询全部社区名称。
+     */
+    @Override
+    public List<Options<String>> getAllCommunityNames() {
+        List<GameCommunity> gameCommunities = gameCommunityMapper.selectAll();
+        return gameCommunities.stream()
+                .map(item -> Options.<String>builder()
+                        .label(item.getCommunityName())
+                        .value(String.valueOf(item.getId()))
+                        .build())
+                .toList();
     }
 }

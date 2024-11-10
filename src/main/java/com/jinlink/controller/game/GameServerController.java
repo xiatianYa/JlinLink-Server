@@ -5,7 +5,9 @@ import cn.hutool.core.bean.BeanUtil;
 import com.jinlink.common.api.Result;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
+import com.jinlink.modules.game.entity.dto.GameServerSearchDTO;
 import com.jinlink.modules.game.entity.vo.GameServerVo;
+import com.jinlink.modules.monitor.entity.dto.MonSchedulerSearchDTO;
 import com.mybatisflex.core.paginate.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -113,10 +115,10 @@ public class GameServerController {
      * @return 分页对象
      */
     @GetMapping("page")
-    @Operation(operationId = "6",summary = "获取游戏服务器详细")
+    @Operation(operationId = "6",summary = "获取游戏服务器分页")
     @SaCheckPermission("game:gameServer:page")
-    public Result<RPage<GameServerVo>> page(@Parameter(description = "分页对象", required = true) @Valid PageQuery pageQuery) {
-        RPage<GameServerVo> gameServerVoRPage = gameServerService.listGameServerVoPage(pageQuery);
+    public Result<RPage<GameServerVo>> page(@Parameter(description = "分页对象", required = true) @Valid PageQuery pageQuery, @Parameter(description = "查询对象", required = true) GameServerSearchDTO gameServerSearchDTO) {
+        RPage<GameServerVo> gameServerVoRPage = gameServerService.listGameServerVoPage(pageQuery,gameServerSearchDTO);
         return Result.data(gameServerVoRPage);
     }
 

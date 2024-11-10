@@ -3,6 +3,7 @@ package com.jinlink.controller.game;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.bean.BeanUtil;
 import com.jinlink.common.api.Result;
+import com.jinlink.common.domain.Options;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
 import com.jinlink.modules.game.entity.vo.GameGameVo;
@@ -120,4 +121,13 @@ public class GameGameController {
         return Result.data(gameGameVoRPage);
     }
 
+    /**
+     * 查询全部游戏名称。
+     */
+    @GetMapping("allGameNames")
+    @Operation(operationId = "7",summary = "查询全部游戏名称")
+    @SaCheckPermission("game:gameGame:allGameNames")
+    public Result<List<Options<String>>> allGameNames() {
+        return Result.success("请求成功",gameGameService.getAllGameNames());
+    }
 }

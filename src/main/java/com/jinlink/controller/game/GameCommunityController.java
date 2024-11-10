@@ -3,6 +3,7 @@ package com.jinlink.controller.game;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.bean.BeanUtil;
 import com.jinlink.common.api.Result;
+import com.jinlink.common.domain.Options;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
 import com.jinlink.modules.game.entity.vo.GameCommunityVo;
@@ -118,5 +119,15 @@ public class GameCommunityController {
     public Result<RPage<GameCommunityVo>> page(@Parameter(description = "分页对象", required = true) @Valid PageQuery pageQuery) {
         RPage<GameCommunityVo> gameCommunityVoRPage = gameCommunityService.listGameCommunityVoPage(pageQuery);
         return Result.data(gameCommunityVoRPage);
+    }
+
+    /**
+     * 查询全部社区名称。
+     */
+    @GetMapping("allCommunityNames")
+    @Operation(operationId = "7",summary = "查询全部社区名称")
+    @SaCheckPermission("game:gameCommunity:allCommunityNames")
+    public Result<List<Options<String>>> allCommunityNames() {
+        return Result.success("请求成功",gameCommunityService.getAllCommunityNames());
     }
 }
