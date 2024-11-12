@@ -1,5 +1,6 @@
 package com.jinlink.modules.game.entity.vo;
 
+import com.jinlink.core.domain.BaseVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,7 +16,10 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(name = "GameServerVo", description = "游戏服务器 VO 对象")
-public class GameServerVo {
+public class GameServerVo extends BaseVO {
+
+    @Schema(description = "服务器名称")
+    private String serverName;
 
     @Schema(description = "社区ID")
     private String communityId;
@@ -40,4 +44,7 @@ public class GameServerVo {
 
     @Schema(description = "服务器端口")
     private String port;
+
+    @Schema(description = "排序值")
+    private Integer sort;
 }

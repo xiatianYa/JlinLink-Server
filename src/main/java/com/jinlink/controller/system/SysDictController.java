@@ -6,7 +6,9 @@ import cn.hutool.core.bean.BeanUtil;
 import com.jinlink.common.api.Result;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
+import com.jinlink.modules.system.entity.dto.SysDictAddDTO;
 import com.jinlink.modules.system.entity.dto.SysDictItemDeleteDTO;
+import com.jinlink.modules.system.entity.dto.SysDictUpdateDTO;
 import com.jinlink.modules.system.entity.vo.SysDictItemOptionsVo;
 import com.jinlink.modules.system.entity.vo.SysDictVo;
 import com.mybatisflex.core.paginate.Page;
@@ -47,14 +49,14 @@ public class SysDictController {
     /**
      * 添加数据字典管理。
      *
-     * @param sysDict 数据字典管理
+     * @param sysDictAddDTO 数据字典管理
      * @return {@code true} 添加成功，{@code false} 添加失败
      */
     @PostMapping("save")
     @Operation(operationId = "1",summary = "添加字典")
     @SaCheckPermission("sys:dict:save")
-    public Result<Boolean> save(@Parameter(description = "字典对象", required = true)@RequestBody SysDict sysDict) {
-        return Result.success("请求成功",sysDictService.save(sysDict));
+    public Result<Boolean> save(@Parameter(description = "字典对象", required = true)@RequestBody SysDictAddDTO sysDictAddDTO) {
+        return Result.success("请求成功",sysDictService.saveDict(sysDictAddDTO));
     }
 
     /**
@@ -73,14 +75,14 @@ public class SysDictController {
     /**
      * 根据主键更新数据字典管理。
      *
-     * @param sysDict 数据字典管理
+     * @param sysDictUpdateDTO 数据字典管理
      * @return {@code true} 更新成功，{@code false} 更新失败
      */
     @PutMapping("update")
     @Operation(operationId = "3",summary = "修改字典")
     @SaCheckPermission("sys:dict:update")
-    public Result<Boolean> update(@Parameter(description = "字典对象", required = true)@RequestBody SysDict sysDict) {
-        return Result.success("请求成功",sysDictService.updateDictById(sysDict));
+    public Result<Boolean> update(@Parameter(description = "字典对象", required = true)@RequestBody SysDictUpdateDTO sysDictUpdateDTO) {
+        return Result.success("请求成功",sysDictService.updateDict(sysDictUpdateDTO));
     }
 
     /**

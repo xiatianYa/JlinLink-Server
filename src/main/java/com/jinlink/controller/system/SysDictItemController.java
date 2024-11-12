@@ -5,9 +5,7 @@ import cn.hutool.core.bean.BeanUtil;
 import com.jinlink.common.api.Result;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
-import com.jinlink.modules.system.entity.SysDictItem;
-import com.jinlink.modules.system.entity.dto.SysDictItemDeleteDTO;
-import com.jinlink.modules.system.entity.dto.SysDictItemSearchDTO;
+import com.jinlink.modules.system.entity.dto.*;
 import com.jinlink.modules.system.entity.vo.SysDictItemVo;
 import com.jinlink.modules.system.service.SysDictItemService;
 import com.mybatisflex.core.paginate.Page;
@@ -40,14 +38,14 @@ public class SysDictItemController {
     /**
      * 添加数据字典子项管理。
      *
-     * @param sysDictItem 数据字典子项管理
+     * @param sysDictItemAddDTO 数据字典子项管理
      * @return {@code true} 添加成功，{@code false} 添加失败
      */
     @PostMapping("save")
     @Operation(operationId = "1",summary = "添加子字典")
     @SaCheckPermission("sys:dict:item:save")
-    public Result<Boolean> save(@Parameter(description = "子字典对象", required = true)@RequestBody SysDictItem sysDictItem) {
-        return Result.success("请求成功",sysDictItemService.save(sysDictItem));
+    public Result<Boolean> save(@Parameter(description = "子字典对象", required = true)@RequestBody SysDictItemAddDTO sysDictItemAddDTO) {
+        return Result.success("请求成功",sysDictItemService.saveDictItem(sysDictItemAddDTO));
     }
 
     /**
@@ -66,14 +64,14 @@ public class SysDictItemController {
     /**
      * 根据主键更新数据字典子项管理。
      *
-     * @param sysDictItem 数据字典子项管理
+     * @param sysDictItemUpdateDTO 数据字典子项管理
      * @return {@code true} 更新成功，{@code false} 更新失败
      */
     @PutMapping("update")
     @Operation(operationId = "3",summary = "修改子字典")
     @SaCheckPermission("sys:dict:item:update")
-    public Result<Boolean> update(@RequestBody SysDictItem sysDictItem) {
-        return Result.success("请求成功",sysDictItemService.updateById(sysDictItem));
+    public Result<Boolean> update(@RequestBody SysDictItemUpdateDTO sysDictItemUpdateDTO) {
+        return Result.success("请求成功",sysDictItemService.updateDictItem(sysDictItemUpdateDTO));
     }
 
     /**

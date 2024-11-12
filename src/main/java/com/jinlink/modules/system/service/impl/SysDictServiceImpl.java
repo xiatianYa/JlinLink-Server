@@ -1,8 +1,12 @@
 package com.jinlink.modules.system.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.ObjectUtil;
+import com.jinlink.common.exception.JinLinkException;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.modules.system.entity.SysDictItem;
+import com.jinlink.modules.system.entity.dto.SysDictAddDTO;
+import com.jinlink.modules.system.entity.dto.SysDictUpdateDTO;
 import com.jinlink.modules.system.entity.vo.SysDictItemOptionsVo;
 import com.jinlink.modules.system.entity.vo.SysDictVo;
 import com.jinlink.modules.system.service.SysDictItemService;
@@ -91,6 +95,27 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
         List<SysDict> records = paginate.getRecords();
         List<SysDictVo> sysDictVos = BeanUtil.copyToList(records, SysDictVo.class);
         return new Page<>(sysDictVos,paginate.getPageNumber(),paginate.getPageSize(),paginate.getTotalRow());
+    }
+
+    @Override
+    public Boolean saveDict(SysDictAddDTO sysDictAddDTO) {
+        SysDict sysDict = BeanUtil.copyProperties(sysDictAddDTO, SysDict.class);
+        if (ObjectUtil.isNull(sysDict)){
+            throw new JinLinkException("参数异常!");
+        }
+        return save(sysDict);
+    }
+
+    /**
+     * 根据主键更新数据字典管理。
+     */
+    @Override
+    public Boolean updateDict(SysDictUpdateDTO sysDictUpdateDTO) {
+        SysDict sysDict = BeanUtil.copyProperties(sysDictUpdateDTO, SysDict.class);
+        if (ObjectUtil.isNull(sysDict)){
+            throw new JinLinkException("参数异常!");
+        }
+        return updateById(sysDict);
     }
 
     /**

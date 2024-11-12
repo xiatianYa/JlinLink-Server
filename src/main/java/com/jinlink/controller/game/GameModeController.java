@@ -7,7 +7,6 @@ import com.jinlink.common.domain.Options;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
 import com.jinlink.modules.game.entity.vo.GameModeVo;
-import com.mybatisflex.core.paginate.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.beans.factory.annotation.Autowired;
 import com.jinlink.modules.game.entity.GameMode;
 import com.jinlink.modules.game.service.GameModeService;
 import org.springframework.web.bind.annotation.RestController;
@@ -91,7 +89,7 @@ public class GameModeController {
     @Operation(operationId = "4",summary = "获取游戏模式列表")
     @SaCheckPermission("game:gameMode:list")
     public Result<List<GameModeVo>> list() {
-        return Result.success("请求成功", BeanUtil.copyToList(gameModeService.list(), GameModeVo.class));
+        return Result.data(BeanUtil.copyToList(gameModeService.list(), GameModeVo.class));
     }
 
     /**

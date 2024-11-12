@@ -13,7 +13,7 @@ spring:
       minimum-idle: 20        # 最小空闲连接数
       idle-timeout: 30000    # 空闲连接保留时间（毫秒）
       max-lifetime: 1800000  # 连接的最大生命周期（毫秒），建议小于MySQL的wait_timeout和interactive_timeout
-      connection-timeout: 30000  # 连接超时时间（毫秒）
+      connection-timeout: 50000  # 连接超时时间（毫秒）
       pool-name: HikariPool-SpringBoot  # 连接池名称（可选）
       auto-commit: true  # 是否自动提交事务（可选，默认为true）
       # connection-test-query: SELECT 1  # 连接测试查询（可选，如果数据库支持isValid()方法，则不需要此配置）
@@ -30,7 +30,7 @@ spring:
       # Redis服务器连接密码（默认为空）
       password: sr2539195984
       # 连接超时时间
-      timeout: 2s
+      timeout: 5s
       lettuce:
         pool:
           enabled: true

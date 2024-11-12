@@ -1,0 +1,33 @@
+package com.jinlink.modules.game.service;
+
+import com.jinlink.core.page.PageQuery;
+import com.jinlink.core.page.RPage;
+import com.jinlink.modules.game.entity.dto.GameMapAddDTO;
+import com.jinlink.modules.game.entity.dto.GameMapSearchDTO;
+import com.jinlink.modules.game.entity.dto.GameMapUpdateDTO;
+import com.jinlink.modules.game.entity.vo.GameMapVo;
+import com.mybatisflex.core.service.IService;
+import com.jinlink.modules.game.entity.GameMap;
+
+/**
+ * 游戏地图表 服务层。
+ *
+ * @author Summer
+ * @since 1.0.0
+ */
+public interface GameMapService extends IService<GameMap> {
+    /**
+     * 分页查询游戏地图表。
+     */
+    RPage<GameMapVo> listGameMapVoPage(PageQuery pageQuery,GameMapSearchDTO gameMapSearchDTO);
+
+    /**
+     * 添加游戏地图表。
+     */
+    Boolean saveGameMap(GameMapAddDTO gameMapAddDTO);
+
+    /**
+     * 根据主键更新游戏地图表。
+     */
+    Boolean updateGameMap(GameMapUpdateDTO gameMapUpdateDTO);
+}
