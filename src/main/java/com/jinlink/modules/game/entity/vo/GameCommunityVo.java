@@ -21,4 +21,10 @@ public class GameCommunityVo extends BaseVO {
 
     @Schema(description = "社区名称")
     private String communityName;
+
+    @Schema(description = "图标")
+    private String logo;
+
+    @Schema(description = "网站")
+    private String website;
 }

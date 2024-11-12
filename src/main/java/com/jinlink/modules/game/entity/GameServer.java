@@ -22,6 +22,11 @@ import lombok.experimental.SuperBuilder;
 public class GameServer extends BaseEntity {
 
     /**
+     * 服务器名称
+     */
+    private String serverName;
+
+    /**
      * 社区ID
      */
     private Long communityId;
@@ -45,4 +50,9 @@ public class GameServer extends BaseEntity {
      * 服务器端口
      */
     private String port;
+
+    /**
+     * 排序值
+     */
+    private Integer sort;
 }

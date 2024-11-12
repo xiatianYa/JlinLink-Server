@@ -6,7 +6,9 @@ import com.jinlink.common.api.Result;
 import com.jinlink.common.domain.Options;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
+import com.jinlink.modules.monitor.entity.dto.MonSchedulerAddDTO;
 import com.jinlink.modules.monitor.entity.dto.MonSchedulerSearchDTO;
+import com.jinlink.modules.monitor.entity.dto.MonSchedulerUpdateDTO;
 import com.jinlink.modules.monitor.entity.vo.MonSchedulerVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -50,8 +52,8 @@ public class MonSchedulerController {
     @PostMapping("save")
     @Operation(operationId = "1",summary = "新增定时任务")
     @SaCheckPermission("mon:scheduler:save")
-    public Result<Boolean> save(@Parameter(description = "定时任务对象", required = true)@RequestBody MonScheduler monScheduler) {
-        return Result.success("请求成功",monSchedulerService.saveScheduler(monScheduler));
+    public Result<Boolean> save(@Parameter(description = "定时任务对象", required = true)@RequestBody MonSchedulerAddDTO monSchedulerAddDTO) {
+        return Result.success("请求成功",monSchedulerService.saveScheduler(monSchedulerAddDTO));
     }
 
     /**
@@ -70,14 +72,14 @@ public class MonSchedulerController {
     /**
      * 根据主键更新调度管理。
      *
-     * @param monScheduler 调度管理
+     * @param monSchedulerUpdateDTO 调度管理
      * @return {@code true} 更新成功，{@code false} 更新失败
      */
     @PutMapping("update")
     @Operation(operationId = "3",summary = "修改定时任务")
     @SaCheckPermission("mon:scheduler:update")
-    public Result<Boolean> update(@Parameter(description = "定时任务对象", required = true)@RequestBody MonScheduler monScheduler) {
-        return Result.success("请求成功!",monSchedulerService.updateSchedulerById(monScheduler)) ;
+    public Result<Boolean> update(@Parameter(description = "定时任务对象", required = true)@RequestBody MonSchedulerUpdateDTO monSchedulerUpdateDTO) {
+        return Result.success("请求成功!",monSchedulerService.updateSchedulerById(monSchedulerUpdateDTO)) ;
     }
 
     /**

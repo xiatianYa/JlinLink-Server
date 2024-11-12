@@ -6,7 +6,9 @@ import com.jinlink.common.domain.Options;
 import com.jinlink.common.exception.JinLinkException;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
+import com.jinlink.modules.monitor.entity.dto.MonSchedulerAddDTO;
 import com.jinlink.modules.monitor.entity.dto.MonSchedulerSearchDTO;
+import com.jinlink.modules.monitor.entity.dto.MonSchedulerUpdateDTO;
 import com.jinlink.modules.monitor.entity.vo.MonSchedulerVo;
 import com.jinlink.modules.monitor.service.QuartzService;
 import com.mybatisflex.core.paginate.Page;
@@ -58,8 +60,11 @@ public class MonSchedulerServiceImpl extends ServiceImpl<MonSchedulerMapper, Mon
      * 修改定时器任务
      */
     @Override
-    public Boolean updateSchedulerById(MonScheduler monScheduler) {
-
+    public Boolean updateSchedulerById(MonSchedulerUpdateDTO monSchedulerUpdateDTO) {
+        MonScheduler monScheduler = BeanUtil.copyProperties(monSchedulerUpdateDTO, MonScheduler.class);
+        if (ObjectUtil.isNull(monScheduler)){
+            throw new JinLinkException("非法参数");
+        }
         //调用是否要开启定时任务
         if(updateById(monScheduler)) startOrStopScheduler(monScheduler);
         return true;
@@ -69,7 +74,11 @@ public class MonSchedulerServiceImpl extends ServiceImpl<MonSchedulerMapper, Mon
      * 新增定时任务
      */
     @Override
-    public Boolean saveScheduler(MonScheduler monScheduler) {
+    public Boolean saveScheduler(MonSchedulerAddDTO monSchedulerAddDTO) {
+        MonScheduler monScheduler = BeanUtil.copyProperties(monSchedulerAddDTO, MonScheduler.class);
+        if (ObjectUtil.isNull(monScheduler)){
+            throw new JinLinkException("非法参数");
+        }
         //调用是否要开启定时任务
         startOrStopScheduler(monScheduler);
         return save(monScheduler);

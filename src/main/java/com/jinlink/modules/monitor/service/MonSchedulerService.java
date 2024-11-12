@@ -3,7 +3,9 @@ package com.jinlink.modules.monitor.service;
 import com.jinlink.common.domain.Options;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
+import com.jinlink.modules.monitor.entity.dto.MonSchedulerAddDTO;
 import com.jinlink.modules.monitor.entity.dto.MonSchedulerSearchDTO;
+import com.jinlink.modules.monitor.entity.dto.MonSchedulerUpdateDTO;
 import com.jinlink.modules.monitor.entity.vo.MonSchedulerVo;
 import com.mybatisflex.core.service.IService;
 import com.jinlink.modules.monitor.entity.MonScheduler;
@@ -29,13 +31,13 @@ public interface MonSchedulerService extends IService<MonScheduler> {
      * 修改定时器任务
      */
     @Transactional
-    Boolean updateSchedulerById(MonScheduler monScheduler);
+    Boolean updateSchedulerById(MonSchedulerUpdateDTO monSchedulerUpdateDTO);
 
     /**
      * 新增定时任务
      */
     @Transactional
-    Boolean saveScheduler(MonScheduler monScheduler);
+    Boolean saveScheduler(MonSchedulerAddDTO monSchedulerAddDTO);
 
     /**
      * 删除单个定时任务

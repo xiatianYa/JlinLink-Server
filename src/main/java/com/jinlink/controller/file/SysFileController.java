@@ -24,7 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @Tag(name = "文件管理")
 @RequiredArgsConstructor
-@RequestMapping
+@RequestMapping("/file")
 public class SysFileController {
     private static final Logger log = LoggerFactory.getLogger(SysFileController.class);
 

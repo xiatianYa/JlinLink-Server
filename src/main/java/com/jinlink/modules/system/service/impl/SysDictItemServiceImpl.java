@@ -1,8 +1,13 @@
 package com.jinlink.modules.system.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.ObjectUtil;
+import com.jinlink.common.exception.JinLinkException;
 import com.jinlink.core.page.PageQuery;
+import com.jinlink.modules.system.entity.dto.SysDictItemAddDTO;
 import com.jinlink.modules.system.entity.dto.SysDictItemSearchDTO;
+import com.jinlink.modules.system.entity.dto.SysDictItemUpdateDTO;
+import com.jinlink.modules.system.entity.dto.SysDictUpdateDTO;
 import com.jinlink.modules.system.entity.vo.SysDictItemVo;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
@@ -39,5 +44,30 @@ public class SysDictItemServiceImpl extends ServiceImpl<SysDictItemMapper, SysDi
         List<SysDictItem> paginateRecords = paginate.getRecords();
         List<SysDictItemVo> sysDictItemVos = BeanUtil.copyToList(paginateRecords, SysDictItemVo.class);
         return new Page<>(sysDictItemVos, paginate.getPageNumber(), paginate.getPageSize(), sysDictItemVos.size());
+    }
+
+
+    /**
+     * 添加数据字典子项管理。
+     */
+    @Override
+    public Boolean saveDictItem(SysDictItemAddDTO sysDictItemAddDTO) {
+        SysDictItem sysDictItem = BeanUtil.copyProperties(sysDictItemAddDTO, SysDictItem.class);
+        if (ObjectUtil.isNull(sysDictItem)){
+            throw new JinLinkException("参数异常!");
+        }
+        return save(sysDictItem);
+    }
+
+    /**
+     * 根据主键更新数据字典子项管理。
+     */
+    @Override
+    public Boolean updateDictItem(SysDictItemUpdateDTO sysDictItemUpdateDTO) {
+        SysDictItem sysDictItem = BeanUtil.copyProperties(sysDictItemUpdateDTO, SysDictItem.class);
+        if (ObjectUtil.isNull(sysDictItem)){
+            throw new JinLinkException("参数异常!");
+        }
+        return updateById(sysDictItem);
     }
 }

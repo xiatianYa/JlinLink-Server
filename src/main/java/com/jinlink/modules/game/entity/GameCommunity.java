@@ -26,5 +26,15 @@ public class GameCommunity extends BaseEntity {
      */
     private String communityName;
 
+    /**
+     * 图标
+     */
+    private String logo;
+
+    /**
+     * 网站
+     */
+    private String website;
+
 
 }

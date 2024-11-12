@@ -1,6 +1,8 @@
 package com.jinlink.modules.system.service;
 
 import com.jinlink.core.page.PageQuery;
+import com.jinlink.modules.system.entity.dto.SysDictAddDTO;
+import com.jinlink.modules.system.entity.dto.SysDictUpdateDTO;
 import com.jinlink.modules.system.entity.vo.SysDictItemOptionsVo;
 import com.jinlink.modules.system.entity.vo.SysDictVo;
 import com.mybatisflex.core.paginate.Page;
@@ -53,4 +55,14 @@ public interface SysDictService extends IService<SysDict> {
      * 分页查询数据字典管理
      */
     Page<SysDictVo> listDictPage(PageQuery query);
+
+    /**
+     * 添加数据字典管理。
+     */
+    Boolean saveDict(SysDictAddDTO sysDictAddDTO);
+
+    /**
+     * 根据主键更新数据字典管理。
+     */
+    Boolean updateDict(SysDictUpdateDTO sysDictUpdateDTO);
 }

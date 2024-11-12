@@ -4,6 +4,7 @@ import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.NotWebContextException;
 import cn.dev33.satoken.stp.StpUtil;
 import com.jinlink.common.domain.LoginUser;
+import com.jinlink.common.exception.JinLinkException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -28,6 +29,19 @@ public class GlobalUserHolder {
             return (LoginUser) StpUtil.getSession().get("user");
         } catch (NotLoginException | NotWebContextException exception) {
             return LoginUser.builder().id(-1L).nickName("系统用户").build();
+        }
+    }
+
+    /**
+     * 获取登录用户信息
+     *
+     * @return {@link LoginUser} 登录用户对象
+     */
+    public static LoginUser getUserById(Object loginId) {
+        try {
+            return (LoginUser) StpUtil.getSessionByLoginId(loginId).get("user");
+        } catch (NotLoginException | NotWebContextException exception) {
+            throw new JinLinkException("用户不存在! | 未登录!");
         }
     }
 

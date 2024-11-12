@@ -7,8 +7,7 @@ import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
 import com.jinlink.modules.game.entity.dto.GameServerSearchDTO;
 import com.jinlink.modules.game.entity.vo.GameServerVo;
-import com.jinlink.modules.monitor.entity.dto.MonSchedulerSearchDTO;
-import com.mybatisflex.core.paginate.Page;
+import com.jinlink.modules.game.entity.vo.SteamServerVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,12 +21,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.beans.factory.annotation.Autowired;
 import com.jinlink.modules.game.entity.GameServer;
 import com.jinlink.modules.game.service.GameServerService;
 import org.springframework.web.bind.annotation.RestController;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 游戏服务器表 控制层。
@@ -92,7 +91,7 @@ public class GameServerController {
     @Operation(operationId = "4",summary = "获取游戏服务器列表")
     @SaCheckPermission("game:gameServer:list")
     public Result<List<GameServerVo>> list() {
-        return Result.success("请求成功",BeanUtil.copyToList(gameServerService.list(), GameServerVo.class));
+        return Result.data(BeanUtil.copyToList(gameServerService.list(), GameServerVo.class));
     }
 
     /**
@@ -122,4 +121,17 @@ public class GameServerController {
         return Result.data(gameServerVoRPage);
     }
 
+    /**
+     * 查询所有服务器数据(依据SteamApi) key社区 value社区下服务器数据。
+     *
+     * @param gameServerSearchDTO 分页对象
+     * @return 分页对象
+     */
+    @GetMapping("getServerAll")
+    @Operation(operationId = "6",summary = "查询所有服务器数据(依据SteamApi)")
+    @SaCheckPermission("game:gameServer:getServerAll")
+    public Result<List<SteamServerVo>> getServerAll(@Parameter(description = "查询对象", required = true) GameServerSearchDTO gameServerSearchDTO) {
+        List<SteamServerVo> gameServiceServerAll = gameServerService.getServerAll(gameServerSearchDTO);
+        return Result.data(gameServiceServerAll);
+    }
 }
