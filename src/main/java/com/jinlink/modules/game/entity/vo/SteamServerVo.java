@@ -26,5 +26,5 @@ public class SteamServerVo {
     private Integer onlineCount;
 
     @Schema(description = "社区下服务器数据")
-    private List<GameServerVo> gameServerVoList;
+    private List<GameServerVo.ServerVo> gameServerVoList;
 }

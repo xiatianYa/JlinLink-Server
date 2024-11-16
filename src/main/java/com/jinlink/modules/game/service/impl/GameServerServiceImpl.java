@@ -3,6 +3,7 @@ package com.jinlink.modules.game.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 import com.jinlink.core.config.redis.service.RedisService;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 /**
  * 游戏服务器表 服务层实现。
@@ -79,66 +81,32 @@ public class GameServerServiceImpl extends ServiceImpl<GameServerMapper, GameSer
      */
     @Override
     public List<SteamServerVo>getServerAll(GameServerSearchDTO gameServerSearchDTO) {
-        //返回数据列表
-        List<SteamServerVo> result = new ArrayList<>();
-        //查询所有社区
-        List<GameCommunity> gameCommunityList = gameCommunityService.list(new QueryWrapper()
-                .eq("id", gameServerSearchDTO.getCommunityId()));
-        //查询所有服务器
-        List<GameServer> gameServerList = gameServerMapper.selectListByQuery(new QueryWrapper()
-                .eq("community_id", gameServerSearchDTO.getCommunityId())
-                .eq("mode_id", gameServerSearchDTO.getModeId()));
-        //查询所有的地图
-        List<GameMap> gameMapList = gameMapService.list();
-        //从Redis获取所有服务器信息
-        Map<String, JSONArray> serverJson = redisService.getCacheMap("server_json");
-        //匹配数据
-        gameCommunityList.forEach(community->{
-            List<GameServerVo> gameServerVoList = new ArrayList<>();
-            //在线人数
-            AtomicReference<Integer> onlineCount = new AtomicReference<>(0);
-            //当前社区下的服务器列表
-            JSONArray objects = serverJson.get(String.valueOf(community.getId()));
-            List<GameEntityVo> gameEntityVos = JSON.parseArray(objects.toJSONString(), GameEntityVo.class);
-            //匹配服务器
-            gameEntityVos.forEach(gameEntityVo->{
-                Optional<GameServer> serverOptional = gameServerList.stream()
-                        .filter(server -> (server.getIp() + ":" + server.getPort()).equals(gameEntityVo.getAddr())).findFirst();
-                //如果找到了匹配的服务器
-                if (serverOptional.isPresent()) {
-                    GameServer gameServer = serverOptional.get();
-                    GameServerVo gameServerVo = BeanUtil.copyProperties(gameServer, GameServerVo.class);
-                    gameServerVo.setServerName(gameEntityVo.getName());
-                    gameServerVo.setServerVo(GameServerVo.ServerVo.builder()
-                                    .mapName(gameEntityVo.getMap())
-                                    .players(gameEntityVo.getPlayers())
-                                    .maxPlayers(gameEntityVo.getMax_players())
-                            .build());
-                    //匹配地图
-                    Optional<GameMap> first = gameMapList.stream().filter(map -> map.getMapName().equals(gameEntityVo.getMap())).findFirst();
-                    if (first.isPresent()) {
-                        GameMap gameMap = first.get();
-                        GameServerVo.ServerVo serverVo = gameServerVo.getServerVo();
-                        serverVo.setMapLabel(gameMap.getMapLabel());
-                        serverVo.setMapUrl(gameMap.getMapUrl());
-                        serverVo.setTag(JSON.parseArray(gameMap.getTag(), String.class));
-                        serverVo.setType(String.valueOf(gameMap.getType()));
-                    }else{
-                        //没有查询到地图
-                        GameServerVo.ServerVo serverVo = gameServerVo.getServerVo();
-                        serverVo.setMapLabel("暂无翻译");
-                    }
-                    onlineCount.updateAndGet(v -> v + gameEntityVo.getPlayers());
-                    gameServerVoList.add(gameServerVo);
-                }
-            });
-            SteamServerVo build = SteamServerVo.builder()
-                    .gameCommunityVo(BeanUtil.copyProperties(community, GameCommunityVo.class))
-                    .onlineCount(onlineCount.get())
-                    .gameServerVoList(gameServerVoList)
-                    .build();
-            result.add(build);
-        });
-        return result;
+        // 从 Redis 缓存中获取服务器 JSON 数据列表
+        List<JSONObject> serverJsonList = redisService.getCacheList("server_json");
+
+        // 查询与指定社区 ID 匹配的社区 ID 列表
+        List<Long> matchingCommunityIds = gameCommunityService.list(new QueryWrapper()
+                        .eq("id", gameServerSearchDTO.getCommunityId()))
+                .stream()
+                .map(GameCommunity::getId)
+                .toList();
+
+        // 准备用于存储匹配服务器数据的列表
+        List<SteamServerVo> resultSteamServerVos = new ArrayList<>();
+
+        // 遍历服务器 JSON 数据列表，解析并筛选匹配的服务器
+        for (JSONObject serverJson : serverJsonList) {
+            // 直接从 JSONObject 解析为 SteamServerVo 对象
+            SteamServerVo steamServerVo = serverJson.toJavaObject(SteamServerVo.class);
+
+            // 检查服务器所属的社区 ID 是否在匹配的社区 ID 列表中
+            if (matchingCommunityIds.contains(steamServerVo.getGameCommunityVo().getId())) {
+                // 如果匹配，则添加到结果列表中
+                resultSteamServerVos.add(steamServerVo);
+            }
+        }
+
+        // 返回处理后的数据列表
+        return resultSteamServerVos;
     }
 }

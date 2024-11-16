@@ -2,7 +2,9 @@ package com.jinlink.controller.game;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.bean.BeanUtil;
+import com.alibaba.fastjson2.JSONObject;
 import com.jinlink.common.api.Result;
+import com.jinlink.common.util.BiliUtils;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
 import com.jinlink.modules.game.entity.dto.GameLiveSearchDTO;
@@ -25,6 +27,8 @@ import com.jinlink.modules.game.entity.GameLive;
 import com.jinlink.modules.game.service.GameLiveService;
 import org.springframework.web.bind.annotation.RestController;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -120,4 +124,33 @@ public class GameLiveController {
         return Result.data(gameLiveVoRPage);
     }
 
+    /**
+     * 查询所有入驻主播。
+     */
+    @GetMapping("listAll")
+    @Operation(operationId = "6",summary = "查询所有入驻主播")
+    @SaCheckPermission("game:gameMap:list")
+    public Result<List<GameLiveVo>> listAll() {
+        List<GameLiveVo> gameLiveVos = new ArrayList<>();
+        List<GameLive> gameLives = gameLiveService.list();
+        for (GameLive gameLive : gameLives) {
+            GameLiveVo gameLiveVo = BeanUtil.copyProperties(gameLive, GameLiveVo.class);
+            JSONObject jsonObject = JSONObject
+                    .parseObject(BiliUtils.getBiliLiveApi(gameLive.getUid()))
+                    .getJSONObject("data")
+                    .getJSONObject("by_room_ids")
+                    .getJSONObject(gameLive.getUid());
+            GameLiveVo.BiliVo biliVo = JSONObject.parseObject(jsonObject.toJSONString(), GameLiveVo.BiliVo.class);
+            gameLiveVo.setBiliVo(biliVo);
+            gameLiveVos.add(gameLiveVo);
+        }
+        gameLiveVos.sort(new Comparator<GameLiveVo>() {
+            @Override
+            public int compare(GameLiveVo o1, GameLiveVo o2) {
+                // 假设你想要升序排序
+                return o2.getBiliVo().getOnline().compareTo(o1.getBiliVo().getOnline());
+            }
+        });
+        return Result.data(gameLiveVos);
+    }
 }

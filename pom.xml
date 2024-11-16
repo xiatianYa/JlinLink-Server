@@ -42,6 +42,7 @@
         <oshi.version>6.6.1</oshi.version>
         <ip2region.version>2.7.0</ip2region.version>
         <commons.io.version>2.16.1</commons.io.version>
+        <expiringmap.version>0.5.10</expiringmap.version>
     </properties>
     <dependencies>
         <!-- SpringBoot -->
@@ -192,6 +193,13 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>${commons.io.version}</version>
+        </dependency>
+
+        <!-- expiring map 数据缓存  -->
+        <dependency>
+            <groupId>net.jodah</groupId>
+            <artifactId>expiringmap</artifactId>
+            <version>${expiringmap.version}</version>
         </dependency>
     </dependencies>
 

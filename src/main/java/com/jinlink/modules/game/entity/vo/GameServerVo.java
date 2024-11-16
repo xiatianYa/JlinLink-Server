@@ -67,6 +67,18 @@ public class GameServerVo extends BaseVO {
     @Schema(name = "GameVo", description = "服务器对象")
     public static class ServerVo implements Serializable {
 
+        @Schema(description = "服务器名称")
+        private String serverName;
+
+        @Schema(description = "服务器地址")
+        private String addr;
+
+        @Schema(description = "服务器IP")
+        private String ip;
+
+        @Schema(description = "服务器端口")
+        private String port;
+
         @Schema(description = "地图名称")
         private String mapName;
 

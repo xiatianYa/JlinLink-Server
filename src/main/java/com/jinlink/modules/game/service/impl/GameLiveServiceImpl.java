@@ -14,6 +14,7 @@ import com.jinlink.modules.game.service.GameLiveService;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,5 +38,15 @@ public class GameLiveServiceImpl extends ServiceImpl<GameLiveMapper, GameLive> i
         List<GameLive> records = paginate.getRecords();
         List<GameLiveVo> gameLiveVos = BeanUtil.copyToList(records, GameLiveVo.class);
         return RPage.build(new Page<>(gameLiveVos,paginate.getPageNumber(),paginate.getPageSize(),paginate.getTotalRow()));
+    }
+
+    /**
+     * 查询所有入驻主播。
+     */
+    @Override
+    public List<GameLiveVo> listAll() {
+        //返回列表
+        List<GameLiveVo> biliUserDataVos = new ArrayList<>();
+        return List.of();
     }
 }
