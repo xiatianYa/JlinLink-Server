@@ -34,7 +34,7 @@ public class MessageVo extends BaseVO {
     private String code;
 
     @Schema(description = "消息体")
-    private Object content;
+    private Object data;
 
     @Schema(description = "提示语")
     private Object msg;

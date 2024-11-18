@@ -4,6 +4,8 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.extra.servlet.JakartaServletUtil;
+import com.alibaba.fastjson2.JSONObject;
+import com.jinlink.common.constants.Constants;
 import com.jinlink.common.constants.RequestConstant;
 import com.jinlink.common.domain.LoginUser;
 import com.jinlink.common.domain.Options;
@@ -16,9 +18,11 @@ import com.jinlink.modules.monitor.entity.MonLogsLogin;
 import com.jinlink.modules.monitor.service.MonLogsLoginService;
 import com.jinlink.modules.system.entity.SysRole;
 import com.jinlink.modules.system.entity.SysUserRole;
+import com.jinlink.modules.system.entity.bo.QQBo;
 import com.jinlink.modules.system.entity.dto.LoginFormDTO;
 import com.jinlink.modules.system.entity.dto.SysUserFormDTO;
 import com.jinlink.modules.system.entity.dto.SysUserSearchDTO;
+import com.jinlink.modules.system.entity.dto.oAuthLoginDTO;
 import com.jinlink.modules.system.entity.vo.SysUserVo;
 import com.jinlink.modules.system.service.SysRoleService;
 import com.jinlink.modules.system.service.SysUserRoleService;
@@ -35,6 +39,10 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -92,7 +100,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }catch (Exception e){
             loginLogs.setStatus(StringPools.ZERO);
             loginLogs.setMessage(e.getMessage());
-            throw e;
+            throw new JinLinkException("登录失败"+e.getMessage());
         }finally {
             monLogsLoginService.save(loginLogs);
         }
@@ -239,6 +247,99 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                         .value(String.valueOf(item.getId()))
                         .build())
                 .toList();
+    }
+
+    @Override
+    public Map<String, String> userOAuthLogin(oAuthLoginDTO loginFormDTO) {
+        //第三方用户对象
+        QQBo qqBo = null;
+        //当用户form为空
+        if (ObjectUtil.isNull(loginFormDTO.getAccessToken()) || ObjectUtil.isNull(loginFormDTO.getType()) || ObjectUtil.isNull(loginFormDTO.getOpenId())){
+            throw new JinLinkException("非法参数!");
+        }
+        try {
+            URL url = new URL("https://graph.qq.com/user/get_user_info?oauth_consumer_key=102129326&access_token="+loginFormDTO.getAccessToken()+"&openid="+loginFormDTO.getOpenId());
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            // 读取响应
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    qqBo= JSONObject.parseObject(line, QQBo.class);
+                }
+            }
+            // 关闭连接
+            conn.disconnect();
+            if (ObjectUtil.isNull(qqBo)){
+                throw new Exception();
+            }
+        } catch (Exception e) {
+            throw new JinLinkException("获取第三方用户信息失败");
+        }
+        //通过用户OpenId 判断用户是否注册过
+        SysUser one = sysUserMapper.selectOneByQuery(new QueryWrapper().eq("qq_open_id", loginFormDTO.getOpenId()));
+        MonLogsLogin loginLogs = initRegisterLog(loginFormDTO);;
+        try {
+            //用户不存在 则进行注册
+            if (ObjectUtil.isNull(one)) {
+                // 注册用户信息
+                SysUser sysUser = SysUser.builder()
+                        .userName(loginFormDTO.getOpenId())
+                        .qqOpenId(loginFormDTO.getOpenId())
+                        .nickName(qqBo.getNickname())
+                        .avatar(ObjectUtil.isNotNull(qqBo.getFigureurl_qq_2()) ? qqBo.getFigureurl_qq_2() : qqBo.getFigureurl_qq_1())
+                        .password(DigestUtils.sha256Hex(qqBo.getNickname() + "VECaJx"))
+                        .lastLoginTime(LocalDateTime.now())
+                        .build();
+                //新建用户
+                sysUserMapper.insert(sysUser);
+                //为用户分配角色
+                for (Long roleId : Constants.USER_DEFAULT_ROLE_LIST) {
+                    SysUserRole sysUserRole = SysUserRole.builder()
+                            .userId(sysUser.getId())
+                            .roleId(roleId)
+                            .build();
+                    sysUserRoleService.save(sysUserRole);
+                }
+                // saToken 进行登录
+                StpUtil.login(sysUser.getId());
+                // 操作用户登录日志
+                loginLogs.setUserId(sysUser.getId());
+                saveUserToSession(sysUser, false);
+                return Map.of("token", StpUtil.getTokenValue(),"refreshToken", StpUtil.getTokenValue());
+            }
+            //当前用户存在 则返回token
+            StpUtil.login(one.getId());
+            // 操作用户登录日志
+            loginLogs.setUserId(one.getId());
+            //保存用户信息
+            saveUserToSession(one, false);
+            return Map.of("token", StpUtil.getTokenValue(),"refreshToken", StpUtil.getTokenValue());
+        }catch (Exception e){
+            loginLogs.setStatus(StringPools.ZERO);
+            loginLogs.setMessage(e.getMessage());
+            throw new JinLinkException("登录失败"+e.getMessage());
+        }finally {
+            monLogsLoginService.save(loginLogs);
+        }
+    }
+
+    /**
+     * 初始化注册日志
+     *
+     * @param loginFormDTO 用户对象
+     * @return {@linkplain MonLogsLogin} 登录日志对象
+     */
+    private MonLogsLogin initRegisterLog(oAuthLoginDTO loginFormDTO) {
+        String ip = JakartaServletUtil.getClientIP(ServletHolderUtil.getRequest());
+        return MonLogsLogin.builder()
+                .userName(loginFormDTO.getOpenId())
+                .status(StringPools.ONE)
+                .userAgent(ServletHolderUtil.getRequest().getHeader(RequestConstant.USER_AGENT))
+                .ip(ip)
+                .ipAddr(IPUtil.getIpAddr(ip))
+                .message("注册成功")
+                .build();
     }
 
     /**

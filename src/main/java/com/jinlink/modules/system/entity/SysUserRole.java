@@ -3,7 +3,10 @@ package com.jinlink.modules.system.entity;
 import com.jinlink.core.domain.BaseEntity;
 import com.mybatisflex.annotation.Table;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 /**
  * 用户角色管理 实体类。
@@ -13,6 +16,9 @@ import lombok.Data;
  */
 
 @Data
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(value = "sys_user_role")
 public class SysUserRole extends BaseEntity {
 

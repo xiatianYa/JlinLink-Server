@@ -29,6 +29,11 @@ public class SysUser extends BaseEntity {
     private String userName;
 
     /**
+     * QQ第三方标识
+     */
+    private String qqOpenId;
+
+    /**
      * 密码
      */
     private String password;

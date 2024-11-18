@@ -3,5 +3,17 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jinlink.modules.game.mapper.GameOnlineStatisticsMapper">
-
+    <resultMap id="GameOnLineStatisticsMap" type="com.jinlink.modules.game.entity.dto.GameOnLineStatisticsDTO">
+        <id column="id" property="id"/>
+        <result column="community_id" property="communityId"/>
+        <result column="communityPlay" property="communityPlay"/>
+        <result column="timeMinute" property="timeMinute"/>
+    </resultMap>
+    <select id="lineChart" resultMap="GameOnLineStatisticsMap">
+        SELECT community_id,MAX(community_play) AS communityPlay,DATE_FORMAT(create_time, '%Y-%m-%d %H:%i') AS timeMinute
+        FROM game_online_statistics
+        WHERE create_time >= NOW() - INTERVAL 1 DAY
+        GROUP BY community_id,DATE_FORMAT(create_time, '%Y-%m-%d %H:%i')
+        ORDER BY community_id,timeMinute
+    </select>
 </mapper>

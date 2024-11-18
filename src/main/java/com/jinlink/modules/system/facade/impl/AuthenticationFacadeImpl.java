@@ -2,17 +2,27 @@ package com.jinlink.modules.system.facade.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.alibaba.fastjson2.JSONObject;
+import com.jinlink.common.constants.Constants;
 import com.jinlink.common.exception.JinLinkException;
 import com.jinlink.modules.system.entity.*;
+import com.jinlink.modules.system.entity.bo.QQBo;
 import com.jinlink.modules.system.entity.dto.LoginFormDTO;
+import com.jinlink.modules.system.entity.dto.oAuthLoginDTO;
 import com.jinlink.modules.system.entity.vo.SysUserInfoVo;
 import com.jinlink.modules.system.facade.IAuthenticationFacade;
 import com.jinlink.modules.system.service.*;
+import com.mybatisflex.core.query.QueryWrapper;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -61,5 +71,14 @@ public class AuthenticationFacadeImpl implements IAuthenticationFacade {
         List<String> buttons = sysRolePermissionService.getUserPermissions(sysUser.getId());
         sysUserInfoVo.setButtons(buttons);
         return sysUserInfoVo;
+    }
+
+    /**
+     * 用户第三方登陆
+     * @param loginFormDTO 登陆数据
+     */
+    @Override
+    public Map<String, String> userOAuthLogin(oAuthLoginDTO loginFormDTO) {
+        return sysUserService.userOAuthLogin(loginFormDTO);
     }
 }

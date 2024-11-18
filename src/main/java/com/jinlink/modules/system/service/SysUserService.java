@@ -5,6 +5,7 @@ import com.jinlink.core.page.PageQuery;
 import com.jinlink.modules.system.entity.dto.LoginFormDTO;
 import com.jinlink.modules.system.entity.dto.SysUserFormDTO;
 import com.jinlink.modules.system.entity.dto.SysUserSearchDTO;
+import com.jinlink.modules.system.entity.dto.oAuthLoginDTO;
 import com.jinlink.modules.system.entity.vo.SysUserVo;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.service.IService;
@@ -54,4 +55,6 @@ public interface SysUserService extends IService<SysUser> {
      * 根据用户Ids 获取用户名称Options
      */
     List<Options<String>> getAllUserNames();
+
+    Map<String, String> userOAuthLogin(oAuthLoginDTO loginFormDTO);
 }

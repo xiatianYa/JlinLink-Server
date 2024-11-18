@@ -1,6 +1,7 @@
 package com.jinlink.modules.websocket.server;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
@@ -11,6 +12,7 @@ import com.jinlink.core.holder.GlobalUserHolder;
 import com.jinlink.modules.game.entity.vo.SteamServerVo;
 import com.jinlink.modules.websocket.entity.JoinServerVo;
 import com.jinlink.modules.websocket.entity.MessageVo;
+import com.jinlink.modules.websocket.entity.OnLineUser;
 import com.jinlink.modules.websocket.entity.dto.ServerSearchDto;
 import jakarta.annotation.Resource;
 import jakarta.websocket.OnClose;
@@ -22,11 +24,10 @@ import jakarta.websocket.server.ServerEndpoint;
 import lombok.SneakyThrows;
 import net.jodah.expiringmap.ExpirationPolicy;
 import net.jodah.expiringmap.ExpiringMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -40,7 +41,7 @@ import java.util.concurrent.TimeUnit;
 public class SeverWebsocket {
     /**concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。*/
     private static final ConcurrentHashMap<Long, SeverWebsocket> webSocketMap = new ConcurrentHashMap<>();
-    private static final Logger log = LoggerFactory.getLogger(SeverWebsocket.class);
+    /** 服务器缓存数据Map */
     private final static ExpiringMap<String, Integer[]> expireCacheMap = ExpiringMap.builder()
             // 设置最大值,添加第11个entry时，会导致第1个立马过期(即使没到过期时间)。默认 Integer.MAX_VALUE
             .maxSize(20)
@@ -164,16 +165,16 @@ public class SeverWebsocket {
     }
 
     /**
-     * 服务器推送地图数据给服务器端
+     * 服务器推送地图数据给客户端
      */
-    @Scheduled(fixedRate = 5000)
+    @Scheduled(fixedRate = 10000)
     public void sendServerMessage(){
         List<SteamServerVo> steamServerVos = redisService.getCacheList("server_json");
         webSocketMap.forEach((k,v)->{
             try {
                 MessageVo build = MessageVo.builder()
                         .msg("获取服务器消息成功")
-                        .content(steamServerVos)
+                        .data(steamServerVos)
                         .code("202")
                         .build();
                 v.session.getAsyncRemote().sendText(JSON.toJSONString(build));
@@ -184,6 +185,25 @@ public class SeverWebsocket {
                         .build();
                 v.session.getAsyncRemote().sendText(JSON.toJSONString(build));
             }
+        });
+    }
+
+    /**
+     * 服务器推送在线用户给客户端
+     */
+    @Scheduled(fixedRate = 20000)
+    public void sendOnlineUserMessage(){
+        List<OnLineUser> onlineUsers = new ArrayList<>();
+        webSocketMap.forEach((k,v)->{
+            if (ObjectUtil.isNotNull(v.loginUser)) onlineUsers.add(BeanUtil.copyProperties(v.loginUser,OnLineUser.class));
+        });
+        MessageVo build = MessageVo.builder()
+                .msg("获取在线用户列表成功!")
+                .code("203")
+                .data(onlineUsers)
+                .build();
+        webSocketMap.forEach((k,v)->{
+            v.session.getAsyncRemote().sendText(JSON.toJSONString(build));
         });
     }
 }

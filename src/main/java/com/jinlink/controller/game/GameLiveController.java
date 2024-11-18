@@ -1,15 +1,19 @@
 package com.jinlink.controller.game;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson2.JSONObject;
 import com.jinlink.common.api.Result;
+import com.jinlink.common.exception.JinLinkException;
 import com.jinlink.common.util.BiliUtils;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
 import com.jinlink.modules.game.entity.dto.GameLiveSearchDTO;
 import com.jinlink.modules.game.entity.dto.GameMapSearchDTO;
 import com.jinlink.modules.game.entity.vo.GameLiveVo;
+import com.mybatisflex.core.query.QueryWrapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -56,6 +60,10 @@ public class GameLiveController {
     @Operation(operationId = "1",summary = "新增游戏直播")
     @SaCheckPermission("game:gameLive:save")
     public Result<Boolean> save(@Parameter(description = "游戏直播对象", required = true)@RequestBody GameLive gameLive) {
+        Long loginIdAsLong = StpUtil.getLoginIdAsLong();
+        if (ObjectUtil.isNotNull(gameLiveService.getOne(new QueryWrapper().eq("createBy", loginIdAsLong)))){
+            throw new JinLinkException("你已经入驻过了,不能再次入驻");
+        }
         return Result.success("请求成功",gameLiveService.save(gameLive));
     }
 

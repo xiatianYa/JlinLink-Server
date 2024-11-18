@@ -14,6 +14,10 @@ public class MyUpdateListener implements UpdateListener {
     public void onUpdate(Object entity) {
         BaseEntity baseEntity = (BaseEntity) entity;
         baseEntity.setUpdateTime(LocalDateTime.now());
-        baseEntity.setUpdateUserId(StpUtil.getLoginIdAsLong());
+        try {
+            baseEntity.setUpdateUserId(StpUtil.getLoginIdAsLong());
+        }catch (Exception e){
+            baseEntity.setUpdateUserId(0L);
+        }
     }
 }

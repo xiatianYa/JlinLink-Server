@@ -29,6 +29,9 @@ import java.util.Optional;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * 拉取服务器数据的定时任务
+ */
 @Component
 @Slf4j
 public class PullServerJob implements Job {
@@ -109,7 +112,7 @@ public class PullServerJob implements Job {
             index++;
         }
         redisService.deleteObject("server_json");
-        redisService.setCacheList("server_json",steamServerVos);
+        if (ObjectUtil.isNotNull(steamServerVos)) redisService.setCacheList("server_json",steamServerVos);
     }
 
     /**

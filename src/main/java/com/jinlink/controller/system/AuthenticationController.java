@@ -3,6 +3,7 @@ package com.jinlink.controller.system;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import com.jinlink.common.api.Result;
 import com.jinlink.modules.system.entity.dto.LoginFormDTO;
+import com.jinlink.modules.system.entity.dto.oAuthLoginDTO;
 import com.jinlink.modules.system.entity.vo.SysUserInfoVo;
 import com.jinlink.modules.system.facade.IAuthenticationFacade;
 import io.swagger.v3.oas.annotations.Operation;
@@ -46,5 +47,11 @@ public class AuthenticationController {
     @SaCheckLogin
     public Result<String> refreshToken(){
         return Result.success("请求成功",null);
+    }
+
+    @PostMapping("/oauth2/qq/login")
+    @Operation(operationId = "4",summary = "用户第三方登录")
+    public Result<Map<String, String>> oauthLogin(@RequestBody oAuthLoginDTO loginFormDTO) {
+        return Result.success("请求成功",authenticationFacade.userOAuthLogin(loginFormDTO));
     }
 }

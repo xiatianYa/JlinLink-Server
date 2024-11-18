@@ -132,5 +132,5 @@ public class Constants {
     /**
      * 用户默认权限列表
      */
-    public static final Long[] USER_DEFAULT_ROLE_LIST = {100L};
+    public static final Long[] USER_DEFAULT_ROLE_LIST = {2L};
 }
