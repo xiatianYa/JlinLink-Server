@@ -60,6 +60,11 @@ public class GameMapServiceImpl extends ServiceImpl<GameMapMapper, GameMap> impl
         GameMap gameMap = BeanUtil.copyProperties(gameMapAddDTO, GameMap.class);
         String artifact = JSON.toJSONString(gameMapAddDTO.getArtifact());
         gameMap.setArtifact(artifact);
+        //查询当前地图存不存在
+        GameMap mapName = gameMapMapper.selectOneByQuery(new QueryWrapper().eq("map_name", gameMapAddDTO.getMapName()));
+        if (ObjectUtil.isNotNull(mapName)) {
+            throw new JinLinkException("当前地图已存在!");
+        }
         if (ObjectUtil.isNull(gameMap)){
             throw new JinLinkException("非法参数!");
         }

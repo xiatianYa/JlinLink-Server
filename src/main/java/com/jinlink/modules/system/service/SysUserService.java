@@ -2,10 +2,8 @@ package com.jinlink.modules.system.service;
 
 import com.jinlink.common.domain.Options;
 import com.jinlink.core.page.PageQuery;
-import com.jinlink.modules.system.entity.dto.LoginFormDTO;
-import com.jinlink.modules.system.entity.dto.SysUserFormDTO;
-import com.jinlink.modules.system.entity.dto.SysUserSearchDTO;
-import com.jinlink.modules.system.entity.dto.oAuthLoginDTO;
+import com.jinlink.modules.system.entity.dto.*;
+import com.jinlink.modules.system.entity.vo.SysUserInfoVo;
 import com.jinlink.modules.system.entity.vo.SysUserVo;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.service.IService;
@@ -56,5 +54,23 @@ public interface SysUserService extends IService<SysUser> {
      */
     List<Options<String>> getAllUserNames();
 
+    /**
+     * 用户第三方登录
+     */
     Map<String, String> userOAuthLogin(oAuthLoginDTO loginFormDTO);
+
+    /**
+     * 获取用户基本信息
+     */
+    SysUserInfoVo getUserInfo();
+
+    /**
+     * 用户退出登录
+     */
+    String logout();
+
+    /**
+     * 刷新Token
+     */
+    String refreshToken(String refreshToken);
 }

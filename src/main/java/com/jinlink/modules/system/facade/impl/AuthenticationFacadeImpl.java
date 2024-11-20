@@ -8,6 +8,7 @@ import com.jinlink.common.exception.JinLinkException;
 import com.jinlink.modules.system.entity.*;
 import com.jinlink.modules.system.entity.bo.QQBo;
 import com.jinlink.modules.system.entity.dto.LoginFormDTO;
+import com.jinlink.modules.system.entity.dto.RefreshTokenDTO;
 import com.jinlink.modules.system.entity.dto.oAuthLoginDTO;
 import com.jinlink.modules.system.entity.vo.SysUserInfoVo;
 import com.jinlink.modules.system.facade.IAuthenticationFacade;
@@ -35,10 +36,6 @@ import java.util.Map;
 public class AuthenticationFacadeImpl implements IAuthenticationFacade {
     @Resource
     private SysUserService sysUserService;
-    @Resource
-    private SysUserRoleService sysUserRoleService;
-    @Resource
-    private SysRolePermissionService sysRolePermissionService;
 
     /**
      * 用户登录
@@ -53,24 +50,7 @@ public class AuthenticationFacadeImpl implements IAuthenticationFacade {
      */
     @Override
     public SysUserInfoVo getUserInfo() {
-        long loginIdAsLong = StpUtil.getLoginIdAsLong();
-        if (ObjectUtil.isNull(loginIdAsLong)){
-            throw new JinLinkException("用户未登录!");
-        }
-        SysUser sysUser = sysUserService.getById(loginIdAsLong);
-        if (ObjectUtil.isNull(sysUser)){
-            throw new JinLinkException("用户不存在!");
-        }
-        SysUserInfoVo sysUserInfoVo = new SysUserInfoVo();
-        sysUserInfoVo.setUserId(sysUser.getId());
-        sysUserInfoVo.setUserName(sysUser.getNickName());
-
-        List<String> userRoles = sysUserRoleService.getUserRoleCodes(sysUser.getId());
-        sysUserInfoVo.setRoles(userRoles);
-        //用户拥有角色的按钮权限
-        List<String> buttons = sysRolePermissionService.getUserPermissions(sysUser.getId());
-        sysUserInfoVo.setButtons(buttons);
-        return sysUserInfoVo;
+        return sysUserService.getUserInfo();
     }
 
     /**
@@ -80,5 +60,15 @@ public class AuthenticationFacadeImpl implements IAuthenticationFacade {
     @Override
     public Map<String, String> userOAuthLogin(oAuthLoginDTO loginFormDTO) {
         return sysUserService.userOAuthLogin(loginFormDTO);
+    }
+
+    @Override
+    public String logout() {
+        return sysUserService.logout();
+    }
+
+    @Override
+    public String refreshToken(String refreshToken) {
+        return sysUserService.refreshToken(refreshToken);
     }
 }

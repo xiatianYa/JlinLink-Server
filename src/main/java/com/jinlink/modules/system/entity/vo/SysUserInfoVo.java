@@ -31,6 +31,11 @@ public class SysUserInfoVo extends BaseVO {
     @Schema(description = "用户名称")
     private String userName;
     /**
+     * 用户头像
+     */
+    @Schema(description = "用户头像")
+    private String avatar;
+    /**
      * 用户权限列表
      */
     @Schema(description = "用户权限列表")

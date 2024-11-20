@@ -29,4 +29,9 @@ public interface GameServerService extends IService<GameServer> {
      * 查询所有服务器数据(依据SteamApi) key社区 value社区下服务器数据。
      */
     List<SteamServerVo> getServerAll(GameServerSearchDTO gameServerSearchDTO);
+
+    /**
+     * 查询所有服务器数据(依据SteamApi) key社区 value社区下服务器数据。
+     */
+    RPage<GameServerVo.ServerVo> getServerAllByGameId(PageQuery pageQuery,GameServerSearchDTO gameServerSearchDTO);
 }

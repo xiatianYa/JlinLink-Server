@@ -76,6 +76,12 @@ public class GameServerVo extends BaseVO {
         @Schema(description = "服务器IP")
         private String ip;
 
+        @Schema(description = "服务器模式")
+        private Long modeId;
+
+        @Schema(description = "游戏ID")
+        private Long gameId;
+
         @Schema(description = "服务器端口")
         private String port;
 
