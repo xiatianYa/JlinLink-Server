@@ -19,11 +19,10 @@ import com.jinlink.modules.monitor.service.MonLogsLoginService;
 import com.jinlink.modules.system.entity.SysRole;
 import com.jinlink.modules.system.entity.SysUserRole;
 import com.jinlink.modules.system.entity.bo.QQBo;
-import com.jinlink.modules.system.entity.dto.LoginFormDTO;
-import com.jinlink.modules.system.entity.dto.SysUserFormDTO;
-import com.jinlink.modules.system.entity.dto.SysUserSearchDTO;
-import com.jinlink.modules.system.entity.dto.oAuthLoginDTO;
+import com.jinlink.modules.system.entity.dto.*;
+import com.jinlink.modules.system.entity.vo.SysUserInfoVo;
 import com.jinlink.modules.system.entity.vo.SysUserVo;
+import com.jinlink.modules.system.service.SysRolePermissionService;
 import com.jinlink.modules.system.service.SysRoleService;
 import com.jinlink.modules.system.service.SysUserRoleService;
 import com.mybatisflex.core.logicdelete.LogicDeleteManager;
@@ -65,6 +64,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     private SysUserRoleService sysUserRoleService;
     @Resource
     private MonLogsLoginService monLogsLoginService;
+    @Resource
+    private SysRolePermissionService sysRolePermissionService;
 
     /**
      * 用户登录
@@ -321,6 +322,51 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             throw new JinLinkException("登录失败"+e.getMessage());
         }finally {
             monLogsLoginService.save(loginLogs);
+        }
+    }
+
+    /**
+     * 获取用户基本信息
+     */
+    @Override
+    public SysUserInfoVo getUserInfo() {
+        long loginIdAsLong = StpUtil.getLoginIdAsLong();
+        if (ObjectUtil.isNull(loginIdAsLong)){
+            throw new JinLinkException("用户未登录!");
+        }
+        SysUser sysUser = sysUserMapper.selectOneById(loginIdAsLong);
+        if (ObjectUtil.isNull(sysUser)){
+            throw new JinLinkException("用户不存在!");
+        }
+        SysUserInfoVo sysUserInfoVo = new SysUserInfoVo();
+        sysUserInfoVo.setUserId(sysUser.getId());
+        sysUserInfoVo.setUserName(sysUser.getNickName());
+        sysUserInfoVo.setAvatar(sysUser.getAvatar());
+
+        List<String> userRoles = sysUserRoleService.getUserRoleCodes(sysUser.getId());
+        sysUserInfoVo.setRoles(userRoles);
+        //用户拥有角色的按钮权限
+        List<String> buttons = sysRolePermissionService.getUserPermissions(sysUser.getId());
+        sysUserInfoVo.setButtons(buttons);
+        return  sysUserInfoVo;
+    }
+
+    /**
+     * 用户退出登录
+     */
+    @Override
+    public String logout() {
+        StpUtil.logout();
+        return "退出成功";
+    }
+
+    @Override
+    public String refreshToken(String  refreshToken) {
+        if (ObjectUtil.isNull(refreshToken)){
+            StpUtil.stpLogic.updateLastActiveToNow(refreshToken);
+            return "刷新成功";
+        }else{
+            throw new JinLinkException("token不存在");
         }
     }
 

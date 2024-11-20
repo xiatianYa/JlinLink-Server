@@ -7,6 +7,7 @@ import com.jinlink.modules.game.entity.vo.GameCommunityVo;
 import com.mybatisflex.core.service.IService;
 import com.jinlink.modules.game.entity.GameCommunity;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -26,4 +27,9 @@ public interface GameCommunityService extends IService<GameCommunity> {
      * 查询全部社区名称。
      */
     List<Options<String>> getAllCommunityNames();
+
+    /**
+     * 根据主键删除游戏社区表。
+     */
+    Boolean removeCommunityById(Serializable id);
 }

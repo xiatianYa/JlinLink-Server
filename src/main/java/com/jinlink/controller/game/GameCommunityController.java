@@ -64,7 +64,7 @@ public class GameCommunityController {
     @Operation(operationId = "2",summary = "删除社区")
     @SaCheckPermission("game:gameCommunity:delete")
     public Result<Boolean> remove(@Parameter(description = "社区ID", required = true)@PathVariable Serializable id) {
-        return Result.success("请求成功",gameCommunityService.removeById(id));
+        return Result.success("请求成功",gameCommunityService.removeCommunityById(id));
     }
 
     /**

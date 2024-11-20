@@ -6,6 +6,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.jinlink.common.domain.LoginUser;
+import com.jinlink.common.exception.JinLinkException;
 import com.jinlink.common.util.udp.GameServerUtil;
 import com.jinlink.core.config.redis.service.RedisService;
 import com.jinlink.core.holder.GlobalUserHolder;
@@ -73,10 +74,12 @@ public class SeverWebsocket {
         //根据token获取登录用户信息
         Object loginId = StpUtil.getLoginIdByToken(token);
         LoginUser loginUser = GlobalUserHolder.getUserById(loginId);
-        if (ObjectUtil.isNull(loginUser)){
-            return;
+        if (ObjectUtil.isNull(loginUser) || !StpUtil.isLogin(loginId)){
+            throw new JinLinkException("用户未登录");
         }
         this.loginUser = loginUser;
+        SeverWebsocket severWebsocket = webSocketMap.get(loginUser.getId());
+        if (ObjectUtil.isNotNull(severWebsocket))webSocketMap.remove(loginUser.getId());
         webSocketMap.remove(loginUser.getId());
         webSocketMap.put(loginUser.getId(),this);
         //用户登录

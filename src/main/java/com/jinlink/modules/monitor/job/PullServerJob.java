@@ -66,7 +66,7 @@ public class PullServerJob implements Job {
             for (GameServer gameServer : serverList) {
                 paths.add(gameServer.getIp()+":"+gameServer.getPort());
             }
-            Callable<List<GameServerVo.ServerVo>> task = () -> HttpUtils.getSteamApiServer(paths);
+            Callable<List<GameServerVo.ServerVo>> task = () -> HttpUtils.getSteamApiServer(paths,serverList);
             Future<List<GameServerVo.ServerVo>> future = executor.submit(task);
             futures.add(future);
         }
@@ -112,7 +112,7 @@ public class PullServerJob implements Job {
             index++;
         }
         redisService.deleteObject("server_json");
-        if (ObjectUtil.isNotNull(steamServerVos)) redisService.setCacheList("server_json",steamServerVos);
+        if (ObjectUtil.isNotNull(steamServerVos) && ObjectUtil.isNotEmpty(steamServerVos)) redisService.setCacheList("server_json",steamServerVos);
     }
 
     /**

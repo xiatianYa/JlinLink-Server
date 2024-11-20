@@ -62,7 +62,7 @@ public class GameLiveController {
     public Result<Boolean> save(@Parameter(description = "游戏直播对象", required = true)@RequestBody GameLive gameLive) {
         Long loginIdAsLong = StpUtil.getLoginIdAsLong();
         if (ObjectUtil.isNotNull(gameLiveService.getOne(new QueryWrapper().eq("createBy", loginIdAsLong)))){
-            throw new JinLinkException("你已经入驻过了,不能再次入驻");
+            throw new JinLinkException("你已经入驻过了,不能再次入驻!");
         }
         return Result.success("请求成功",gameLiveService.save(gameLive));
     }
@@ -100,7 +100,7 @@ public class GameLiveController {
      */
     @GetMapping("list")
     @Operation(operationId = "4",summary = "获取游戏直播列表")
-    @SaCheckPermission("game:gameMap:list")
+    @SaCheckPermission("game:gameLive:list")
     public Result<List<GameLiveVo>> list() {
         return Result.data(BeanUtil.copyToList(gameLiveService.list(), GameLiveVo.class));
     }
@@ -113,7 +113,7 @@ public class GameLiveController {
      */
     @GetMapping("getInfo/{id}")
         @Operation(operationId = "5",summary = "获取游戏直播详细")
-    @SaCheckPermission("game:gameMap:info")
+    @SaCheckPermission("game:gameLive:info")
     public Result<GameLiveVo> getInfo(@PathVariable Serializable id) {
         return Result.success("请求成功",BeanUtil.copyProperties(gameLiveService.getById(id), GameLiveVo.class));
     }
@@ -126,7 +126,7 @@ public class GameLiveController {
      */
     @GetMapping("page")
     @Operation(operationId = "6",summary = "分页查询游戏直播")
-    @SaCheckPermission("game:gameMap:page")
+    @SaCheckPermission("game:gameLive:page")
     public Result<RPage<GameLiveVo>> page(@Parameter(description = "分页对象", required = true) @Valid PageQuery pageQuery,@Parameter(description = "查询对象", required = true) GameLiveSearchDTO gameLiveSearchDTO) {
         RPage<GameLiveVo> gameLiveVoRPage = gameLiveService.listGameLiveVoPage(pageQuery,gameLiveSearchDTO);
         return Result.data(gameLiveVoRPage);
@@ -137,7 +137,7 @@ public class GameLiveController {
      */
     @GetMapping("listAll")
     @Operation(operationId = "6",summary = "查询所有入驻主播")
-    @SaCheckPermission("game:gameMap:list")
+    @SaCheckPermission("game:gameLive:list")
     public Result<List<GameLiveVo>> listAll() {
         List<GameLiveVo> gameLiveVos = new ArrayList<>();
         List<GameLive> gameLives = gameLiveService.list();
