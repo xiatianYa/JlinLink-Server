@@ -36,5 +36,5 @@ public class GameOnlineStatistics extends BaseEntity {
     /**
      * 社区在线人数
      */
-    private Integer communityPlay;
+    private Long communityPlay;
 }

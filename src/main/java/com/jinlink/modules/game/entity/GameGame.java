@@ -26,5 +26,4 @@ public class GameGame extends BaseEntity {
      */
     private String gameName;
 
-
 }

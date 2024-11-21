@@ -1,15 +1,16 @@
 package com.jinlink.modules.game.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson2.JSONObject;
 import com.jinlink.common.util.PageUtil;
-import com.jinlink.common.util.StringUtils;
 import com.jinlink.core.config.redis.service.RedisService;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
 import com.jinlink.modules.game.entity.*;
 import com.jinlink.modules.game.entity.dto.GameServerSearchDTO;
 import com.jinlink.modules.game.entity.vo.GameServerVo;
+import com.jinlink.modules.game.entity.vo.SourceServerVo;
 import com.jinlink.modules.game.entity.vo.SteamServerVo;
 import com.jinlink.modules.game.service.*;
 import com.mybatisflex.core.paginate.Page;
@@ -79,68 +80,57 @@ public class GameServerServiceImpl extends ServiceImpl<GameServerMapper, GameSer
     }
 
     /**
-     * 查询所有服务器数据(依据SteamApi)。
+     * 查询所有服务器数据。
      */
     @Override
-    public List<SteamServerVo>getServerAll(GameServerSearchDTO gameServerSearchDTO) {
+    public List<SourceServerVo> getServerAll(GameServerSearchDTO gameServerSearchDTO) {
         // 从 Redis 缓存中获取服务器 JSON 数据列表
-        List<JSONObject> serverJsonList = redisService.getCacheList("server_json");
-
-        // 查询与指定社区 ID 匹配的社区 ID 列表
-        List<Long> matchingCommunityIds = gameCommunityService.list(new QueryWrapper()
-                        .eq("id", gameServerSearchDTO.getCommunityId()))
-                .stream()
-                .map(GameCommunity::getId)
-                .toList();
-
-        // 准备用于存储匹配服务器数据的列表
-        List<SteamServerVo> resultSteamServerVos = new ArrayList<>();
-
-        // 遍历服务器 JSON 数据列表，解析并筛选匹配的服务器
-        for (JSONObject serverJson : serverJsonList) {
-            // 直接从 JSONObject 解析为 SteamServerVo 对象
-            SteamServerVo steamServerVo = serverJson.toJavaObject(SteamServerVo.class);
-            // 检查服务器所属的社区 ID 是否在匹配的社区 ID 列表中
-            if (matchingCommunityIds.contains(steamServerVo.getGameCommunityVo().getId())) {
-                //过滤掉用户不要的游戏模式
-                if (StringUtils.isNotNull(gameServerSearchDTO.getModeId())){
-                    List<GameServerVo.ServerVo> gameServerVoList = steamServerVo.getGameServerVoList();
-                    List<GameServerVo.ServerVo> serverVos = gameServerVoList.stream().filter(item -> item.getModeId().equals(gameServerSearchDTO.getModeId())).toList();
-                    steamServerVo.setGameServerVoList(serverVos);
-                }
-                //过滤掉用户不要的游戏
-                if (StringUtils.isNotNull(gameServerSearchDTO.getGameId())){
-                    List<GameServerVo.ServerVo> gameServerVoList = steamServerVo.getGameServerVoList();
-                    List<GameServerVo.ServerVo> serverVos = gameServerVoList.stream().filter(item -> item.getGameId().equals(gameServerSearchDTO.getGameId())).toList();
-                    steamServerVo.setGameServerVoList(serverVos);
-                }
-                //如果当前社区服务器数量为0 则不添加
-                // 如果匹配，则添加到结果列表中
-                if (StringUtils.isNotEmpty(steamServerVo.getGameServerVoList())) resultSteamServerVos.add(steamServerVo);
+        List<JSONObject> serverJsonList = redisService.getCacheList("serverVo");
+        // 返回的数据列表
+        List<SourceServerVo> serverVos = new ArrayList<>();
+        for (JSONObject jsonObject : serverJsonList) {
+            // 直接从 JSONObject 解析为 SourceServerVo 对象
+            SourceServerVo sourceServerVo = jsonObject.toJavaObject(SourceServerVo.class);
+            // 筛选用户不要的社区
+            if (ObjectUtil.isNotNull(gameServerSearchDTO.getCommunityId())
+                    && !sourceServerVo.getGameCommunity().getId().equals(gameServerSearchDTO.getCommunityId())) continue;
+            // 筛选用户不要的游戏 | 模式
+            List<SteamServerVo> gameServerVoList = sourceServerVo.getGameServerVoList();
+            // 拷贝列表
+            List<SteamServerVo> gameServerVoCpList = new ArrayList<>();
+            for (SteamServerVo steamServerVo : gameServerVoList) {
+                //判断这个服务器是不是用户要的模式
+                if (ObjectUtil.isNull(steamServerVo.getModeId()) || ObjectUtil.isNotNull(gameServerSearchDTO.getModeId()) && !steamServerVo.getModeId().equals(gameServerSearchDTO.getModeId())) continue;
+                //判断这个服务器是不是用户要的游戏
+                if (ObjectUtil.isNotNull(gameServerSearchDTO.getGameId()) && !steamServerVo.getGameId().equals(gameServerSearchDTO.getGameId())) continue;
+                //都符合条件 则添加进列表
+                gameServerVoCpList.add(steamServerVo);
+            }
+            if (ObjectUtil.isNotEmpty(gameServerVoCpList)){
+                sourceServerVo.setGameServerVoList(gameServerVoCpList);
+                serverVos.add(sourceServerVo);
             }
         }
-        // 返回处理后的数据列表
-        return resultSteamServerVos;
+        return serverVos;
     }
 
-    /**
-     * 查询所有服务器数据(依据SteamApi) key社区 value社区下服务器数据。
-     */
     @Override
-    public RPage<GameServerVo.ServerVo> getServerAllByGameId(PageQuery pageQuery,GameServerSearchDTO gameServerSearchDTO) {
+    public RPage<SteamServerVo> getServerAllPage(PageQuery pageQuery, GameServerSearchDTO gameServerSearchDTO) {
         // 从 Redis 缓存中获取服务器 JSON 数据列表
-        List<JSONObject> serverJsonList = redisService.getCacheList("server_json");
-        // 返回列表
-        List<GameServerVo.ServerVo> serverVoList = new ArrayList<>();
-        // 遍历服务器 JSON 数据列表，解析并筛选匹配的服务器
-        for (JSONObject serverJson : serverJsonList) {
-            // 直接从 JSONObject 解析为 SteamServerVo 对象
-            SteamServerVo steamServerVo = serverJson.toJavaObject(SteamServerVo.class);
-            List<GameServerVo.ServerVo> gameServerVoList = steamServerVo.getGameServerVoList()
-                    .stream().filter(item -> item.getGameId().equals(gameServerSearchDTO.getGameId())).toList();
-            serverVoList.addAll(gameServerVoList);
+        List<JSONObject> serverJsonList = redisService.getCacheList("serverVo");
+        // 返回的数据列表
+        List<SteamServerVo> steamServerVos = new ArrayList<>();
+        for (JSONObject jsonObject : serverJsonList) {
+            // 直接从 JSONObject 解析为 SourceServerVo 对象
+            SourceServerVo sourceServerVo = jsonObject.toJavaObject(SourceServerVo.class);
+            List<SteamServerVo> gameServerVoList = sourceServerVo.getGameServerVoList();
+            for (SteamServerVo steamServerVo : gameServerVoList) {
+                //判断这个服务器是不是用户要的游戏
+                if (ObjectUtil.isNotNull(gameServerSearchDTO.getGameId()) && !steamServerVo.getGameId().equals(gameServerSearchDTO.getGameId())) continue;
+                //都符合条件 则添加进列表
+                steamServerVos.add(steamServerVo);
+            }
         }
-        List<GameServerVo.ServerVo> page = PageUtil.getPage(serverVoList, pageQuery.getCurrent(), pageQuery.getSize());
-        return RPage.build(new Page<>(page,pageQuery.getCurrent(),pageQuery.getSize(),serverVoList.size()));
+        return RPage.build(new Page<>(PageUtil.getPage(steamServerVos,pageQuery.getCurrent(),pageQuery.getSize()),pageQuery.getCurrent(),pageQuery.getSize(),steamServerVos.size()));
     }
 }

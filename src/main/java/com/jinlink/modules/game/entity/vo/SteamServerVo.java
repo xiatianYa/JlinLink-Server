@@ -19,12 +19,43 @@ import java.util.List;
 @Schema(name = "SteamServerVo", description = "Steam服务器数据 VO 对象")
 public class SteamServerVo {
 
-    @Schema(description = "社区对象")
-    private GameCommunityVo gameCommunityVo;
+    @Schema(description = "服务器名称")
+    private String serverName;
 
-    @Schema(description = "在线人数")
-    private Integer onlineCount;
+    @Schema(description = "服务器地址")
+    private String addr;
 
-    @Schema(description = "社区下服务器数据")
-    private List<GameServerVo.ServerVo> gameServerVoList;
+    @Schema(description = "服务器IP")
+    private String ip;
+
+    @Schema(description = "服务器端口")
+    private String port;
+
+    @Schema(description = "服务器模式")
+    private Long modeId;
+
+    @Schema(description = "游戏ID")
+    private Long gameId;
+
+    @Schema(description = "地图名称")
+    private String mapName;
+
+    @Schema(description = "译名")
+    private String mapLabel;
+
+    @Schema(description = "图片路径")
+    private String mapUrl;
+
+    @Schema(description = "地图类型")
+    private String type;
+
+    @Schema(description = "地图标签")
+    private List<String> tag;
+
+    @Schema(description = "服务器在线玩家数")
+    private Integer players;
+
+    @Schema(description = "服务器最大玩家数")
+    private Integer maxPlayers;
+
 }

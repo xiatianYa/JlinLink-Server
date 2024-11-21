@@ -2,6 +2,7 @@ package com.jinlink.modules.game.entity.vo;
 
 import com.jinlink.common.domain.BTPairs;
 import com.jinlink.core.domain.BaseVO;
+import com.jinlink.modules.game.entity.dto.ExgMapDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -41,4 +42,7 @@ public class GameMapVo extends BaseVO {
 
     @Schema(description = "地图神器")
     private List<BTPairs> artifact;
+
+    @Schema(name = "EXG社区地图CD")
+    private ExgMapDTO exgMap;
 }

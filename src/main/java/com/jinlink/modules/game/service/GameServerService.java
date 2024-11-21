@@ -5,6 +5,7 @@ import com.jinlink.core.page.RPage;
 import com.jinlink.modules.game.entity.GameCommunity;
 import com.jinlink.modules.game.entity.dto.GameServerSearchDTO;
 import com.jinlink.modules.game.entity.vo.GameServerVo;
+import com.jinlink.modules.game.entity.vo.SourceServerVo;
 import com.jinlink.modules.game.entity.vo.SteamServerVo;
 import com.mybatisflex.core.service.IService;
 import com.jinlink.modules.game.entity.GameServer;
@@ -26,12 +27,12 @@ public interface GameServerService extends IService<GameServer> {
     RPage<GameServerVo> listGameServerVoPage(PageQuery pageQuery, GameServerSearchDTO gameServerSearchDTO);
 
     /**
-     * 查询所有服务器数据(依据SteamApi) key社区 value社区下服务器数据。
+     * 查询所有服务器数据。
      */
-    List<SteamServerVo> getServerAll(GameServerSearchDTO gameServerSearchDTO);
+    List<SourceServerVo> getServerAll(GameServerSearchDTO gameServerSearchDTO);
 
     /**
-     * 查询所有服务器数据(依据SteamApi) key社区 value社区下服务器数据。
+     * 查询所有服务器数据分页
      */
-    RPage<GameServerVo.ServerVo> getServerAllByGameId(PageQuery pageQuery,GameServerSearchDTO gameServerSearchDTO);
+    RPage<SteamServerVo> getServerAllPage(PageQuery pageQuery, GameServerSearchDTO gameServerSearchDTO);
 }

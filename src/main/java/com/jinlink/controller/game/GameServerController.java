@@ -5,9 +5,13 @@ import cn.hutool.core.bean.BeanUtil;
 import com.jinlink.common.api.Result;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
+import com.jinlink.modules.game.entity.dto.GameServerAddDTO;
 import com.jinlink.modules.game.entity.dto.GameServerSearchDTO;
+import com.jinlink.modules.game.entity.dto.GameServerUpdateDTO;
 import com.jinlink.modules.game.entity.vo.GameServerVo;
+import com.jinlink.modules.game.entity.vo.SourceServerVo;
 import com.jinlink.modules.game.entity.vo.SteamServerVo;
+import com.mybatisflex.core.paginate.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -46,13 +50,14 @@ public class GameServerController {
     /**
      * 添加游戏服务器表。
      *
-     * @param gameServer 游戏服务器表
+     * @param gameServerAddDTO 游戏服务器表
      * @return {@code true} 添加成功，{@code false} 添加失败
      */
     @PostMapping("save")
     @Operation(operationId = "1",summary = "新增游戏服务器")
     @SaCheckPermission("game:gameServer:save")
-    public Result<Boolean> save(@Parameter(description = "游戏服务器对象", required = true)@RequestBody GameServer gameServer) {
+    public Result<Boolean> save(@Parameter(description = "游戏服务器对象", required = true)@RequestBody GameServerAddDTO gameServerAddDTO) {
+        GameServer gameServer = BeanUtil.copyProperties(gameServerAddDTO, GameServer.class);
         return Result.success("请求成功", gameServerService.save(gameServer));
     }
 
@@ -72,13 +77,14 @@ public class GameServerController {
     /**
      * 根据主键更新游戏服务器表。
      *
-     * @param gameServer 游戏服务器表
+     * @param gameServerUpdateDTO 游戏服务器表
      * @return {@code true} 更新成功，{@code false} 更新失败
      */
     @PutMapping("update")
     @Operation(operationId = "3",summary = "修改游戏服务器")
     @SaCheckPermission("game:gameServer:update")
-    public Result<Boolean> update(@Parameter(description = "游戏服务器对象", required = true)@RequestBody GameServer gameServer) {
+    public Result<Boolean> update(@Parameter(description = "游戏服务器对象", required = true)@RequestBody GameServerUpdateDTO gameServerUpdateDTO) {
+        GameServer gameServer = BeanUtil.copyProperties(gameServerUpdateDTO, GameServer.class);
         return Result.success("请求成功",gameServerService.updateById(gameServer));
     }
 
@@ -122,30 +128,30 @@ public class GameServerController {
     }
 
     /**
-     * 查询所有服务器数据(依据SteamApi) key社区 value社区下服务器数据。
+     * 查询所有服务器数据
      *
      * @param gameServerSearchDTO 分页对象
      * @return 分页对象
      */
     @GetMapping("getServerAll")
-    @Operation(operationId = "6",summary = "查询所有服务器数据(依据SteamApi)")
+    @Operation(operationId = "6",summary = "查询所有服务器数据")
     @SaCheckPermission("game:gameServer:getServerAll")
-    public Result<List<SteamServerVo>> getServerAll(@Parameter(description = "查询对象", required = true) GameServerSearchDTO gameServerSearchDTO) {
-        List<SteamServerVo> gameServiceServerAll = gameServerService.getServerAll(gameServerSearchDTO);
+    public Result<List<SourceServerVo>> getServerAll(@Parameter(description = "查询对象", required = true) GameServerSearchDTO gameServerSearchDTO) {
+        List<SourceServerVo> gameServiceServerAll = gameServerService.getServerAll(gameServerSearchDTO);
         return Result.data(gameServiceServerAll);
     }
 
     /**
-     * 查询所有服务器数据(依据SteamApi) key社区 value社区下服务器数据。
+     * 查询所有服务器数据分页
      *
      * @param gameServerSearchDTO 分页对象
      * @return 分页对象
      */
-    @GetMapping("getServerAllByGameId")
-    @Operation(operationId = "7",summary = "查询服务器数据根据游戏ID")
+    @GetMapping("getServerAllPage")
+    @Operation(operationId = "7",summary = "查询所有服务器数据(分页)")
     @SaCheckPermission("game:gameServer:getServerAll")
-    public Result<RPage<GameServerVo.ServerVo>> getServerAllByGameId(@Parameter(description = "分页对象", required = true) @Valid PageQuery pageQuery,@Parameter(description = "查询对象", required = true) GameServerSearchDTO gameServerSearchDTO) {
-        RPage<GameServerVo.ServerVo> serverVoRPage = gameServerService.getServerAllByGameId(pageQuery,gameServerSearchDTO);
-        return Result.data(serverVoRPage);
+    public Result<RPage<SteamServerVo>> getServerAllPage(@Parameter(description = "分页对象", required = true) @Valid PageQuery pageQuery,@Parameter(description = "查询对象", required = true) GameServerSearchDTO gameServerSearchDTO) {
+        RPage<SteamServerVo> gameServiceServerAll = gameServerService.getServerAllPage(pageQuery,gameServerSearchDTO);
+        return Result.data(gameServiceServerAll);
     }
 }

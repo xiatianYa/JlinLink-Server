@@ -10,7 +10,7 @@ import com.jinlink.common.exception.JinLinkException;
 import com.jinlink.common.util.udp.GameServerUtil;
 import com.jinlink.core.config.redis.service.RedisService;
 import com.jinlink.core.holder.GlobalUserHolder;
-import com.jinlink.modules.game.entity.vo.SteamServerVo;
+import com.jinlink.modules.game.entity.vo.SourceServerVo;
 import com.jinlink.modules.websocket.entity.JoinServerVo;
 import com.jinlink.modules.websocket.entity.MessageVo;
 import com.jinlink.modules.websocket.entity.OnLineUser;
@@ -121,9 +121,9 @@ public class SeverWebsocket {
                 responseData= GameServerUtil.sendAndReceiveUDP(serverSearchDto.getIp(), serverSearchDto.getPort());
                 // 缓存50ms
                if (responseData != null && responseData.length > 0) {
-                   expireCacheMap.put(serverSearchDto.getIp()+":"+serverSearchDto.getPort(),responseData,2000,TimeUnit.MILLISECONDS);
+                   expireCacheMap.put(serverSearchDto.getIp()+":"+serverSearchDto.getPort(),responseData,500,TimeUnit.MILLISECONDS);
                }else{
-                   expireCacheMap.put(serverSearchDto.getIp()+":"+serverSearchDto.getPort(),new Integer[]{serverSearchDto.getMinPlayers(),serverSearchDto.getMinPlayers()},2000,TimeUnit.MILLISECONDS);
+                   expireCacheMap.put(serverSearchDto.getIp()+":"+serverSearchDto.getPort(),null,2000,TimeUnit.MILLISECONDS);
                }
             }
             //返回数据为null 获取失败
@@ -172,12 +172,12 @@ public class SeverWebsocket {
      */
     @Scheduled(fixedRate = 10000)
     public void sendServerMessage(){
-        List<SteamServerVo> steamServerVos = redisService.getCacheList("server_json");
+        List<SourceServerVo> serverVos = redisService.getCacheList("serverVo");
         webSocketMap.forEach((k,v)->{
             try {
                 MessageVo build = MessageVo.builder()
                         .msg("获取服务器消息成功")
-                        .data(steamServerVos)
+                        .data(serverVos)
                         .code("202")
                         .build();
                 v.session.getAsyncRemote().sendText(JSON.toJSONString(build));

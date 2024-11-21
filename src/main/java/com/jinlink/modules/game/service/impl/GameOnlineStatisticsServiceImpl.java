@@ -5,10 +5,7 @@ import com.alibaba.fastjson2.JSONObject;
 import com.jinlink.core.config.redis.service.RedisService;
 import com.jinlink.modules.game.entity.GameCommunity;
 import com.jinlink.modules.game.entity.dto.GameOnLineStatisticsDTO;
-import com.jinlink.modules.game.entity.vo.GameOnLineStatisticsLineVo;
-import com.jinlink.modules.game.entity.vo.GameOnLineStatisticsPieVo;
-import com.jinlink.modules.game.entity.vo.GameServerVo;
-import com.jinlink.modules.game.entity.vo.SteamServerVo;
+import com.jinlink.modules.game.entity.vo.*;
 import com.jinlink.modules.game.service.GameCommunityService;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.jinlink.modules.game.entity.GameOnlineStatistics;
@@ -69,16 +66,15 @@ public class GameOnlineStatisticsServiceImpl extends ServiceImpl<GameOnlineStati
 
     @Override
     public List<GameOnLineStatisticsPieVo> pieChart() {
+        List<JSONObject> serverVos  = redisService.getCacheList("serverVo");
+        if (ObjectUtil.isNull(serverVos)) return null;
         List<GameOnLineStatisticsPieVo> gameOnLineStatisticsPieVos = new ArrayList<>();
-        // 从 Redis 缓存中获取服务器 JSON 数据列表
-        List<JSONObject> serverJsonList = redisService.getCacheList("server_json");
-        // 遍历服务器 JSON 数据列表，解析并筛选匹配的服务器
-        for (JSONObject serverJson : serverJsonList) {
+        for (JSONObject serverVo : serverVos) {
             // 直接从 JSONObject 解析为 SteamServerVo 对象
-            SteamServerVo steamServerVo = serverJson.toJavaObject(SteamServerVo.class);
+            SourceServerVo steamServerVo = serverVo.toJavaObject(SourceServerVo.class);
             GameOnLineStatisticsPieVo build = GameOnLineStatisticsPieVo.builder()
-                    .name(steamServerVo.getGameCommunityVo().getCommunityName())
-                    .value(steamServerVo.getGameServerVoList().stream().mapToLong(GameServerVo.ServerVo::getPlayers).sum())
+                    .name(steamServerVo.getGameCommunity().getCommunityName())
+                    .value(steamServerVo.getOnLineUserNumber())
                     .build();
             gameOnLineStatisticsPieVos.add(build);
         }
