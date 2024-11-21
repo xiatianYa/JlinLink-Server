@@ -28,7 +28,7 @@
         <!-- 其他工具版本 -->
         <mybatis.flex.version>1.9.7</mybatis.flex.version>
         <mybatis.flex.codegen.version>1.8.3</mybatis.flex.codegen.version>
-        <mysql.version>8.0.33</mysql.version>
+        <mysql.version>8.2.0</mysql.version>
         <fastjson2.version>2.0.32</fastjson2.version>
         <druid.version>1.2.18</druid.version>
         <satoken.version>1.39.0</satoken.version>
@@ -60,12 +60,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jdbc</artifactId>
-        </dependency>
-        <!-- SpringBootTest -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
         </dependency>
         <!-- SpringBootCache -->
         <dependency>
@@ -116,7 +110,7 @@
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
-            <scope>${mysql.version}</scope>
+            <version>${mysql.version}</version>
         </dependency>
         <!-- Sa-Token 权限认证-->
         <dependency>
@@ -219,5 +213,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

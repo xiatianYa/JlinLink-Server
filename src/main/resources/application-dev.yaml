@@ -7,6 +7,7 @@ spring:
     url: jdbc:mysql://47.113.197.48:3306/jinlink_boot?socketTimeout=60000&connectTimeout=30000&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
     username: root
     password: sr2539195984
+    driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       max-lifetime: 300000
   data:

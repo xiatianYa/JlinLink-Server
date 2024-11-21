@@ -26,7 +26,6 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 @RequestMapping("/file")
 public class SysFileController {
-    private static final Logger log = LoggerFactory.getLogger(SysFileController.class);
 
     @NonNull
     private SysFileService sysFileService;

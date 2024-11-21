@@ -154,18 +154,4 @@ public class GameServerController {
         RPage<SteamServerVo> gameServiceServerAll = gameServerService.getServerAllPage(pageQuery,gameServerSearchDTO);
         return Result.data(gameServiceServerAll);
     }
-
-    /**
-     * 查询所有服务器数据(依据SteamApi) key社区 value社区下服务器数据。
-     *
-     * @param gameServerSearchDTO 分页对象
-     * @return 分页对象
-     */
-    @GetMapping("getServerAllByGameId")
-    @Operation(operationId = "7",summary = "查询服务器数据根据游戏ID")
-    @SaCheckPermission("game:gameServer:getServerAll")
-    public Result<RPage<GameServerVo.ServerVo>> getServerAllByGameId(@Parameter(description = "分页对象", required = true) @Valid PageQuery pageQuery,@Parameter(description = "查询对象", required = true) GameServerSearchDTO gameServerSearchDTO) {
-        RPage<GameServerVo.ServerVo> serverVoRPage = gameServerService.getServerAllByGameId(pageQuery,gameServerSearchDTO);
-        return Result.data(serverVoRPage);
-    }
 }
