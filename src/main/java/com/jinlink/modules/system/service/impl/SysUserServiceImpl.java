@@ -160,7 +160,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             });
             sysUserVos.add(sysUserVo);
         });
-        return new Page<>(sysUserVos, paginate.getPageNumber(), paginate.getPageSize(), sysUserVos.size());
+        return new Page<>(sysUserVos, paginate.getPageNumber(), paginate.getPageSize(), paginate.getTotalRow());
     }
 
     /**

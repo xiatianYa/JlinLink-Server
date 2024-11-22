@@ -34,7 +34,6 @@ public class SysRouteController {
      */
     @GetMapping("getConstantRoutes")
     @Operation(operationId = "1",summary = "获取固定的路由数据(不需要权限)")
-    @SaCheckLogin
     public Result<List<Map<String, Object>>> getConstantRoutes() {
         return Result.success("获取成功!",sysMenuService.getConstantRoutes());
     }
