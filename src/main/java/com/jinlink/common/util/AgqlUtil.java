@@ -14,6 +14,7 @@ import com.jinlink.modules.monitor.entity.vo.GameEntityVo;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,22 +28,13 @@ public class AgqlUtil {
      * @param gameMapList 地图列表
      * @return 服务器源对象
      */
-    public static SourceServerVo getSourceServerVoList(GameCommunity gameCommunity, List<GameServer> gameServers, List<GameMap> gameMapList){
-        try {
-            RestTemplate restTemplate = new RestTemplate();
-            StringBuilder paths= new StringBuilder();
-            for (GameServer gameServer : gameServers) {
-                paths.append("paths=").append(gameServer.getIp()).append(":").append(gameServer.getPort()).append("&");
-            }
-            return analysisJsonForObject(gameCommunity,gameServers,restTemplate.getForObject(new URI("https://inadvertently.top/steamApi/?" + paths), String.class),gameMapList);
-        }catch (Exception e){
-            System.out.println("请求失败: " + e.getMessage());
-            return SourceServerVo.builder()
-                    .gameCommunity(gameCommunity)
-                    .onLineUserNumber(0L)
-                    .gameServerVoList(new ArrayList<>())
-                    .build();
+    public static SourceServerVo getSourceServerVoList(GameCommunity gameCommunity, List<GameServer> gameServers, List<GameMap> gameMapList) throws URISyntaxException {
+        RestTemplate restTemplate = new RestTemplate();
+        StringBuilder paths= new StringBuilder();
+        for (GameServer gameServer : gameServers) {
+            paths.append("paths=").append(gameServer.getIp()).append(":").append(gameServer.getPort()).append("&");
         }
+        return analysisJsonForObject(gameCommunity,gameServers,restTemplate.getForObject(new URI("https://inadvertently.top/steamApi/?" + paths), String.class),gameMapList);
     }
 
     /**

@@ -70,6 +70,7 @@ public class PullServerJob implements Job {
                 serverVos.add(serverVo);
             } catch (InterruptedException | ExecutionException e) {
                 System.out.println("社区数据获取失败!");
+                return;
             }
         }
         //将数据存储进Redis中
