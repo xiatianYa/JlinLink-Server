@@ -1,30 +1,16 @@
 package com.jinlink.modules.system.facade.impl;
 
-import cn.dev33.satoken.stp.StpUtil;
-import cn.hutool.core.util.ObjectUtil;
-import com.alibaba.fastjson2.JSONObject;
-import com.jinlink.common.constants.Constants;
-import com.jinlink.common.exception.JinLinkException;
-import com.jinlink.modules.system.entity.*;
-import com.jinlink.modules.system.entity.bo.QQBo;
 import com.jinlink.modules.system.entity.dto.LoginFormDTO;
-import com.jinlink.modules.system.entity.dto.RefreshTokenDTO;
+import com.jinlink.modules.system.entity.dto.RegisterFormDTO;
 import com.jinlink.modules.system.entity.dto.oAuthLoginDTO;
 import com.jinlink.modules.system.entity.vo.SysUserInfoVo;
 import com.jinlink.modules.system.facade.IAuthenticationFacade;
 import com.jinlink.modules.system.service.*;
-import com.mybatisflex.core.query.QueryWrapper;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -62,13 +48,35 @@ public class AuthenticationFacadeImpl implements IAuthenticationFacade {
         return sysUserService.userOAuthLogin(loginFormDTO);
     }
 
+    /**
+     * 用户退出登陆
+     */
     @Override
     public String logout() {
         return sysUserService.logout();
     }
 
+    /**
+     * 刷新token
+     */
     @Override
     public String refreshToken(String refreshToken) {
         return sysUserService.refreshToken(refreshToken);
+    }
+
+    /**
+     * 获取用户注册验证码
+     */
+    @Override
+    public byte[] getRegisterCode(String userName) {
+        return sysUserService.getRegisterCode(userName);
+    }
+
+    /**
+     * 用户注册
+     */
+    @Override
+    public Boolean userRegister(RegisterFormDTO registerFormDTO) {
+        return sysUserService.userRegister(registerFormDTO);
     }
 }

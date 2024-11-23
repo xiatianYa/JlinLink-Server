@@ -2,6 +2,7 @@ package com.jinlink.modules.system.facade;
 
 import com.jinlink.modules.system.entity.dto.LoginFormDTO;
 import com.jinlink.modules.system.entity.dto.RefreshTokenDTO;
+import com.jinlink.modules.system.entity.dto.RegisterFormDTO;
 import com.jinlink.modules.system.entity.dto.oAuthLoginDTO;
 import com.jinlink.modules.system.entity.vo.SysUserInfoVo;
 
@@ -17,4 +18,8 @@ public interface IAuthenticationFacade {
     String logout();
 
     String refreshToken(String refreshToken);
+
+    byte[] getRegisterCode(String userName);
+
+    Boolean userRegister(RegisterFormDTO registerFormDTO);
 }

@@ -4,6 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckLogin;
 import com.jinlink.common.api.Result;
 import com.jinlink.modules.system.entity.dto.LoginFormDTO;
 import com.jinlink.modules.system.entity.dto.RefreshTokenDTO;
+import com.jinlink.modules.system.entity.dto.RegisterFormDTO;
 import com.jinlink.modules.system.entity.dto.oAuthLoginDTO;
 import com.jinlink.modules.system.entity.vo.SysUserInfoVo;
 import com.jinlink.modules.system.facade.IAuthenticationFacade;
@@ -60,5 +61,18 @@ public class AuthenticationController {
     @Operation(operationId = "5",summary = "用户第三方登录")
     public Result<Map<String, String>> oauthLogin(@RequestBody oAuthLoginDTO loginFormDTO) {
         return Result.success("请求成功",authenticationFacade.userOAuthLogin(loginFormDTO));
+    }
+
+    @GetMapping("/getCode")
+    @Operation(operationId = "6",summary = "获取用户注册验证码")
+    public Result<byte[]> getRegisterCode(@RequestParam String userName){
+        byte[] responseData = authenticationFacade.getRegisterCode(userName);
+        return Result.data(responseData);
+    }
+
+    @PostMapping("/register")
+    @Operation(operationId = "6",summary = "用户注册")
+    public Result<Boolean> userRegister(@RequestBody RegisterFormDTO registerFormDTO){
+        return Result.success("请求成功",authenticationFacade.userRegister(registerFormDTO));
     }
 }

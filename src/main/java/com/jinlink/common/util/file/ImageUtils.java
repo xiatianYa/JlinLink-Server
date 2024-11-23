@@ -39,7 +39,7 @@ public class ImageUtils {
                     Path path = Paths.get(targetDir, fileName);
                     Files.createDirectories(path.getParent());
                     Files.copy(inputStream, path, StandardCopyOption.REPLACE_EXISTING);
-                    return "http://127.0.0.1:8080/statics/live/" + fileName;
+                    return "https://www.bluearchive.top/statics/live/" + fileName;
                 }
             } else {
                 throw new RuntimeException("Failed to download image: " + responseEntity.getStatusCode());

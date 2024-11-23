@@ -2,11 +2,6 @@ package com.jinlink.common.constants;
 
 /**
  * 请求常量
- *
- * @Author payne.zhuang <paynezhuang@gmail.com>
- * @ProjectName panis-boot
- * @ClassName com.izpan.common.constants.RequestConstant
- * @CreateTime 2023/7/19 - 17:08
  */
 public final class RequestConstant {
 

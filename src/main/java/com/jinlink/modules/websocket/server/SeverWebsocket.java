@@ -121,7 +121,7 @@ public class SeverWebsocket {
                 responseData= GameServerUtil.sendAndReceiveUDP(serverSearchDto.getIp(), serverSearchDto.getPort());
                 // 缓存50ms
                if (responseData != null && responseData.length > 0) {
-                   expireCacheMap.put(serverSearchDto.getIp()+":"+serverSearchDto.getPort(),responseData,200,TimeUnit.MILLISECONDS);
+                   expireCacheMap.put(serverSearchDto.getIp()+":"+serverSearchDto.getPort(),responseData,100,TimeUnit.MILLISECONDS);
                }else{
                    expireCacheMap.put(serverSearchDto.getIp()+":"+serverSearchDto.getPort(),null,5000,TimeUnit.MILLISECONDS);
                }

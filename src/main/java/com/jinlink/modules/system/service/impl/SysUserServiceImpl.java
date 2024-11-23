@@ -1,15 +1,20 @@
 package com.jinlink.modules.system.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.captcha.CaptchaUtil;
+import cn.hutool.captcha.LineCaptcha;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.extra.servlet.JakartaServletUtil;
+import cn.hutool.extra.servlet.ServletUtil;
 import com.alibaba.fastjson2.JSONObject;
 import com.jinlink.common.constants.Constants;
 import com.jinlink.common.constants.RequestConstant;
 import com.jinlink.common.domain.LoginUser;
 import com.jinlink.common.domain.Options;
 import com.jinlink.common.exception.JinLinkException;
+import com.jinlink.common.util.StringUtils;
+import com.jinlink.core.config.redis.service.RedisService;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.common.pool.StringPools;
 import com.jinlink.common.util.IPUtil;
@@ -46,6 +51,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 用户管理 服务层实现。
@@ -66,6 +72,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     private MonLogsLoginService monLogsLoginService;
     @Resource
     private SysRolePermissionService sysRolePermissionService;
+    @Resource
+    private RedisService redisService;
 
     /**
      * 用户登录
@@ -250,6 +258,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 .toList();
     }
 
+    /**
+     * 第三方登录
+     */
     @Override
     public Map<String, String> userOAuthLogin(oAuthLoginDTO loginFormDTO) {
         //第三方用户对象
@@ -371,6 +382,70 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }else{
             throw new JinLinkException("token不存在");
         }
+    }
+
+    /**
+     * 获取用户注册验证码
+     */
+    @Override
+    public byte[] getRegisterCode(String userName) {
+        if (StringUtils.isEmpty(userName)){
+            throw new JinLinkException("请先填写账号名!");
+        }
+        //定义图形验证码的长和宽
+        LineCaptcha lineCaptcha = CaptchaUtil.createLineCaptcha(200, 100);
+        //验证码保存120s
+        redisService.deleteObject(userName);
+        redisService.setCacheObject(userName,lineCaptcha.getCode(),120L, TimeUnit.SECONDS);
+        return lineCaptcha.getImageBytes();
+    }
+
+    @Override
+    public Boolean userRegister(RegisterFormDTO registerFormDTO) {
+        //参数校验
+        if (ObjectUtil.isEmpty(registerFormDTO.getUserName())
+                | ObjectUtil.isEmpty(registerFormDTO.getNickName())
+                | ObjectUtil.isEmpty(registerFormDTO.getPassword())
+                | ObjectUtil.isEmpty(registerFormDTO.getPassword())
+                | ObjectUtil.isEmpty(registerFormDTO.getConfirmPassword())){
+            throw new JinLinkException("非法参数!");
+        }
+        //校验用户是否注册
+        SysUser one = sysUserMapper.selectOneByQuery(new QueryWrapper().eq("user_name", registerFormDTO.getUserName()));
+        if (ObjectUtil.isNotNull(one)){
+            throw new JinLinkException("用户名已被注册!");
+        }
+        //校验密码是否一致
+        if (!registerFormDTO.getPassword().equals(registerFormDTO.getConfirmPassword())){
+            throw new JinLinkException("两次密码不一致!");
+        }
+        //校验验证是否正确
+        String code = registerFormDTO.getCode();
+        String entryCode = redisService.getCacheObject(registerFormDTO.getUserName());
+        if(ObjectUtil.isNull(entryCode) | !code.equals(entryCode)){
+            throw new JinLinkException("验证码错误!");
+        }
+        //注册用户信息
+        SysUser sysUser = SysUser.builder()
+                .userName(registerFormDTO.getUserName())
+                .nickName(registerFormDTO.getNickName())
+                .userGender("1")
+                .salt("VECaJx")
+                .status("1")
+                .avatar(Constants.USER_DEFAULT_AVATAR)
+                .password(DigestUtils.sha256Hex(registerFormDTO.getPassword() + "VECaJx"))
+                .lastLoginTime(LocalDateTime.now())
+                .build();
+        sysUserMapper.insert(sysUser);
+        //为用户分配角色
+        for (Long roleId : Constants.USER_DEFAULT_ROLE_LIST) {
+            SysUserRole sysUserRole = SysUserRole.builder()
+                    .userId(sysUser.getId())
+                    .roleId(roleId)
+                    .build();
+            sysUserRoleService.save(sysUserRole);
+        }
+        return true;
     }
 
     /**

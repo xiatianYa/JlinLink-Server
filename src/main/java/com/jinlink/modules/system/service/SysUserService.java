@@ -73,4 +73,14 @@ public interface SysUserService extends IService<SysUser> {
      * 刷新Token
      */
     String refreshToken(String refreshToken);
+
+    /**
+     * 获取用户注册验证码
+     */
+    byte[] getRegisterCode(String userName);
+
+    /**
+     * 用户注册
+     */
+    Boolean userRegister(RegisterFormDTO registerFormDTO);
 }

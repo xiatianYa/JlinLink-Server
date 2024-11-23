@@ -15,7 +15,6 @@ public class GlobalExceptionHandler {
     //全局异常拦截
     @ExceptionHandler
     public Result<String> handlerException(Exception e) {
-        log.error(e.getMessage(), e);
         return Result.failure(ResultCode.FORBIDDEN.getCode(), e.getMessage());
     }
 }

@@ -133,4 +133,9 @@ public class Constants {
      * 用户默认权限列表
      */
     public static final Long[] USER_DEFAULT_ROLE_LIST = {2L};
+
+    /**
+     * 用户默认头像
+     */
+    public static final String USER_DEFAULT_AVATAR = "";
 }

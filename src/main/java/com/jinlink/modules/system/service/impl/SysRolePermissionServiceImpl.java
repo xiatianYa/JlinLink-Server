@@ -104,7 +104,8 @@ public class SysRolePermissionServiceImpl extends ServiceImpl<SysRolePermissionM
         //获取用户角色信息
         List<Long> userRoleIds = sysUserRoleService.list(new QueryWrapper().eq("user_id", id)).stream()
                 .map(SysUserRole::getRoleId).toList();
-
+        //当前用户没有任何角色
+        if (ObjectUtil.isEmpty(userRoleIds)) return List.of();
         //获取用户拥有的按钮Ids
         List<Long> userPermissionIds = sysRolePermissionMapper.selectListByQuery(new QueryWrapper().in("role_id", userRoleIds)).stream()
                 .map(SysRolePermission::getPermissionId).toList();

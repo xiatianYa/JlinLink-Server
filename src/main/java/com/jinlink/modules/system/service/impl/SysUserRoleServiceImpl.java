@@ -1,6 +1,7 @@
 package com.jinlink.modules.system.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.jinlink.common.exception.JinLinkException;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.modules.system.entity.SysRole;
@@ -17,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -66,6 +68,8 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
     public List<String> getUserRoleCodes(Long id) {
         //获取用户角色信息
         List<SysUserRole> sysUserRoles = sysUserRoleMapper.selectListByQuery(new QueryWrapper().eq("user_id",id));
+        //当前用户没有任何角色
+        if (ObjectUtil.isEmpty(sysUserRoles)) return List.of();
         //查询角色表
         List<SysRole> sysRoles = sysRoleService.
                 list(new QueryWrapper().eq("status",1).in("id", sysUserRoles.stream().map(SysUserRole::getRoleId).collect(Collectors.toList())));
