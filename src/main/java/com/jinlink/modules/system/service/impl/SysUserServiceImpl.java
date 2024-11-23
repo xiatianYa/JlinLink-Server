@@ -290,7 +290,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
         //通过用户OpenId 判断用户是否注册过
         SysUser one = sysUserMapper.selectOneByQuery(new QueryWrapper().eq("qq_open_id", loginFormDTO.getOpenId()));
-        MonLogsLogin loginLogs = initRegisterLog(loginFormDTO);;
+        if (StringPools.ZERO.equals(one.getStatus())) {
+            throw new JinLinkException("当前用户 %s 已被禁止登录".formatted(one.getUserName()));
+        }
+        MonLogsLogin loginLogs = initRegisterOauthLog(loginFormDTO);;
         try {
             //用户不存在 则进行注册
             if (ObjectUtil.isNull(one)) {
@@ -425,39 +428,67 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         if(ObjectUtil.isNull(entryCode) | !code.equals(entryCode)){
             throw new JinLinkException("验证码错误!");
         }
-        //注册用户信息
-        SysUser sysUser = SysUser.builder()
-                .userName(registerFormDTO.getUserName())
-                .nickName(registerFormDTO.getNickName())
-                .userGender("1")
-                .salt("VECaJx")
-                .status("1")
-                .avatar(Constants.USER_DEFAULT_AVATAR)
-                .password(DigestUtils.sha256Hex(registerFormDTO.getPassword() + "VECaJx"))
-                .lastLoginTime(LocalDateTime.now())
-                .build();
-        sysUserMapper.insert(sysUser);
-        //为用户分配角色
-        for (Long roleId : Constants.USER_DEFAULT_ROLE_LIST) {
-            SysUserRole sysUserRole = SysUserRole.builder()
-                    .userId(sysUser.getId())
-                    .roleId(roleId)
+        MonLogsLogin monLogsLogin = initRegisterLog(registerFormDTO);
+        try {
+            //注册用户信息
+            SysUser sysUser = SysUser.builder()
+                    .userName(registerFormDTO.getUserName())
+                    .nickName(registerFormDTO.getNickName())
+                    .userGender("1")
+                    .salt("VECaJx")
+                    .status("1")
+                    .avatar(Constants.USER_DEFAULT_AVATAR)
+                    .password(DigestUtils.sha256Hex(registerFormDTO.getPassword() + "VECaJx"))
+                    .lastLoginTime(LocalDateTime.now())
                     .build();
-            sysUserRoleService.save(sysUserRole);
+            sysUserMapper.insert(sysUser);
+            //为用户分配角色
+            for (Long roleId : Constants.USER_DEFAULT_ROLE_LIST) {
+                SysUserRole sysUserRole = SysUserRole.builder()
+                        .userId(sysUser.getId())
+                        .roleId(roleId)
+                        .build();
+                sysUserRoleService.save(sysUserRole);
+            }
+        }catch (Exception e){
+            monLogsLogin.setStatus(StringPools.ZERO);
+            monLogsLoginService.save(monLogsLogin);
+            throw new JinLinkException("用户注册失败");
+        }finally {
+            //新增注册日志
+            monLogsLoginService.save(monLogsLogin);
         }
         return true;
     }
 
     /**
-     * 初始化注册日志
+     * 初始化注册日志(第三方)
      *
      * @param loginFormDTO 用户对象
      * @return {@linkplain MonLogsLogin} 登录日志对象
      */
-    private MonLogsLogin initRegisterLog(oAuthLoginDTO loginFormDTO) {
+    private MonLogsLogin initRegisterOauthLog(oAuthLoginDTO loginFormDTO) {
         String ip = JakartaServletUtil.getClientIP(ServletHolderUtil.getRequest());
         return MonLogsLogin.builder()
                 .userName(loginFormDTO.getOpenId())
+                .status(StringPools.ONE)
+                .userAgent(ServletHolderUtil.getRequest().getHeader(RequestConstant.USER_AGENT))
+                .ip(ip)
+                .ipAddr(IPUtil.getIpAddr(ip))
+                .message("注册成功")
+                .build();
+    }
+
+    /**
+     * 初始化注册日志(账号密码)
+     *
+     * @param registerFormDTO 用户对象
+     * @return {@linkplain MonLogsLogin} 登录日志对象
+     */
+    private MonLogsLogin initRegisterLog(RegisterFormDTO registerFormDTO) {
+        String ip = JakartaServletUtil.getClientIP(ServletHolderUtil.getRequest());
+        return MonLogsLogin.builder()
+                .userName(registerFormDTO.getUserName())
                 .status(StringPools.ONE)
                 .userAgent(ServletHolderUtil.getRequest().getHeader(RequestConstant.USER_AGENT))
                 .ip(ip)

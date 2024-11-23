@@ -137,5 +137,5 @@ public class Constants {
     /**
      * 用户默认头像
      */
-    public static final String USER_DEFAULT_AVATAR = "";
+    public static final String USER_DEFAULT_AVATAR = "https://www.bluearchive.top/statics/system/defaultAvata.jpg";
 }
