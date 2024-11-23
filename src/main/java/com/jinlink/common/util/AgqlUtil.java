@@ -4,6 +4,9 @@ import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+import com.ibasco.agql.protocols.valve.source.query.SourceQueryClient;
+import com.ibasco.agql.protocols.valve.source.query.players.SourcePlayer;
+import com.ibasco.agql.protocols.valve.source.query.players.SourceQueryPlayerResponse;
 import com.jinlink.modules.game.entity.GameCommunity;
 import com.jinlink.modules.game.entity.GameMap;
 import com.jinlink.modules.game.entity.GameServer;
@@ -13,6 +16,7 @@ import com.jinlink.modules.game.entity.vo.SteamServerVo;
 import com.jinlink.modules.monitor.entity.vo.GameEntityVo;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -100,5 +104,18 @@ public class AgqlUtil {
             }
         }
         return sourceServerVo;
+    }
+
+    /**
+     * 获取服务器在线玩家列表
+     */
+    public static List<SourcePlayer> getGameUserInfoByServer(String ip, Integer port){
+        try (SourceQueryClient client = new SourceQueryClient()) {
+            InetSocketAddress address = new InetSocketAddress(ip, port);
+            SourceQueryPlayerResponse response = client.getPlayers(address).join();
+            return response.getResult();
+        }catch (Exception e){
+            return null;
+        }
     }
 }

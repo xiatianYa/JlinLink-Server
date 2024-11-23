@@ -1,10 +1,12 @@
 package com.jinlink.modules.game.entity.vo;
 
+import com.ibasco.agql.protocols.valve.source.query.players.SourcePlayer;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.checkerframework.checker.units.qual.C;
 
 import java.util.List;
 
@@ -57,5 +59,8 @@ public class SteamServerVo {
 
     @Schema(description = "服务器最大玩家数")
     private Integer maxPlayers;
+
+    @Schema(description = "服务器在线玩家信息列表")
+    private List<SourcePlayer> sourcePlayers;
 
 }

@@ -2,6 +2,7 @@ package com.jinlink.controller.game;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.bean.BeanUtil;
+import com.ibasco.agql.protocols.valve.source.query.players.SourcePlayer;
 import com.jinlink.common.api.Result;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
@@ -11,26 +12,18 @@ import com.jinlink.modules.game.entity.dto.GameServerUpdateDTO;
 import com.jinlink.modules.game.entity.vo.GameServerVo;
 import com.jinlink.modules.game.entity.vo.SourceServerVo;
 import com.jinlink.modules.game.entity.vo.SteamServerVo;
-import com.mybatisflex.core.paginate.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import com.jinlink.modules.game.entity.GameServer;
 import com.jinlink.modules.game.service.GameServerService;
-import org.springframework.web.bind.annotation.RestController;
+
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 游戏服务器表 控制层。
@@ -153,5 +146,16 @@ public class GameServerController {
     public Result<RPage<SteamServerVo>> getServerAllPage(@Parameter(description = "分页对象", required = true) @Valid PageQuery pageQuery,@Parameter(description = "查询对象", required = true) GameServerSearchDTO gameServerSearchDTO) {
         RPage<SteamServerVo> gameServiceServerAll = gameServerService.getServerAllPage(pageQuery,gameServerSearchDTO);
         return Result.data(gameServiceServerAll);
+    }
+
+    /**
+     * 查询所有服务器数据分页
+     */
+    @GetMapping("getServerOnlineUser")
+    @Operation(operationId = "8",summary = "查询服务器在线玩家列表")
+    @SaCheckPermission("game:gameServer:getServerAll")
+    public Result<List<SourcePlayer>> fetchGetServerOnlineUser(@RequestParam String addr) {
+        List<SourcePlayer> sourcePlayers = gameServerService.fetchGetServerOnlineUser(addr);
+        return Result.data(sourcePlayers);
     }
 }

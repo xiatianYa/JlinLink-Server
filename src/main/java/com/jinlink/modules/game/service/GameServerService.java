@@ -1,5 +1,6 @@
 package com.jinlink.modules.game.service;
 
+import com.ibasco.agql.protocols.valve.source.query.players.SourcePlayer;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
 import com.jinlink.modules.game.entity.GameCommunity;
@@ -35,4 +36,9 @@ public interface GameServerService extends IService<GameServer> {
      * 查询所有服务器数据分页
      */
     RPage<SteamServerVo> getServerAllPage(PageQuery pageQuery, GameServerSearchDTO gameServerSearchDTO);
+
+    /**
+     * 查询所有服务器数据分页
+     */
+    List<SourcePlayer> fetchGetServerOnlineUser(String addr);
 }

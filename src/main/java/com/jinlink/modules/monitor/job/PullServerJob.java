@@ -49,7 +49,7 @@ public class PullServerJob implements Job {
         //查询所有地图
         List<GameMap> gameMapList = gameMapService.list();
         // 创建一个固定大小的线程池
-        ExecutorService executor = Executors.newFixedThreadPool(gameCommunityList.size());
+        ExecutorService executor = Executors.newFixedThreadPool(4);
         // 存储Future对象的列表，以便稍后获取结果
         List<Future<SourceServerVo>> futures = new ArrayList<>();
         //遍历社区列表 获取服务器数据

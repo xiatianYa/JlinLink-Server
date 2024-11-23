@@ -3,6 +3,9 @@ package com.jinlink.modules.game.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson2.JSONObject;
+import com.ibasco.agql.protocols.valve.source.query.players.SourcePlayer;
+import com.jinlink.common.exception.JinLinkException;
+import com.jinlink.common.util.AgqlUtil;
 import com.jinlink.common.util.PageUtil;
 import com.jinlink.core.config.redis.service.RedisService;
 import com.jinlink.core.page.PageQuery;
@@ -123,6 +126,7 @@ public class GameServerServiceImpl extends ServiceImpl<GameServerMapper, GameSer
         for (JSONObject jsonObject : serverJsonList) {
             // 直接从 JSONObject 解析为 SourceServerVo 对象
             SourceServerVo sourceServerVo = jsonObject.toJavaObject(SourceServerVo.class);
+            //社区的服务器列表
             List<SteamServerVo> gameServerVoList = sourceServerVo.getGameServerVoList();
             for (SteamServerVo steamServerVo : gameServerVoList) {
                 //判断这个服务器是不是用户要的游戏
@@ -132,5 +136,12 @@ public class GameServerServiceImpl extends ServiceImpl<GameServerMapper, GameSer
             }
         }
         return RPage.build(new Page<>(PageUtil.getPage(steamServerVos,pageQuery.getCurrent(),pageQuery.getSize()),pageQuery.getCurrent(),pageQuery.getSize(),steamServerVos.size()));
+    }
+
+    @Override
+    public List<SourcePlayer> fetchGetServerOnlineUser(String addr) {
+        if(ObjectUtil.isNull(addr)) throw new JinLinkException("非法参数");
+        String[] split = addr.split(":");
+        return AgqlUtil.getGameUserInfoByServer(split[0], Integer.parseInt(split[1]));
     }
 }
