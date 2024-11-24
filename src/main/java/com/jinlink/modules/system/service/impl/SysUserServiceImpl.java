@@ -290,7 +290,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
         //通过用户OpenId 判断用户是否注册过
         SysUser one = sysUserMapper.selectOneByQuery(new QueryWrapper().eq("qq_open_id", loginFormDTO.getOpenId()));
-        if (StringPools.ZERO.equals(one.getStatus())) {
+        if (ObjectUtil.isNotNull(one) && StringPools.ZERO.equals(one.getStatus())) {
             throw new JinLinkException("当前用户 %s 已被禁止登录".formatted(one.getUserName()));
         }
         MonLogsLogin loginLogs = initRegisterOauthLog(loginFormDTO);;
