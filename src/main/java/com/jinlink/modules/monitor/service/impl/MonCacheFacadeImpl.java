@@ -1,5 +1,6 @@
 package com.jinlink.modules.monitor.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.jinlink.core.config.redis.service.RedisService;
 import com.jinlink.common.pool.StringPools;
 import com.jinlink.modules.monitor.entity.vo.MonCacheRedisVo;
@@ -36,6 +37,7 @@ public class MonCacheFacadeImpl implements IMonCacheFacade {
         long usedMemory = Long.parseLong(redisInfo.getProperty("used_memory"));
         // 最大内存
         String maxMemory = redisInfo.getProperty("maxmemory");
+        if (ObjectUtil.isNotNull(maxMemory)) maxMemory = "0";
         // 计算内存使用率
         BigDecimal memoryUsageRate = BigDecimal.ZERO;
         if (StringPools.ZERO.equals(maxMemory)) {
