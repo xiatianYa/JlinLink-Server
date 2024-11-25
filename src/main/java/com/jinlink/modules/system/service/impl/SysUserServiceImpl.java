@@ -47,6 +47,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -274,11 +275,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             // 读取响应
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+            // 读取响应，并指定InputStreamReader使用UTF-8编码
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
+                StringBuilder response = new StringBuilder();
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    qqBo= JSONObject.parseObject(line, QQBo.class);
+                    response.append(line);
                 }
+                // 假设QQBo是一个可以通过JSON字符串构造的对象
+                // 注意：这里应该处理整个响应字符串，而不是每一行单独解析
+                qqBo = JSONObject.parseObject(response.toString(), QQBo.class);
             }
             // 关闭连接
             conn.disconnect();
