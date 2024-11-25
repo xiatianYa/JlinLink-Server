@@ -37,7 +37,7 @@ public class MonCacheFacadeImpl implements IMonCacheFacade {
         long usedMemory = Long.parseLong(redisInfo.getProperty("used_memory"));
         // 最大内存
         String maxMemory = redisInfo.getProperty("maxmemory");
-        if (ObjectUtil.isNotNull(maxMemory)) maxMemory = "0";
+        if (ObjectUtil.isNull(maxMemory)) maxMemory = "0";
         // 计算内存使用率
         BigDecimal memoryUsageRate = BigDecimal.ZERO;
         if (StringPools.ZERO.equals(maxMemory)) {
