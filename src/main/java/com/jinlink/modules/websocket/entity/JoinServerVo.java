@@ -25,6 +25,12 @@ public class JoinServerVo implements Serializable {
     @Serial
     private static final long serialVersionUID = 5769107831011956328L;
 
+    @Schema(description = "服务器地址")
+    private String ip;
+
+    @Schema
+    private Integer port;
+
     @Schema(description = "在线玩家数")
     private Integer players;
 

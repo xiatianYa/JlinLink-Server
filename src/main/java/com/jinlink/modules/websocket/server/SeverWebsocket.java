@@ -136,6 +136,8 @@ public class SeverWebsocket {
                 return;
             }
             JoinServerVo build = JoinServerVo.builder()
+                    .ip(serverSearchDto.getIp())
+                    .port(serverSearchDto.getPort())
                     .players(responseData[0])
                     .maxPlayers(responseData[1])
                     .status(serverSearchDto.getMinPlayers() >= responseData[0])
