@@ -1,6 +1,7 @@
 package com.jinlink.modules.game.entity.dto;
 
 import com.jinlink.common.domain.BTPairs;
+import com.jinlink.core.domain.BaseVO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,13 +17,10 @@ import java.util.List;
 @Getter
 @Setter
 @Schema(name = "GameMapUpdateDTO", description = "游戏地图 修改 DTO 对象")
-public class GameMapUpdateDTO implements Serializable {
+public class GameMapUpdateDTO extends BaseVO {
 
     @Serial
     private static final long serialVersionUID = 3142177789879843872L;
-
-    @Schema(description = "ID")
-    private Long id;
 
     @Schema(description = "地图名称")
     private String mapName;

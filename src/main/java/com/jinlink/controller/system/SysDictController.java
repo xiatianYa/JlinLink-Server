@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import com.jinlink.modules.system.entity.SysDict;
 import com.jinlink.modules.system.service.SysDictService;
 import org.springframework.web.bind.annotation.RestController;
 import java.io.Serializable;

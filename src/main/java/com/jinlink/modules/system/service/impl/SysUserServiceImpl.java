@@ -6,7 +6,6 @@ import cn.hutool.captcha.LineCaptcha;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.extra.servlet.JakartaServletUtil;
-import cn.hutool.extra.servlet.ServletUtil;
 import com.alibaba.fastjson2.JSONObject;
 import com.jinlink.common.constants.Constants;
 import com.jinlink.common.constants.RequestConstant;

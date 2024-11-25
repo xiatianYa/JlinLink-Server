@@ -6,6 +6,8 @@ import com.jinlink.common.api.Result;
 import com.jinlink.common.domain.Options;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
+import com.jinlink.modules.game.entity.dto.GameGameAddDTO;
+import com.jinlink.modules.game.entity.dto.GameGameUpdateDTO;
 import com.jinlink.modules.game.entity.vo.GameGameVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -50,8 +52,8 @@ public class GameGameController {
     @PostMapping("save")
     @Operation(operationId = "1",summary = "新增游戏")
     @SaCheckPermission("game:gameGame:save")
-    public Result<Boolean> save(@Parameter(description = "游戏对象", required = true)@RequestBody GameGame gameGame) {
-        return Result.success("请求成功",gameGameService.save(gameGame));
+    public Result<Boolean> save(@Parameter(description = "游戏对象", required = true)@RequestBody GameGameAddDTO gameGame) {
+        return Result.success("请求成功",gameGameService.save(BeanUtil.copyProperties(gameGame, GameGame.class)));
     }
 
     /**
@@ -76,8 +78,8 @@ public class GameGameController {
     @PutMapping("update")
     @Operation(operationId = "3",summary = "修改游戏")
     @SaCheckPermission("game:gameGame:update")
-    public Result<Boolean> update(@Parameter(description = "游戏对象", required = true)@RequestBody GameGame gameGame) {
-        return Result.success("请求成功",gameGameService.updateById(gameGame));
+    public Result<Boolean> update(@Parameter(description = "游戏对象", required = true)@RequestBody GameGameUpdateDTO gameGame) {
+        return Result.success("请求成功",gameGameService.updateById(BeanUtil.copyProperties(gameGame, GameGame.class)));
     }
 
     /**

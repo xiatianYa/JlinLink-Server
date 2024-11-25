@@ -22,7 +22,7 @@ import lombok.experimental.SuperBuilder;
 public class GameGame extends BaseEntity {
 
     /**
-     * 游戏ID
+     * 游戏名称
      */
     private String gameName;
 
