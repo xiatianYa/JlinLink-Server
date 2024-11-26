@@ -5,6 +5,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
+import com.jinlink.common.constants.Constants;
 import com.jinlink.common.domain.LoginUser;
 import com.jinlink.common.exception.JinLinkException;
 import com.jinlink.common.util.udp.GameServerUtil;
@@ -174,7 +175,7 @@ public class SeverWebsocket {
      */
     @Scheduled(fixedRate = 10000)
     public void sendServerMessage(){
-        List<SourceServerVo> serverVos = redisService.getCacheList("serverVo");
+        List<SourceServerVo> serverVos = redisService.getCacheList(Constants.SERVER_VO_KEY);
         webSocketMap.forEach((k,v)->{
             try {
                 MessageVo build = MessageVo.builder()

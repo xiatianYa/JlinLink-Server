@@ -7,8 +7,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 /**
  * 文件处理工具类
@@ -227,5 +230,40 @@ public class FileUtils {
 
         // 使用String.format()保留两位小数
         return String.format("%.2f", sizeInMB);
+    }
+    /**
+     * 获取文件base64编码
+     *
+     * @param imageUrl      文件路径
+     * @param urlEncode 如果Content-Type是application/x-www-form-urlencoded时,传true
+     * @return base64编码信息，不带文件头
+     * @throws IOException IO异常
+     */
+    public static String getFileContentAsBase64(String imageUrl, boolean urlEncode) throws IOException {
+        try {
+            URL url = new URL(imageUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setDoOutput(true);
+            connection.connect();
+            InputStream is = connection.getInputStream();
+            byte[] buffer = new byte[1024];
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            int bytesRead;
+            while ((bytesRead = is.read(buffer)) != -1) {
+                baos.write(buffer, 0, bytesRead);
+            }
+            byte[] imageBytes = baos.toByteArray();
+            baos.close();
+            is.close();
+            String base64 = Base64.getEncoder().encodeToString(imageBytes);
+            if (urlEncode) {
+                base64 = URLEncoder.encode(base64, "utf-8");
+            }
+            return base64;
+        } catch (IOException e) {
+            System.out.println("网络图片获取失败:"+e.getMessage());
+            return null;
+        }
     }
 }

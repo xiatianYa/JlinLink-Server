@@ -138,4 +138,29 @@ public class Constants {
      * 用户默认头像
      */
     public static final String USER_DEFAULT_AVATAR = "https://www.bluearchive.top/statics/system/defaultAvata.jpg";
+
+    /**
+     * 服务器数据key
+     */
+    public static final String SERVER_VO_KEY = "serverVo";
+
+    /**
+     * 服务器查询图片地图
+     */
+    public static final String SERVER_QUERY_BG_URL = "https://www.bluearchive.top/statics/system/serverBg.jpeg";
+
+    /**
+     * 百度API_KEY
+     */
+    public static final String BAIDU_KEY = "baiduApiKey";
+
+    /**
+     * 百度API_KEY
+     */
+    public static final String BAIDU_API_KEY = "SGdRoH6go1LS6Yv8eyxoWpv7";
+
+    /**
+     * 百度SECRET_KEY
+     */
+    public static final String BAIDU_SECRET_KEY = "j3YpheLoPnlEfVlKfQlSmHo6zwQ8Csj9";
 }

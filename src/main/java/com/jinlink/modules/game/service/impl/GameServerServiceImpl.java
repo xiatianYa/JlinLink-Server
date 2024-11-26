@@ -5,7 +5,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson2.JSONObject;
 import com.ibasco.agql.protocols.valve.source.query.players.SourcePlayer;
 import com.jinlink.common.exception.JinLinkException;
-import com.jinlink.common.util.AgqlUtil;
+import com.jinlink.common.util.AgqlUtils;
 import com.jinlink.common.util.PageUtil;
 import com.jinlink.core.config.redis.service.RedisService;
 import com.jinlink.core.page.PageQuery;
@@ -142,6 +142,6 @@ public class GameServerServiceImpl extends ServiceImpl<GameServerMapper, GameSer
     public List<SourcePlayer> fetchGetServerOnlineUser(String addr) {
         if(ObjectUtil.isNull(addr)) throw new JinLinkException("非法参数");
         String[] split = addr.split(":");
-        return AgqlUtil.getGameUserInfoByServer(split[0], Integer.parseInt(split[1]));
+        return AgqlUtils.getGameUserInfoByServer(split[0], Integer.parseInt(split[1]));
     }
 }

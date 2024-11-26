@@ -14,8 +14,10 @@ import com.jinlink.modules.game.entity.dto.ExgMapDTO;
 import com.jinlink.modules.game.entity.vo.SourceServerVo;
 import com.jinlink.modules.game.entity.vo.SteamServerVo;
 import com.jinlink.modules.monitor.entity.vo.GameEntityVo;
+import net.mamoe.mirai.internal.deps.okhttp3.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -23,7 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class AgqlUtil {
+public class AgqlUtils {
+    static final OkHttpClient HTTP_CLIENT = new OkHttpClient().newBuilder().build();
 
     /**
      * 基于SteamWebApi获取服务器信息
@@ -115,6 +118,29 @@ public class AgqlUtil {
             SourceQueryPlayerResponse response = client.getPlayers(address).join();
             return response.getResult();
         }catch (Exception e){
+            return null;
+        }
+    }
+
+    /**
+     * 从用户的AK，SK生成鉴权签名（Access Token）
+     *
+     * @return 鉴权签名（Access Token）
+     */
+    public static String getAccessToken(String API_KEY,String SECRET_KEY){
+        MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
+        RequestBody body = RequestBody.create(mediaType, "grant_type=client_credentials&client_id=" + API_KEY
+                + "&client_secret=" + SECRET_KEY);
+        Request request = new Request.Builder()
+                .url("https://aip.baidubce.com/oauth/2.0/token")
+                .method("POST", body)
+                .addHeader("Content-Type", "application/x-www-form-urlencoded")
+                .build();
+        try {
+            Response response = HTTP_CLIENT.newCall(request).execute();
+            return JSONObject.parseObject(response.body().string()).getString("access_token");
+        }catch (IOException e){
+            System.out.println("签名获取失败:"+e.getMessage());
             return null;
         }
     }

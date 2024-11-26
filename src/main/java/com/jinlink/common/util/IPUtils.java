@@ -19,16 +19,16 @@ import java.io.InputStream;
  */
 
 @Slf4j
-public class IPUtil {
+public class IPUtils {
 
-    private IPUtil() {
+    private IPUtils() {
 
     }
 
     private static Searcher searcher = null;
 
     static {
-        try (InputStream ris = IPUtil.class.getResourceAsStream("/ip2region/data.xdb")) {
+        try (InputStream ris = IPUtils.class.getResourceAsStream("/ip2region/data.xdb")) {
             byte[] dbBinStr = FileCopyUtils.copyToByteArray(ris);
             searcher = Searcher.newWithBuffer(dbBinStr);
             log.info("Create content cached searcher success");

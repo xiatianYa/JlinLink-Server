@@ -11,9 +11,9 @@ import java.nio.charset.StandardCharsets;
  */
 
 @Slf4j
-public class DownloadUtil {
+public class DownloadUtils {
 
-    private DownloadUtil() {
+    private DownloadUtils() {
 
     }
 

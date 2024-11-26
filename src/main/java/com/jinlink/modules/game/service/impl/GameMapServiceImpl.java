@@ -5,7 +5,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson2.JSON;
 import com.jinlink.common.domain.BTPairs;
 import com.jinlink.common.exception.JinLinkException;
-import com.jinlink.common.util.AgqlUtil;
+import com.jinlink.common.util.AgqlUtils;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
 import com.jinlink.modules.game.entity.dto.ExgMapDTO;
@@ -49,7 +49,7 @@ public class GameMapServiceImpl extends ServiceImpl<GameMapMapper, GameMap> impl
                 .like("map_label", gameMapSearchDTO.getMapLabel())
                 .eq("type", gameMapSearchDTO.getType())
                 .eq("mode_id", gameMapSearchDTO.getModeId()));
-        List<ExgMapDTO> exgMaps = AgqlUtil.getExgMapApiServer();
+        List<ExgMapDTO> exgMaps = AgqlUtils.getExgMapApiServer();
         List<GameMap> records = paginate.getRecords();
         List<GameMapVo> gameMapVos = new ArrayList<>();
         records.forEach(item->{

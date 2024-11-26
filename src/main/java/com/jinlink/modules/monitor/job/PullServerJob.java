@@ -1,13 +1,13 @@
 package com.jinlink.modules.monitor.job;
 
 import cn.hutool.core.util.ObjectUtil;
-import com.jinlink.common.util.AgqlUtil;
+import com.jinlink.common.constants.Constants;
+import com.jinlink.common.util.AgqlUtils;
 import com.jinlink.core.config.redis.service.RedisService;
 import com.jinlink.modules.game.entity.GameCommunity;
 import com.jinlink.modules.game.entity.GameMap;
 import com.jinlink.modules.game.entity.GameOnlineStatistics;
 import com.jinlink.modules.game.entity.GameServer;
-import com.jinlink.modules.game.entity.vo.GameServerVo;
 import com.jinlink.modules.game.entity.vo.SourceServerVo;
 import com.jinlink.modules.game.service.GameCommunityService;
 import com.jinlink.modules.game.service.GameMapService;
@@ -56,7 +56,7 @@ public class PullServerJob implements Job {
         for (GameCommunity gameCommunity : gameCommunityList) {
             //获取服务器列表
             List<GameServer> serverList = gameServers.stream().filter(item -> item.getCommunityId().equals(gameCommunity.getId())).toList();
-            Callable<SourceServerVo> callable = () -> AgqlUtil.getSourceServerVoList(gameCommunity,serverList,gameMapList);
+            Callable<SourceServerVo> callable = () -> AgqlUtils.getSourceServerVoList(gameCommunity,serverList,gameMapList);
             Future<SourceServerVo> future = executor.submit(callable);
             futures.add(future);
         }
@@ -74,8 +74,8 @@ public class PullServerJob implements Job {
             }
         }
         //将数据存储进Redis中
-        redisService.deleteObject("serverVo");
-        if(ObjectUtil.isNotNull(serverVos) && ObjectUtil.isNotEmpty(serverVos)) redisService.setCacheList("serverVo",serverVos);
+        redisService.deleteObject(Constants.SERVER_VO_KEY);
+        if(ObjectUtil.isNotNull(serverVos) && ObjectUtil.isNotEmpty(serverVos)) redisService.setCacheList(Constants.SERVER_VO_KEY,serverVos);
         System.out.println("服务器信息获取成功!");
     }
 

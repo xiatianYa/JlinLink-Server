@@ -4,7 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.extra.servlet.JakartaServletUtil;
 import com.alibaba.fastjson2.JSON;
 import com.jinlink.common.constants.RequestConstant;
-import com.jinlink.common.util.IPUtil;
+import com.jinlink.common.util.IPUtils;
 import com.jinlink.modules.monitor.entity.MonLogsError;
 import com.jinlink.modules.monitor.entity.MonLogsOperation;
 import com.jinlink.modules.monitor.entity.dto.MonLogsOperationAddDTO;
@@ -106,7 +106,7 @@ public class OperationLogAspect {
                 .contentType(contentType)
                 .methodParams(JSON.toJSONString(arguments))
                 .ip(ip)
-                .ipAddr(IPUtil.getIpAddr(ip))
+                .ipAddr(IPUtils.getIpAddr(ip))
                 .userAgent(request.getHeader(RequestConstant.USER_AGENT))
                 .build());
     }

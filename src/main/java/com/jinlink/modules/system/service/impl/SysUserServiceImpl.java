@@ -16,7 +16,7 @@ import com.jinlink.common.util.StringUtils;
 import com.jinlink.core.config.redis.service.RedisService;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.common.pool.StringPools;
-import com.jinlink.common.util.IPUtil;
+import com.jinlink.common.util.IPUtils;
 import com.jinlink.core.util.ServletHolderUtil;
 import com.jinlink.modules.monitor.entity.MonLogsLogin;
 import com.jinlink.modules.monitor.service.MonLogsLoginService;
@@ -479,7 +479,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 .status(StringPools.ONE)
                 .userAgent(ServletHolderUtil.getRequest().getHeader(RequestConstant.USER_AGENT))
                 .ip(ip)
-                .ipAddr(IPUtil.getIpAddr(ip))
+                .ipAddr(IPUtils.getIpAddr(ip))
                 .message("注册成功")
                 .build();
     }
@@ -497,7 +497,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 .status(StringPools.ONE)
                 .userAgent(ServletHolderUtil.getRequest().getHeader(RequestConstant.USER_AGENT))
                 .ip(ip)
-                .ipAddr(IPUtil.getIpAddr(ip))
+                .ipAddr(IPUtils.getIpAddr(ip))
                 .message("注册成功")
                 .build();
     }
@@ -515,7 +515,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 .status(StringPools.ONE)
                 .userAgent(ServletHolderUtil.getRequest().getHeader(RequestConstant.USER_AGENT))
                 .ip(ip)
-                .ipAddr(IPUtil.getIpAddr(ip))
+                .ipAddr(IPUtils.getIpAddr(ip))
                 .message("登陆成功")
                 .build();
     }

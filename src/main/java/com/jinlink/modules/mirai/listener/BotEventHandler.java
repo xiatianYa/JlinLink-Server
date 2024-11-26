@@ -1,25 +1,98 @@
 package com.jinlink.modules.mirai.listener;
 
 import cn.hutool.core.util.ObjectUtil;
+import com.alibaba.fastjson2.JSONObject;
+import com.jinlink.common.constants.Constants;
+import com.jinlink.common.util.AgqlUtils;
+import com.jinlink.core.config.redis.service.RedisService;
+import com.jinlink.modules.game.entity.GameCommunity;
+import com.jinlink.modules.game.entity.vo.SourceServerVo;
+import com.jinlink.modules.game.service.GameCommunityService;
+import com.jinlink.modules.mirai.handle.BotMessageHandle;
+import com.mybatisflex.core.query.QueryWrapper;
+import jakarta.annotation.Resource;
 import kotlin.coroutines.CoroutineContext;
+import net.mamoe.mirai.contact.Group;
+import net.mamoe.mirai.contact.Member;
 import net.mamoe.mirai.event.EventHandler;
 import net.mamoe.mirai.event.SimpleListenerHost;
 import net.mamoe.mirai.event.events.*;
+import net.mamoe.mirai.message.data.MessageChain;
+import net.mamoe.mirai.message.data.PlainText;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.stereotype.Service;
 
+import java.util.List;
+
+/**
+ * Bot消息处理器
+ */
+@Service
 public class BotEventHandler extends SimpleListenerHost {
+
+    /**RedisService*/
+    private static RedisService redisService;
+
+    /**GameCommunityService*/
+    private static GameCommunityService gameCommunityService;
+
+    @Resource
+    public void setRedisService(RedisService redisService) {
+        BotEventHandler.redisService = redisService;
+    }
+
+    @Resource
+    public void setGameCommunityService(GameCommunityService gameCommunityService) {
+        BotEventHandler.gameCommunityService = gameCommunityService;
+    }
+
     @Override
     public void handleException(@NotNull CoroutineContext context, @NotNull Throwable exception) {
         super.handleException(context, exception);
     }
 
     /**
-     * 接收到消息(群,好友消息,群临时会话消息,陌生人消息,其他客户端消息)
+     * 群消息
      * @param event 消息对象
      */
     @EventHandler
-    public void onMessageEvent(@NotNull MessageEvent event) {
-        System.out.println(event.getMessage());
+    public void onGroupMessageEvent(@NotNull GroupMessageEvent event) {
+        // 发送的消息
+        MessageChain message = event.getMessage();
+        // 接收消息的群
+        Group group = event.getGroup();
+        // 发送消息的人
+        Member sender = event.getSender();
+        // 判断消息是否违规
+        try {
+            String baiduKey = redisService.getCacheObject(Constants.BAIDU_KEY);
+            if (BotMessageHandle.ProhibitHandle(message,group,sender,baiduKey)) return;
+        }catch (Exception e){
+            //重新获取百度Key
+            String accessToken = AgqlUtils.getAccessToken(Constants.BAIDU_API_KEY, Constants.BAIDU_SECRET_KEY);
+            redisService.setCacheObject(Constants.BAIDU_KEY,accessToken);
+            System.out.println("图标检测失败!");
+        }
+        // 根据消息判断 转发消息
+        if (message.get(1) instanceof PlainText) {
+            String msg = ((PlainText) message.get(1)).getContent();
+            //判断其是否在查询服务器(转为大写)
+            GameCommunity gameCommunity = gameCommunityService.getOne(new QueryWrapper().eq("community_name", msg.toLowerCase()));
+            //有服务器消息
+            if (ObjectUtil.isNotNull(gameCommunity)) {
+                // 服务器数据列表
+                List<JSONObject> serverJsonList = redisService.getCacheList(Constants.SERVER_VO_KEY);
+                for (JSONObject jsonObject : serverJsonList) {
+                    // 直接从 JSONObject 解析为 SourceServerVo 对象
+                    SourceServerVo sourceServerVo = jsonObject.toJavaObject(SourceServerVo.class);
+                    if (sourceServerVo.getGameCommunity().getId().equals(gameCommunity.getId())) {
+                        //绘制图片 发送消息
+                        BotMessageHandle.ServerHandle(sourceServerVo,group);
+                        return;
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -50,5 +123,23 @@ public class BotEventHandler extends SimpleListenerHost {
         if (ObjectUtil.isNotNull(event.getGroup())){
             event.getGroup().sendMessage("Sensen " + event.getFromNick() + "申请加入本群!");
         }
+    }
+
+    /**
+     * 群成员被禁言
+     * @param event 消息对象
+     */
+    @EventHandler
+    public void onMemberMuteEvent(@NotNull MemberMuteEvent event) {
+        event.getGroup().sendMessage(event.getMember().getNick()+"你怎么不说话了?");
+    }
+
+    /**
+     * 群成员被取消禁言
+     * @param event 消息对象
+     */
+    @EventHandler
+    public void onMemberUnmuteEvent(@NotNull MemberUnmuteEvent event) {
+        event.getGroup().sendMessage(event.getMember().getNick()+"说话说话!");
     }
 }
