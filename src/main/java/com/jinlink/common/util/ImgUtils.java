@@ -1,5 +1,6 @@
 package com.jinlink.common.util;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.jinlink.modules.game.entity.vo.SteamServerVo;
 
 import javax.imageio.ImageIO;
@@ -10,6 +11,7 @@ import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 
 public class ImgUtils extends JFrame {
@@ -46,13 +48,28 @@ public class ImgUtils extends JFrame {
             for (int col = 0; col < 6 && row * 6 + col < gameServerVoList.size(); col++) {
                 int x = margin + col * (boxWidth + margin);
                 int y = margin + row * (boxHeight + margin);
-                //添加盒子
-                RoundRectangle2D.Double roundRect = new RoundRectangle2D.Double(x, y, boxWidth, boxHeight, 20, 20);
-                roundedG2d.setColor(semiTransparentGray); // 设置圆角矩形的颜色
-                roundedG2d.fill(roundRect);
 
                 //给盒子里添加文字
                 SteamServerVo steamServerVo = gameServerVoList.get(row * 6 + col);
+
+                //添加盒子背景
+                try {
+                    if (ObjectUtil.isNotNull(steamServerVo.getMapUrl())){
+                        BufferedImage boxImage = resizeImage(steamServerVo.getMapUrl(), boxWidth, boxHeight);
+                        g2d.drawImage(boxImage, x, y, boxWidth, boxHeight, null);
+                    }else{
+                        //添加盒子
+                        RoundRectangle2D.Double roundRect = new RoundRectangle2D.Double(x, y, boxWidth, boxHeight, 0, 0);
+                        roundedG2d.setColor(semiTransparentGray); // 设置圆角矩形的颜色
+                        roundedG2d.fill(roundRect);
+                    }
+                }catch (Exception e){
+                    System.out.println("图片绘制失败");
+                }
+
+                // 在盒子顶部添加加载条
+                drawLoadingBar(g2d,x,y, steamServerVo.getPlayers(),steamServerVo.getMaxPlayers(),boxWidth,10);
+
                 roundedG2d.setColor(Color.WHITE);
                 String serverName = steamServerVo.getServerName();
                 roundedG2d.drawString(serverName, x + 5, y + 40);
@@ -63,8 +80,6 @@ public class ImgUtils extends JFrame {
                 String label="地图译名:"+steamServerVo.getMapLabel();
                 roundedG2d.drawString(label, x+5,y+130);
 
-                // 在盒子顶部添加加载条
-                drawLoadingBar(g2d,x,y, steamServerVo.getPlayers(),steamServerVo.getMaxPlayers(),boxWidth,10);
             }
         }
 
@@ -100,7 +115,7 @@ public class ImgUtils extends JFrame {
         int loadBarY = y + 10 - loadBarHeight;
 
         // 创建加载条矩形
-        RoundRectangle2D loadBar = new RoundRectangle2D.Double(x, loadBarY, loadBarWidth, loadBarHeight,20,20);
+        RoundRectangle2D loadBar = new RoundRectangle2D.Double(x, loadBarY, loadBarWidth, loadBarHeight,0,0);
 
         // 设置颜色并绘制加载条
         if (loadBarMaxWidth <= 118) {
@@ -113,5 +128,18 @@ public class ImgUtils extends JFrame {
             g2d.setColor(new Color(255, 79, 0));
         }
         g2d.fill(loadBar);
+    }
+
+    /**
+     * 下载网络图片 调整图片大学奥
+     */
+    public static BufferedImage resizeImage(String imageUrl, int targetWidth, int targetHeight) throws IOException {
+        BufferedImage originalImage = ImageIO.read(new URL(imageUrl));
+        BufferedImage resizedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = resizedImage.createGraphics();
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g2d.drawImage(originalImage.getScaledInstance(targetWidth, targetHeight, java.awt.Image.SCALE_SMOOTH), 0, 0, null);
+        g2d.dispose();
+        return resizedImage;
     }
 }

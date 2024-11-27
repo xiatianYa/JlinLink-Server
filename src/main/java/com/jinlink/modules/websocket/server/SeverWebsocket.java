@@ -83,12 +83,12 @@ public class SeverWebsocket {
         }catch (Exception e){
             System.out.println("用户未登录!");
         }
-        SeverWebsocket severWebsocket = webSocketMap.get(loginUser.getId());
-        if (ObjectUtil.isNotNull(severWebsocket))webSocketMap.remove(loginUser.getId());
-        webSocketMap.remove(loginUser.getId());
-        webSocketMap.put(loginUser.getId(),this);
+        SeverWebsocket severWebsocket = webSocketMap.get(this.loginUser.getId());
+        if (ObjectUtil.isNotNull(severWebsocket))webSocketMap.remove(this.loginUser.getId());
+        webSocketMap.remove(this.loginUser.getId());
+        webSocketMap.put(this.loginUser.getId(),this);
         //用户登录
-        System.out.println("用户:"+loginUser.getNickName()+"连接成功");
+        System.out.println("用户:"+this.loginUser.getNickName()+"连接成功");
         //给自己发登录成功的消息
         MessageVo messageVo = MessageVo.builder()
                 .sendUser(this.loginUser)
@@ -103,11 +103,11 @@ public class SeverWebsocket {
      */
     @OnClose
     public void onClose() {
-        if (ObjectUtil.isNotNull(this.loginUser) && webSocketMap.containsKey(loginUser.getId())) {
+        if (ObjectUtil.isNotNull(this.loginUser) && webSocketMap.containsKey(this.loginUser.getId())) {
             //删除当前连接
-            webSocketMap.remove(loginUser.getId());
+            webSocketMap.remove(this.loginUser.getId());
             //用户断开
-            System.out.println("用户:"+loginUser.getNickName()+"连接断开");
+            System.out.println("用户:"+this.loginUser.getNickName()+"连接断开");
         }
     }
 

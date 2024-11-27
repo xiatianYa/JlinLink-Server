@@ -14,8 +14,8 @@ import org.springframework.stereotype.Component;
 public class MiraiStart implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        Bot bot = BotFactory.INSTANCE.newBot(2905684658L, BotAuthorization.byQRCode(), botConfiguration -> {
-            botConfiguration.setProtocol(BotConfiguration.MiraiProtocol.MACOS);
+        Bot bot = BotFactory.INSTANCE.newBot(3815829425L, BotAuthorization.byQRCode(), botConfiguration -> {
+            botConfiguration.setProtocol(BotConfiguration.MiraiProtocol.ANDROID_WATCH);
         });
 
         bot.login();
