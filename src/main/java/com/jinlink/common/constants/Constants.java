@@ -163,4 +163,13 @@ public class Constants {
      * 百度SECRET_KEY
      */
     public static final String BAIDU_SECRET_KEY = "j3YpheLoPnlEfVlKfQlSmHo6zwQ8Csj9";
+
+    /**
+     * 统用状态枚举(成功)
+     */
+    public static final String COMMON_SUCCESS_STATUS = "1";
+    /**
+     * 统用状态枚举(失败)
+     */
+    public static final String COMMON_FAIL_STATUS = "0";
 }

@@ -36,11 +36,11 @@ public class Codegen {
                 .setSince("1.0.0");
 
         //设置根包
-        globalConfig.setBasePackage("com.jinlink.modules.game");
+        globalConfig.setBasePackage("com.jinlink.modules.bot");
 
         //设置表前缀和只生成哪些表
         globalConfig.setTablePrefix("tb_");
-        globalConfig.setGenerateTable("game_online_statistics");
+        globalConfig.setGenerateTable("bot_map_order");
 
         //设置生成 entity 并启用 Lombok
         globalConfig.setEntityGenerateEnable(true);
@@ -77,7 +77,7 @@ public class Codegen {
         ColumnConfig columnConfig = new ColumnConfig();
         columnConfig.setLarge(true);
         columnConfig.setVersion(true);
-        globalConfig.setColumnConfig("game_online_statistics", columnConfig);
+        globalConfig.setColumnConfig("bot_map_order", columnConfig);
 
         return globalConfig;
     }

@@ -1,6 +1,6 @@
 package com.jinlink;
 
-import com.jinlink.modules.mirai.listener.BotEventHandler;
+import com.jinlink.modules.bot.listener.BotEventHandler;
 import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.BotFactory;
 import net.mamoe.mirai.auth.BotAuthorization;
@@ -13,9 +13,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class MiraiStart implements ApplicationRunner {
     @Override
-    public void run(ApplicationArguments args) throws Exception {
-        Bot bot = BotFactory.INSTANCE.newBot(3815829425L, BotAuthorization.byQRCode(), botConfiguration -> {
-            botConfiguration.setProtocol(BotConfiguration.MiraiProtocol.ANDROID_WATCH);
+    public void run(ApplicationArguments args) {
+        Bot bot = BotFactory.INSTANCE.newBot(2905684658L, BotAuthorization.byPassword("sr2539195984"), botConfiguration -> {
+            botConfiguration.setProtocol(BotConfiguration.MiraiProtocol.IPAD);
         });
 
         bot.login();

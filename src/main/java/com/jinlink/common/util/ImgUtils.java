@@ -72,13 +72,13 @@ public class ImgUtils extends JFrame {
 
                 roundedG2d.setColor(Color.WHITE);
                 String serverName = steamServerVo.getServerName();
-                roundedG2d.drawString(serverName, x + 5, y + 40);
+                roundedG2d.drawString(serverName, x + 5, y + 35);
                 String onLineUser="在线玩家("+steamServerVo.getPlayers()+"/"+steamServerVo.getMaxPlayers()+")";
-                roundedG2d.drawString(onLineUser, x+5,y+70);
+                roundedG2d.drawString(onLineUser, x+5,y+65);
                 String map="地图名:"+steamServerVo.getMapName();
-                roundedG2d.drawString(map, x+5,y+100);
+                roundedG2d.drawString(map, x+5,y+95);
                 String label="地图译名:"+steamServerVo.getMapLabel();
-                roundedG2d.drawString(label, x+5,y+130);
+                roundedG2d.drawString(label, x+5,y+125);
 
             }
         }

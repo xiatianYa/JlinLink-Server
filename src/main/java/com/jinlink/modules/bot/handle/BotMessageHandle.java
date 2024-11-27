@@ -1,4 +1,4 @@
-package com.jinlink.modules.mirai.handle;
+package com.jinlink.modules.bot.handle;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.jinlink.common.util.ImgUtils;

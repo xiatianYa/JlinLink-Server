@@ -4,14 +4,12 @@ import com.alibaba.fastjson2.JSONObject;
 import com.jinlink.common.util.BiliUtils;
 import com.jinlink.common.util.file.ImageUtils;
 import com.jinlink.modules.game.entity.GameLive;
-import com.jinlink.modules.game.mapper.GameLiveMapper;
 import com.jinlink.modules.game.service.GameLiveService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +33,7 @@ public class DailyCronJob implements Job {
 
     @Override
     @Transactional
-    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+    public void execute(JobExecutionContext jobExecutionContext) {
         List<GameLive> gameLives = gameLiveService.list();
         for (GameLive gameLive : gameLives) {
             String bgPath = JSONObject.parseObject(BiliUtils.getBiliLiveApi(gameLive.getUid()))

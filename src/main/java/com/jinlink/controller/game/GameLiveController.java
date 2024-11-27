@@ -152,7 +152,7 @@ public class GameLiveController {
             gameLiveVo.setBiliVo(biliVo);
             gameLiveVos.add(gameLiveVo);
         }
-        gameLiveVos.sort(new Comparator<GameLiveVo>() {
+        gameLiveVos.sort(new Comparator<>() {
             @Override
             public int compare(GameLiveVo o1, GameLiveVo o2) {
                 // 假设你想要升序排序
