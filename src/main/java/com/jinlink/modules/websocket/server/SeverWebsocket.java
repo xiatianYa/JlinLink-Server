@@ -74,11 +74,15 @@ public class SeverWebsocket {
         this.session = session;
         //根据token获取登录用户信息
         Object loginId = StpUtil.getLoginIdByToken(token);
-        LoginUser loginUser = GlobalUserHolder.getUserById(loginId);
-        if (ObjectUtil.isNull(loginUser) || !StpUtil.isLogin(loginId)){
-            throw new JinLinkException("用户未登录");
+        try {
+            LoginUser loginUser = GlobalUserHolder.getUserById(loginId);
+            if (ObjectUtil.isNull(loginUser) || !StpUtil.isLogin(loginId)){
+                throw new JinLinkException("用户未登录!");
+            }
+            this.loginUser = loginUser;
+        }catch (Exception e){
+            System.out.println("用户未登录!");
         }
-        this.loginUser = loginUser;
         SeverWebsocket severWebsocket = webSocketMap.get(loginUser.getId());
         if (ObjectUtil.isNotNull(severWebsocket))webSocketMap.remove(loginUser.getId());
         webSocketMap.remove(loginUser.getId());

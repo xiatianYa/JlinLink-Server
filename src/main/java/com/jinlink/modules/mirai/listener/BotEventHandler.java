@@ -3,7 +3,6 @@ package com.jinlink.modules.mirai.listener;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson2.JSONObject;
 import com.jinlink.common.constants.Constants;
-import com.jinlink.common.util.AgqlUtils;
 import com.jinlink.core.config.redis.service.RedisService;
 import com.jinlink.modules.game.entity.GameCommunity;
 import com.jinlink.modules.game.entity.vo.SourceServerVo;
@@ -64,15 +63,15 @@ public class BotEventHandler extends SimpleListenerHost {
         // 发送消息的人
         Member sender = event.getSender();
         // 判断消息是否违规
-        try {
-            String baiduKey = redisService.getCacheObject(Constants.BAIDU_KEY);
-            if (BotMessageHandle.ProhibitHandle(message,group,sender,baiduKey)) return;
-        }catch (Exception e){
-            //重新获取百度Key
-            String accessToken = AgqlUtils.getAccessToken(Constants.BAIDU_API_KEY, Constants.BAIDU_SECRET_KEY);
-            redisService.setCacheObject(Constants.BAIDU_KEY,accessToken);
-            System.out.println("图标检测失败!");
-        }
+//        try {
+//            String baiduKey = redisService.getCacheObject(Constants.BAIDU_KEY);
+//            if (BotMessageHandle.ProhibitHandle(message,group,sender,baiduKey)) return;
+//        }catch (Exception e){
+//            //重新获取百度Key
+//            String accessToken = AgqlUtils.getAccessToken(Constants.BAIDU_API_KEY, Constants.BAIDU_SECRET_KEY);
+//            redisService.setCacheObject(Constants.BAIDU_KEY,accessToken);
+//            System.out.println("图标检测失败!");
+//        }
         // 根据消息判断 转发消息
         if (message.get(1) instanceof PlainText) {
             String msg = ((PlainText) message.get(1)).getContent();

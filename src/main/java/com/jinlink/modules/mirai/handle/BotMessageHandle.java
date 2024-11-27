@@ -1,17 +1,12 @@
 package com.jinlink.modules.mirai.handle;
 
 import cn.hutool.core.util.ObjectUtil;
-import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONObject;
 import com.jinlink.common.util.ImgUtils;
-import com.jinlink.common.util.file.FileUtils;
 import com.jinlink.modules.game.entity.vo.SourceServerVo;
 import lombok.SneakyThrows;
 import net.mamoe.mirai.contact.Group;
 import net.mamoe.mirai.contact.Member;
 import net.mamoe.mirai.contact.MemberPermission;
-import net.mamoe.mirai.contact.NormalMember;
-import net.mamoe.mirai.internal.deps.okhttp3.*;
 import net.mamoe.mirai.message.data.*;
 import net.mamoe.mirai.utils.ExternalResource;
 
@@ -28,6 +23,7 @@ public class BotMessageHandle {
         // 构建服务器查询数据图片
         ExternalResource externalResource = null;
         try {
+            group.sendMessage("服务器消息获取中...");
             // 记录开始时间
             long startTime = System.currentTimeMillis();
             File imgBuilder = ImgUtils.serverImgBuilder(sourceServerVo.getGameServerVoList());
@@ -94,35 +90,6 @@ public class BotMessageHandle {
      * 检测图片是否合法
      */
     public static void prohibitImage(Group group, MessageChain message, Member sender, Image Img, String baiduKey) throws IOException {
-        //获取图片
-        String imageUrl = Image.queryUrl(Img);
-        MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
-        String fileContentAsBase64 = FileUtils.getFileContentAsBase64(imageUrl, true);
-        RequestBody body = RequestBody.create(mediaType, "image=" + fileContentAsBase64);
-        Request request = new Request.Builder()
-                .url("https://aip.baidubce.com/rest/2.0/solution/v1/img_censor/v2/user_defined?access_token=" + baiduKey)
-                .method("POST", body)
-                .addHeader("Content-Type", "application/x-www-form-urlencoded")
-                .addHeader("Accept", "application/json")
-                .build();
-        Response response = new OkHttpClient().newBuilder().build().newCall(request).execute();
-        JSONObject rootNode = JSON.parseObject(response.body().string());
-        if (!rootNode.get("conclusion").equals("合规")) {
-            try {
-                JSONObject dataNode = (JSONObject) rootNode.getJSONArray("data").get(0);
-                sender.mute(60);
-                //获取管理员对象
-                NormalMember owner = group.getOwner();
-                //向管理员发送违规图片
-                MessageChainBuilder messageChainBuilder = new MessageChainBuilder();
-                messageChainBuilder.append("违规人员QQ号 : ").append(String.valueOf(sender.getId()));
-                messageChainBuilder.append(Img);
-                owner.sendMessage(messageChainBuilder.build());
-                //发送违规信息
-                sendProhibit(message,group, "禁止发违规图片(原因:" + dataNode.get("msg") + ",发起者:" + sender.getId() + ")");
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
+
     }
 }
