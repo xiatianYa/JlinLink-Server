@@ -32,4 +32,9 @@ public interface GameCommunityService extends IService<GameCommunity> {
      * 根据主键删除游戏社区表。
      */
     Boolean removeCommunityById(Serializable id);
+
+    /**
+     * 查询全部社区名称。
+     */
+    List<String> getCommunityNames();
 }

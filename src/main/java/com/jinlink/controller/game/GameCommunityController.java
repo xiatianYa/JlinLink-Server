@@ -128,4 +128,13 @@ public class GameCommunityController {
     public Result<List<Options<String>>> allCommunityNames() {
         return Result.success("请求成功",gameCommunityService.getAllCommunityNames());
     }
+
+    /**
+     * 查询全部社区名称。
+     */
+    @GetMapping("getCommunityNames")
+    @Operation(operationId = "8",summary = "查询全部社区名称")
+    public Result<List<String>> getCommunityNames() {
+        return Result.success("请求成功",gameCommunityService.getCommunityNames());
+    }
 }

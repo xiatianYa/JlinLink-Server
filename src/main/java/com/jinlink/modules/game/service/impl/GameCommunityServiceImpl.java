@@ -69,4 +69,13 @@ public class GameCommunityServiceImpl extends ServiceImpl<GameCommunityMapper, G
         }
         return removeById(id);
     }
+
+    /**
+     * 查询全部社区名称。
+     */
+    @Override
+    public List<String> getCommunityNames() {
+        List<GameCommunity> gameCommunities = gameCommunityMapper.selectAll();
+        return gameCommunities.stream().map(GameCommunity::getCommunityName).toList();
+    }
 }
