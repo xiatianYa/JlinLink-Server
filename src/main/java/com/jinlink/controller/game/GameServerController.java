@@ -128,7 +128,6 @@ public class GameServerController {
      */
     @GetMapping("getServerAll")
     @Operation(operationId = "6",summary = "查询所有服务器数据")
-    @SaCheckPermission("game:gameServer:getServerAll")
     public Result<List<SourceServerVo>> getServerAll(@Parameter(description = "查询对象", required = true) GameServerSearchDTO gameServerSearchDTO) {
         List<SourceServerVo> gameServiceServerAll = gameServerService.getServerAll(gameServerSearchDTO);
         return Result.data(gameServiceServerAll);
