@@ -41,4 +41,10 @@ public interface GameServerService extends IService<GameServer> {
      * 查询所有服务器数据分页
      */
     List<SourcePlayer> fetchGetServerOnlineUser(String addr);
+
+
+    /**
+     * 查询所有服务器数据(Json)
+     */
+    String getServerAllJson();
 }

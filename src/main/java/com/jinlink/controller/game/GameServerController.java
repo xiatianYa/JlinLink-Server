@@ -157,4 +157,13 @@ public class GameServerController {
         List<SourcePlayer> sourcePlayers = gameServerService.fetchGetServerOnlineUser(addr);
         return Result.data(sourcePlayers);
     }
+
+    /**
+     * 查询所有服务器数据(Json)
+     */
+    @GetMapping("getServerAllJson")
+    @Operation(operationId = "8",summary = "查询服务器(Json)")
+    public String getServerAllJson(){
+        return gameServerService.getServerAllJson();
+    }
 }

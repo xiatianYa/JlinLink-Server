@@ -13,6 +13,7 @@ import com.jinlink.core.page.RPage;
 import com.jinlink.modules.game.entity.*;
 import com.jinlink.modules.game.entity.dto.GameServerSearchDTO;
 import com.jinlink.modules.game.entity.vo.GameServerVo;
+import com.jinlink.modules.game.entity.vo.SourceServerJsonVo;
 import com.jinlink.modules.game.entity.vo.SourceServerVo;
 import com.jinlink.modules.game.entity.vo.SteamServerVo;
 import com.jinlink.modules.game.service.*;
@@ -143,5 +144,24 @@ public class GameServerServiceImpl extends ServiceImpl<GameServerMapper, GameSer
         if(ObjectUtil.isNull(addr)) throw new JinLinkException("非法参数");
         String[] split = addr.split(":");
         return AgqlUtils.getGameUserInfoByServer(split[0], Integer.parseInt(split[1]));
+    }
+
+    @Override
+    public String getServerAllJson() {
+        // 从 Redis 缓存中获取服务器 JSON 数据列表
+        List<JSONObject> serverJsonList = redisService.getCacheList("serverVo");
+        // 返回的数据列表
+        List<SourceServerJsonVo> serverVos = new ArrayList<>();
+        for (JSONObject jsonObject : serverJsonList) {
+            // 直接从 JSONObject 解析为 SourceServerVo 对象
+            SourceServerVo sourceServerVo = jsonObject.toJavaObject(SourceServerVo.class);
+            SourceServerJsonVo build = SourceServerJsonVo.builder()
+                    .communityName(sourceServerVo.getGameCommunity().getCommunityName().toLowerCase())
+                    .onLineUserNumber(sourceServerVo.getOnLineUserNumber())
+                    .gameServerVoList(sourceServerVo.getGameServerVoList())
+                    .build();
+            serverVos.add(build);
+        }
+        return JSONObject.toJSONString(serverVos);
     }
 }
