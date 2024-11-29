@@ -76,6 +76,6 @@ public class GameCommunityServiceImpl extends ServiceImpl<GameCommunityMapper, G
     @Override
     public List<String> getCommunityNames() {
         List<GameCommunity> gameCommunities = gameCommunityMapper.selectAll();
-        return gameCommunities.stream().map(GameCommunity::getCommunityName).toList();
+        return gameCommunities.stream().map(GameCommunity::getCommunityName).map(String::toLowerCase).toList();
     }
 }
