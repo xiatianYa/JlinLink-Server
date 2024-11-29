@@ -9,6 +9,8 @@ import com.jinlink.modules.game.entity.vo.GameMapVo;
 import com.mybatisflex.core.service.IService;
 import com.jinlink.modules.game.entity.GameMap;
 
+import java.util.List;
+
 /**
  * 游戏地图表 服务层。
  *
@@ -30,4 +32,9 @@ public interface GameMapService extends IService<GameMap> {
      * 根据主键更新游戏地图表。
      */
     Boolean updateGameMap(GameMapUpdateDTO gameMapUpdateDTO);
+
+    /**
+     * 查询所有游戏地图名称。
+     */
+    List<String> listMapName();
 }

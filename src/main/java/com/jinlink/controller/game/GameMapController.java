@@ -120,4 +120,15 @@ public class GameMapController {
         return Result.data(gameModeVoRPage);
     }
 
+    /**
+     * 查询所有游戏地图名称。
+     *
+     * @return 所有数据
+     */
+    @GetMapping("listMapName")
+    @Operation(operationId = "7",summary = "获取游戏地图名称")
+    public Result<List<String>> listMapName() {
+        return Result.data(gameMapService.listMapName());
+    }
+
 }

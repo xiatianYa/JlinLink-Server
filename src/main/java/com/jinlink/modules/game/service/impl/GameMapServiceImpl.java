@@ -114,4 +114,12 @@ public class GameMapServiceImpl extends ServiceImpl<GameMapMapper, GameMap> impl
         }
         return updateById(gameMap);
     }
+
+    /**
+     * 查询所有游戏地图名称。
+     */
+    @Override
+    public List<String> listMapName() {
+        return gameMapMapper.selectAll().stream().map(GameMap::getMapName).toList();
+    }
 }
