@@ -1,7 +1,5 @@
 package com.jinlink.modules.websocket.entity;
 
-import com.jinlink.common.domain.LoginUser;
-import com.jinlink.modules.game.entity.vo.GameServerVo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;

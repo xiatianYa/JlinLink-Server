@@ -7,7 +7,6 @@ import com.jinlink.core.page.PageQuery;
 import com.jinlink.modules.system.entity.dto.SysDictItemAddDTO;
 import com.jinlink.modules.system.entity.dto.SysDictItemSearchDTO;
 import com.jinlink.modules.system.entity.dto.SysDictItemUpdateDTO;
-import com.jinlink.modules.system.entity.dto.SysDictUpdateDTO;
 import com.jinlink.modules.system.entity.vo.SysDictItemVo;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
