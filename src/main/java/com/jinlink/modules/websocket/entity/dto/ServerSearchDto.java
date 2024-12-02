@@ -23,6 +23,8 @@ public class ServerSearchDto extends BaseVO {
     private Integer port;
     @Schema(description = "最小在线数")
     private Integer minPlayers;
+    @Schema(description = "最大在线人数")
+    private Integer maxPlayers;
     @Schema(description = "返回码")
     private String code;
     @Schema(description = "返回信息")

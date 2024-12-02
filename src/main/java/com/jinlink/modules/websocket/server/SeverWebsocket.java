@@ -126,9 +126,10 @@ public class SeverWebsocket {
                 responseData= GameServerUtil.sendAndReceiveUDP(serverSearchDto.getIp(), serverSearchDto.getPort());
                 // 缓存50ms
                if (responseData != null && responseData.length > 0) {
-                   expireCacheMap.put(serverSearchDto.getIp()+":"+serverSearchDto.getPort(),responseData,100,TimeUnit.MILLISECONDS);
+                   expireCacheMap.put(serverSearchDto.getIp()+":"+serverSearchDto.getPort(),responseData,200,TimeUnit.MILLISECONDS);
                }else{
-                   expireCacheMap.put(serverSearchDto.getIp()+":"+serverSearchDto.getPort(),null,5000,TimeUnit.MILLISECONDS);
+                   responseData = new Integer[]{serverSearchDto.getMaxPlayers(),serverSearchDto.getMaxPlayers()};
+                   expireCacheMap.put(serverSearchDto.getIp()+":"+serverSearchDto.getPort(),responseData,3000,TimeUnit.MILLISECONDS);
                }
             }
             //返回数据为null 获取失败
