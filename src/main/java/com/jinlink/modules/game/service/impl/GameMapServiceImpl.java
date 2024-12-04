@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson2.JSON;
 import com.jinlink.common.domain.BTPairs;
+import com.jinlink.common.domain.Options;
 import com.jinlink.common.exception.JinLinkException;
 import com.jinlink.common.util.AgqlUtils;
 import com.jinlink.core.page.PageQuery;
@@ -121,5 +122,19 @@ public class GameMapServiceImpl extends ServiceImpl<GameMapMapper, GameMap> impl
     @Override
     public List<String> listMapName() {
         return gameMapMapper.selectAll().stream().map(GameMap::getMapName).toList();
+    }
+
+    /**
+     * 查询全部地图配置项。
+     */
+    @Override
+    public List<Options<String>> allMapNames() {
+        List<GameMap> gameMapList = gameMapMapper.selectAll();
+        return gameMapList.stream()
+                .map(item -> Options.<String>builder()
+                        .label(item.getMapLabel())
+                        .value(String.valueOf(item.getId()))
+                        .build())
+                .toList();
     }
 }

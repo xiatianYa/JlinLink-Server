@@ -1,5 +1,6 @@
 package com.jinlink.modules.game.service;
 
+import com.jinlink.common.domain.Options;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
 import com.jinlink.modules.game.entity.dto.GameMapAddDTO;
@@ -37,4 +38,9 @@ public interface GameMapService extends IService<GameMap> {
      * 查询所有游戏地图名称。
      */
     List<String> listMapName();
+
+    /**
+     * 查询全部地图配置项。
+     */
+    List<Options<String>> allMapNames();
 }

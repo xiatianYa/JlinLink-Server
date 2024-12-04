@@ -3,6 +3,7 @@ package com.jinlink.controller.game;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.bean.BeanUtil;
 import com.jinlink.common.api.Result;
+import com.jinlink.common.domain.Options;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
 import com.jinlink.modules.game.entity.dto.GameMapAddDTO;
@@ -131,4 +132,13 @@ public class GameMapController {
         return Result.data(gameMapService.listMapName());
     }
 
+    /**
+     * 查询全部地图配置项。
+     */
+    @GetMapping("allMapNames")
+    @Operation(operationId = "8",summary = "查询全部模式名称")
+    @SaCheckPermission("game:gameMap:allMapNames")
+    public Result<List<Options<String>>> allMapNames() {
+        return Result.success("请求成功",gameMapService.allMapNames());
+    }
 }
