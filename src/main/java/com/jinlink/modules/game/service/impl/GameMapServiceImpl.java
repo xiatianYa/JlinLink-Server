@@ -132,7 +132,7 @@ public class GameMapServiceImpl extends ServiceImpl<GameMapMapper, GameMap> impl
         List<GameMap> gameMapList = gameMapMapper.selectAll();
         return gameMapList.stream()
                 .map(item -> Options.<String>builder()
-                        .label(item.getMapLabel())
+                        .label(item.getMapLabel()+"("+item.getMapUrl()+")")
                         .value(String.valueOf(item.getId()))
                         .build())
                 .toList();
