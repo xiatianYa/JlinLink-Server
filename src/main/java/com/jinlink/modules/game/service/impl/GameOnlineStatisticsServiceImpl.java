@@ -15,6 +15,7 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -78,6 +79,6 @@ public class GameOnlineStatisticsServiceImpl extends ServiceImpl<GameOnlineStati
                     .build();
             gameOnLineStatisticsPieVos.add(build);
         }
-        return gameOnLineStatisticsPieVos;
+        return gameOnLineStatisticsPieVos.stream().sorted(Comparator.comparingDouble(GameOnLineStatisticsPieVo::getValue).reversed()).limit(4).toList();
     }
 }

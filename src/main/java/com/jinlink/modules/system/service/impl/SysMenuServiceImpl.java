@@ -156,6 +156,8 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         sysMenu.setMultiTab(sysMenuVo.getMultiTab() ? "Y" : "N");
         sysMenu.setConstant(sysMenuVo.getConstant() ? "Y" : "N");
         sysMenu.setQuery(JSON.toJSONString(sysMenuVo.getQuery()));
+        //先添加菜单
+        int isTrue = sysMenuMapper.insert(sysMenu);
         //添加按钮配置
         List<BTPairs> buttons = sysMenuVo.getButtons();
         //添加现有按钮
@@ -168,7 +170,6 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
                     .build();
             sysPermissionService.save(sysPermission);
         });
-        int isTrue = sysMenuMapper.insert(sysMenu);
         if (ObjectUtil.isNotNull(isTrue)) {
             return true;
         }else{

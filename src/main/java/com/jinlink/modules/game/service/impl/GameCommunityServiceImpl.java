@@ -63,7 +63,9 @@ public class GameCommunityServiceImpl extends ServiceImpl<GameCommunityMapper, G
     @Override
     public Boolean removeCommunityById(Serializable id) {
         //查询当前社区下有没有服务器 如果有则不允许删除
-        List<GameServer> gameServers = gameServerMapper.selectListByQuery(new QueryWrapper().eq("community_id", id));
+        List<GameServer> gameServers = gameServerMapper.selectListByQuery(new QueryWrapper()
+                .eq("community_id", id)
+                .eq("is_delete",0));
         if (ObjectUtil.isNotNull(gameServers)){
             throw new JinLinkException("当前社区下还有服务器,不允许删除");
         }

@@ -9,6 +9,7 @@ import com.jinlink.modules.game.entity.dto.GameMapUpdateDTO;
 import com.jinlink.modules.game.entity.vo.GameMapVo;
 import com.mybatisflex.core.service.IService;
 import com.jinlink.modules.game.entity.GameMap;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,11 +28,13 @@ public interface GameMapService extends IService<GameMap> {
     /**
      * 添加游戏地图表。
      */
+    @Transactional
     Boolean saveGameMap(GameMapAddDTO gameMapAddDTO);
 
     /**
      * 根据主键更新游戏地图表。
      */
+    @Transactional
     Boolean updateGameMap(GameMapUpdateDTO gameMapUpdateDTO);
 
     /**
