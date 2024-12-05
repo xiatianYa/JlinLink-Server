@@ -6,6 +6,7 @@ import com.jinlink.core.page.RPage;
 import com.jinlink.modules.game.entity.vo.GameCommunityVo;
 import com.mybatisflex.core.service.IService;
 import com.jinlink.modules.game.entity.GameCommunity;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.List;
@@ -31,6 +32,7 @@ public interface GameCommunityService extends IService<GameCommunity> {
     /**
      * 根据主键删除游戏社区表。
      */
+    @Transactional
     Boolean removeCommunityById(Serializable id);
 
     /**

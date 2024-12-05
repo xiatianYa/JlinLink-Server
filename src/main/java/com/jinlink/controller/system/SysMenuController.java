@@ -61,7 +61,7 @@ public class SysMenuController {
     @DeleteMapping("remove/{id}")
     @Operation(operationId = "2",summary = "删除菜单")
     @SaCheckPermission("sys:menu:delete")
-    public Result<Boolean> remove(@PathVariable Serializable id) {
+    public Result<Boolean> remove(@Parameter(description = "主键ID", required = true)@PathVariable Serializable id) {
         return Result.success("删除成功!",sysMenuService.removeMenuById(id));
     }
 
