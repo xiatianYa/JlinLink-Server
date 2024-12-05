@@ -2,7 +2,9 @@ package com.jinlink.modules.system.service;
 
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.modules.system.entity.dto.SysFeedbackAddDTO;
+import com.jinlink.modules.system.entity.dto.SysFeedbackSearchDTO;
 import com.jinlink.modules.system.entity.dto.SysFeedbackUpdateDTO;
+import com.jinlink.modules.system.entity.dto.SysUserSearchDTO;
 import com.jinlink.modules.system.entity.vo.SysFeedbackVo;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.service.IService;
@@ -46,5 +48,5 @@ public interface SysFeedbackService extends IService<SysFeedback> {
     /**
      * 分页查询意见反馈表。
      */
-    Page<SysFeedbackVo> pageSysFeedbackVo(PageQuery query);
+    Page<SysFeedbackVo> pageSysFeedbackVo(PageQuery query, SysFeedbackSearchDTO sysFeedbackSearchDTO);
 }

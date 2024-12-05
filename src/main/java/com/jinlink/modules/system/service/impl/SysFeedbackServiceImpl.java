@@ -4,7 +4,9 @@ import cn.hutool.core.bean.BeanUtil;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.modules.system.entity.SysUser;
 import com.jinlink.modules.system.entity.dto.SysFeedbackAddDTO;
+import com.jinlink.modules.system.entity.dto.SysFeedbackSearchDTO;
 import com.jinlink.modules.system.entity.dto.SysFeedbackUpdateDTO;
+import com.jinlink.modules.system.entity.dto.SysUserSearchDTO;
 import com.jinlink.modules.system.entity.vo.SysFeedbackVo;
 import com.jinlink.modules.system.service.SysUserService;
 import com.mybatisflex.core.paginate.Page;
@@ -86,8 +88,11 @@ public class SysFeedbackServiceImpl extends ServiceImpl<SysFeedbackMapper, SysFe
      * 分页查询意见反馈表。
      */
     @Override
-    public Page<SysFeedbackVo> pageSysFeedbackVo(PageQuery query) {
-        Page<SysFeedback> paginate = sysFeedbackMapper.paginate(query.getCurrent(), query.getSize(), new QueryWrapper());
+    public Page<SysFeedbackVo> pageSysFeedbackVo(PageQuery query, SysFeedbackSearchDTO sysFeedbackSearchDTO) {
+        Page<SysFeedback> paginate = sysFeedbackMapper.paginate(query.getCurrent(), query.getSize(), new QueryWrapper()
+                .like("content",sysFeedbackSearchDTO.getContent())
+                .eq("type",sysFeedbackSearchDTO.getType())
+                .eq("status",sysFeedbackSearchDTO.getStatus()));
         List<SysFeedback> records = paginate.getRecords();
         List<SysFeedbackVo> sysFeedbackVoList = new ArrayList<>();
         List<SysUser> sysUsers = sysUserService.list(new QueryWrapper());

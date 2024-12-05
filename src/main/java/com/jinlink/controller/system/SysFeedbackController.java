@@ -5,7 +5,9 @@ import com.jinlink.common.api.Result;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
 import com.jinlink.modules.system.entity.dto.SysFeedbackAddDTO;
+import com.jinlink.modules.system.entity.dto.SysFeedbackSearchDTO;
 import com.jinlink.modules.system.entity.dto.SysFeedbackUpdateDTO;
+import com.jinlink.modules.system.entity.dto.SysUserSearchDTO;
 import com.jinlink.modules.system.entity.vo.SysFeedbackVo;
 import com.mybatisflex.core.paginate.Page;
 import io.swagger.v3.oas.annotations.Operation;
@@ -113,8 +115,8 @@ public class SysFeedbackController {
     @GetMapping("page")
     @Operation(operationId = "6",summary = "获取意见反馈(分页)")
     @SaCheckPermission("sys:sysFeedback:page")
-    public Result<RPage<SysFeedbackVo>> page(@Parameter(description = "分页对象", required = true) PageQuery query) {
-        Page<SysFeedbackVo> sysFeedbackVoPage =sysFeedbackService.pageSysFeedbackVo(query);
+    public Result<RPage<SysFeedbackVo>> page(@Parameter(description = "分页对象", required = true) PageQuery query,@Parameter(description = "查询对象", required = true) SysFeedbackSearchDTO sysFeedbackSearchDTO) {
+        Page<SysFeedbackVo> sysFeedbackVoPage =sysFeedbackService.pageSysFeedbackVo(query,sysFeedbackSearchDTO);
         return Result.data(RPage.build(sysFeedbackVoPage));
     }
 }
