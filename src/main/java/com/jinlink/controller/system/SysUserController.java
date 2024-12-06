@@ -5,8 +5,7 @@ import com.jinlink.common.api.Result;
 import com.jinlink.common.domain.Options;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
-import com.jinlink.modules.system.entity.dto.SysUserFormDTO;
-import com.jinlink.modules.system.entity.dto.SysUserSearchDTO;
+import com.jinlink.modules.system.entity.dto.*;
 import com.jinlink.modules.system.entity.vo.SysUserVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -140,5 +139,44 @@ public class SysUserController {
     @SaCheckPermission("sys:user:allUserNames")
     public Result<List<Options<String>>> allUserNames() {
         return Result.success("请求成功",sysUserService.getAllUserNames());
+    }
+
+    /**
+     * 根据主键更新自己用户信息。
+     *
+     * @param sysUserOneSelfDTO 用户对象
+     * @return {@code true} 更新成功，{@code false} 更新失败
+     */
+    @PutMapping("updateUserInfo")
+    @Operation(operationId = "9",summary = "修改用户信息")
+    @SaCheckPermission("sys:user:oneself")
+    public Result<Boolean> oneself(@Parameter(description = "修改对象", required = true)@RequestBody SysUserOneSelfDTO sysUserOneSelfDTO) {
+        return Result.success("请求成功!",sysUserService.updateOneSelf(sysUserOneSelfDTO));
+    }
+
+    /**
+     * 更新自己密码。
+     *
+     * @param sysUserPasswordDTO 修改密码对象
+     * @return {@code true} 更新成功，{@code false} 更新失败
+     */
+    @PutMapping("updatePassword")
+    @Operation(operationId = "10",summary = "修改用户密码")
+    @SaCheckPermission("sys:user:updatePassword")
+    public Result<Boolean> updatePassword(@Parameter(description = "修改对象", required = true)@RequestBody SysUserPasswordDTO sysUserPasswordDTO) {
+        return Result.success("请求成功!",sysUserService.updatePassword(sysUserPasswordDTO));
+    }
+
+    /**
+     * 重置账号名和密码。
+     *
+     * @param sysUserResetDTO 修改密码对象
+     * @return {@code true} 更新成功，{@code false} 更新失败
+     */
+    @PutMapping("reset")
+    @Operation(operationId = "11",summary = "重置账号名和密码")
+    @SaCheckPermission("sys:user:reset")
+    public Result<Boolean> reset(@Parameter(description = "修改对象", required = true)@RequestBody SysUserResetDTO sysUserResetDTO) {
+        return Result.success("请求成功!",sysUserService.reset(sysUserResetDTO));
     }
 }

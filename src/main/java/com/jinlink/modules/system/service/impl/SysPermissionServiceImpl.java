@@ -29,7 +29,7 @@ import java.util.List;
  */
 @Slf4j
 @Service
-public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, SysPermission> implements SysPermissionService {
+public class  SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, SysPermission> implements SysPermissionService {
     @Resource
     private SysPermissionMapper sysPermissionMapper;
     @Resource

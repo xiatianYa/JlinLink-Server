@@ -69,6 +69,11 @@ public class SysUser extends BaseEntity {
     private String status;
 
     /**
+     * 是否重置(0:未重置,1:已重置)
+     */
+    private String isReset;
+
+    /**
      * MD5的盐值，混淆密码
      */
     private String salt;

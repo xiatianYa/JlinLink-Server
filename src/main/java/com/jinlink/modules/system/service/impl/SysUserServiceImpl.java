@@ -109,7 +109,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }catch (Exception e){
             loginLogs.setStatus(StringPools.ZERO);
             loginLogs.setMessage(e.getMessage());
-            throw new JinLinkException("登录失败"+e.getMessage());
+            throw new JinLinkException(e.getMessage());
         }finally {
             monLogsLoginService.save(loginLogs);
         }
@@ -247,6 +247,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
     }
 
+    /**
+     * 获取所有用户昵称
+     */
     @Override
     public List<Options<String>> getAllUserNames() {
         List<SysUser> sysUsers = sysUserMapper.selectAll();
@@ -363,6 +366,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         SysUserInfoVo sysUserInfoVo = new SysUserInfoVo();
         sysUserInfoVo.setUserId(sysUser.getId());
         sysUserInfoVo.setUserName(sysUser.getNickName());
+        sysUserInfoVo.setUserPhone(sysUser.getUserPhone());
+        sysUserInfoVo.setUserEmail(sysUser.getUserEmail());
+        sysUserInfoVo.setUserGender(sysUser.getUserGender());
         sysUserInfoVo.setAvatar(sysUser.getAvatar());
 
         List<String> userRoles = sysUserRoleService.getUserRoleCodes(sysUser.getId());
@@ -382,6 +388,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         return "退出成功";
     }
 
+    /**
+     * 刷新用户Token
+     */
     @Override
     public String refreshToken(String  refreshToken) {
         if (ObjectUtil.isNull(refreshToken)){
@@ -408,6 +417,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         return lineCaptcha.getImageBytes();
     }
 
+    /**
+     * 用户注册
+     */
     @Override
     public Boolean userRegister(RegisterFormDTO registerFormDTO) {
         //参数校验
@@ -426,6 +438,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         //校验密码是否一致
         if (!registerFormDTO.getPassword().equals(registerFormDTO.getConfirmPassword())){
             throw new JinLinkException("两次密码不一致!");
+        }
+        //校验密码长度
+        if (registerFormDTO.getPassword().length() <= 6){
+            throw new JinLinkException("密码过短");
         }
         //校验验证是否正确
         String code = registerFormDTO.getCode();
@@ -464,6 +480,92 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             monLogsLoginService.save(monLogsLogin);
         }
         return true;
+    }
+
+    /**
+     * 根据主键更新自己用户信息。
+     */
+    @Override
+    public Boolean updateOneSelf(SysUserOneSelfDTO sysUserOneSelfDTO) {
+        long loginIdAsLong = StpUtil.getLoginIdAsLong();
+        SysUser sysUser = sysUserMapper.selectOneById(loginIdAsLong);
+        if (ObjectUtil.isNull(sysUser)) throw new JinLinkException("用户不存在");
+        //设置用户名称
+        if (ObjectUtil.isNotNull(sysUserOneSelfDTO.getUserName())){
+            sysUser.setNickName(sysUserOneSelfDTO.getUserName());
+        }
+        //设置用户邮箱
+        if (ObjectUtil.isNotNull(sysUserOneSelfDTO.getUserEmail())){
+            sysUser.setUserEmail(sysUserOneSelfDTO.getUserEmail());
+        }
+        //设置用户手机号
+        if (ObjectUtil.isNotNull(sysUserOneSelfDTO.getUserPhone())){
+            sysUser.setUserPhone(sysUserOneSelfDTO.getUserPhone());
+        }
+        //设置用户性别
+        if (ObjectUtil.isNotNull(sysUserOneSelfDTO.getUserGender())){
+            sysUser.setUserGender(sysUserOneSelfDTO.getUserGender());
+        }
+        return updateById(sysUser);
+    }
+
+    /**
+     * 更新自己密码。
+     */
+    @Override
+    public Boolean updatePassword(SysUserPasswordDTO sysUserPasswordDTO) {
+        long loginIdAsLong = StpUtil.getLoginIdAsLong();
+        SysUser sysUser = sysUserMapper.selectOneById(loginIdAsLong);
+        if (ObjectUtil.isNull(sysUser)) throw new JinLinkException("用户不存在!");
+        if (ObjectUtil.isNull(sysUserPasswordDTO)
+                || ObjectUtil.isNull(sysUserPasswordDTO.getOldPassword())
+                || ObjectUtil.isNull(sysUserPasswordDTO.getNewPassword())
+                || ObjectUtil.isNull(sysUserPasswordDTO.getConfirmPassword()))
+            throw new JinLinkException("参数异常!");
+        //校验两个密码是否一致
+        if (!sysUserPasswordDTO.getNewPassword().equals(sysUserPasswordDTO.getConfirmPassword()))
+            throw new JinLinkException("两次密码不一致!");
+        if (sysUserPasswordDTO.getOldPassword().equals(sysUserPasswordDTO.getNewPassword()))
+            throw new JinLinkException("旧密码不能和新密码一致!");
+        //校验密码长度
+        if (sysUserPasswordDTO.getNewPassword().length() <= 6){
+            throw new JinLinkException("密码长度过短!");
+        }
+        String oldPassword = DigestUtils.sha256Hex(sysUserPasswordDTO.getOldPassword() + sysUser.getSalt());
+        //校验 新老密码是否一致
+        if (!sysUser.getPassword().equals(oldPassword))
+            throw new JinLinkException("旧密码错误!");
+        //校验通过 修改用户密码
+        sysUser.setPassword(DigestUtils.sha256Hex(sysUserPasswordDTO.getNewPassword() + sysUser.getSalt()));
+        return updateById(sysUser);
+    }
+
+    @Override
+    public Boolean reset(SysUserResetDTO sysUserResetDTO) {
+        long loginIdAsLong = StpUtil.getLoginIdAsLong();
+        SysUser sysUser = sysUserMapper.selectOneById(loginIdAsLong);
+        if (ObjectUtil.isNull(sysUser)) throw new JinLinkException("用户不存在!");
+        if (ObjectUtil.isNotNull(sysUser.getIsReset()) && sysUser.getIsReset().equals("1")){
+            throw new JinLinkException("你已重置过账户,无法再次重置!");
+        }
+        //校验用户是否注册
+        SysUser one = sysUserMapper.selectOneByQuery(new QueryWrapper().eq("user_name", sysUserResetDTO.getUserName()));
+        if (ObjectUtil.isNotNull(one)){
+            throw new JinLinkException("用户名已被注册!");
+        }
+        //校验密码长度
+        if (ObjectUtil.isNull(sysUserResetDTO.getPassword()) || sysUserResetDTO.getPassword().length() <= 6 || ObjectUtil.isNull(sysUserResetDTO.getUserName())){
+            throw new JinLinkException("参数非法 | 密码长度过短");
+        }
+        //校验用户名称是否过短
+        if (sysUserResetDTO.getUserName().length() < 2){
+            throw new JinLinkException("用户名过短!");
+        }
+        //重置用户信息
+        sysUser.setUserName(sysUserResetDTO.getUserName());
+        sysUser.setPassword(DigestUtils.sha256Hex(sysUserResetDTO.getPassword() + sysUser.getSalt()));
+        sysUser.setIsReset("1");
+        return updateById(sysUser);
     }
 
     /**

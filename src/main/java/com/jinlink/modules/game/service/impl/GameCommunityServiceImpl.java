@@ -9,7 +9,6 @@ import com.jinlink.core.page.RPage;
 import com.jinlink.modules.game.entity.GameServer;
 import com.jinlink.modules.game.entity.vo.GameCommunityVo;
 import com.jinlink.modules.game.mapper.GameServerMapper;
-import com.jinlink.modules.game.service.GameServerService;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;

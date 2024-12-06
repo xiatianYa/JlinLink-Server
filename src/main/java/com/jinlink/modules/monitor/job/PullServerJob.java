@@ -20,6 +20,7 @@ import org.quartz.JobExecutionContext;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -55,7 +56,8 @@ public class PullServerJob implements Job {
         //遍历社区列表 获取服务器数据
         for (GameCommunity gameCommunity : gameCommunityList) {
             //获取服务器列表
-            List<GameServer> serverList = gameServers.stream().filter(item -> item.getCommunityId().equals(gameCommunity.getId())).toList();
+            List<GameServer> serverList = gameServers.stream().filter(item -> item.getCommunityId().equals(gameCommunity.getId()))
+                    .sorted(Comparator.comparingInt(GameServer::getSort)).toList();
             Callable<SourceServerVo> callable = () -> AgqlUtils.getSourceServerVoList(gameCommunity,serverList,gameMapList);
             Future<SourceServerVo> future = executor.submit(callable);
             futures.add(future);

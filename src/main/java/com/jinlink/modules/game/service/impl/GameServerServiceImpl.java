@@ -118,6 +118,9 @@ public class GameServerServiceImpl extends ServiceImpl<GameServerMapper, GameSer
         return serverVos;
     }
 
+    /**
+     * 查询所有服务器数据(分页)。
+     */
     @Override
     public RPage<SteamServerVo> getServerAllPage(PageQuery pageQuery, GameServerSearchDTO gameServerSearchDTO) {
         // 从 Redis 缓存中获取服务器 JSON 数据列表
@@ -139,6 +142,9 @@ public class GameServerServiceImpl extends ServiceImpl<GameServerMapper, GameSer
         return RPage.build(new Page<>(PageUtil.getPage(steamServerVos,pageQuery.getCurrent(),pageQuery.getSize()),pageQuery.getCurrent(),pageQuery.getSize(),steamServerVos.size()));
     }
 
+    /**
+     * 查询所有服务器人数。
+     */
     @Override
     public List<SourcePlayer> fetchGetServerOnlineUser(String addr) {
         if(ObjectUtil.isNull(addr)) throw new JinLinkException("非法参数");
@@ -146,6 +152,9 @@ public class GameServerServiceImpl extends ServiceImpl<GameServerMapper, GameSer
         return AgqlUtils.getGameUserInfoByServer(split[0], Integer.parseInt(split[1]));
     }
 
+    /**
+     * 查询所有服务器返回JSON。
+     */
     @Override
     public String getServerAllJson() {
         // 从 Redis 缓存中获取服务器 JSON 数据列表

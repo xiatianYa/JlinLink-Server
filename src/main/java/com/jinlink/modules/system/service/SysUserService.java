@@ -82,5 +82,24 @@ public interface SysUserService extends IService<SysUser> {
     /**
      * 用户注册
      */
+    @Transactional
     Boolean userRegister(RegisterFormDTO registerFormDTO);
+
+    /**
+     * 根据主键更新自己用户信息。
+     */
+    @Transactional
+    Boolean updateOneSelf(SysUserOneSelfDTO sysUserOneSelfDTO);
+
+    /**
+     * 更新自己密码。
+     */
+    @Transactional
+    Boolean updatePassword(SysUserPasswordDTO sysUserPasswordDTO);
+
+    /**
+     * 重置账号名和密码。
+     */
+    @Transactional
+    Boolean reset(SysUserResetDTO sysUserResetDTO);
 }
