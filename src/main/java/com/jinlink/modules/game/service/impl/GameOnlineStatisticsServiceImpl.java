@@ -79,6 +79,6 @@ public class GameOnlineStatisticsServiceImpl extends ServiceImpl<GameOnlineStati
                     .build();
             gameOnLineStatisticsPieVos.add(build);
         }
-        return gameOnLineStatisticsPieVos.stream().sorted(Comparator.comparingDouble(GameOnLineStatisticsPieVo::getValue).reversed()).limit(4).toList();
+        return gameOnLineStatisticsPieVos.stream().sorted(Comparator.comparingDouble(GameOnLineStatisticsPieVo::getValue).reversed()).limit(5).toList();
     }
 }
