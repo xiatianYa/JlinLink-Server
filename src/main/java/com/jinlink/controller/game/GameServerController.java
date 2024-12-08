@@ -4,6 +4,7 @@ import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.bean.BeanUtil;
 import com.ibasco.agql.protocols.valve.source.query.players.SourcePlayer;
 import com.jinlink.common.api.Result;
+import com.jinlink.common.util.mcping.MinecraftPingReply;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
 import com.jinlink.modules.game.entity.dto.GameServerAddDTO;
@@ -162,8 +163,22 @@ public class GameServerController {
      * 查询所有服务器数据(Json)
      */
     @GetMapping("getServerAllJson")
-    @Operation(operationId = "8",summary = "查询服务器(Json)")
+    @Operation(operationId = "9",summary = "查询服务器(Json)")
     public String getServerAllJson(){
         return gameServerService.getServerAllJson();
+    }
+
+    /**
+     * 查询我的世界服务器(分页)
+     *
+     * @param pageQuery 分页对象
+     * @return 分页对象
+     */
+    @GetMapping("getMinecraftPage")
+    @Operation(operationId = "10",summary = "查询我的世界服务器(分页)")
+    @SaCheckPermission("game:gameServer:getServerAll")
+    public Result<RPage<MinecraftPingReply>> getMinecraftPage(@Parameter(description = "分页对象", required = true) @Valid PageQuery pageQuery,@Parameter(description = "查询对象", required = true) GameServerSearchDTO gameServerSearchDTO) {
+        RPage<MinecraftPingReply> gameServiceServerAll = gameServerService.getMinecraftPage(pageQuery,gameServerSearchDTO);
+        return Result.data(gameServiceServerAll);
     }
 }

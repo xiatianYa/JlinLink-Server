@@ -38,9 +38,25 @@ import lombok.Data;
 @Data
 public class MinecraftPingReply {
 
+    /**
+     * 服务器名称
+     */
     private String description;
+    /**
+     * 在线玩家数据
+     */
     private Players players;
+    /**
+     * 服务器版本
+     */
     private Version version;
+    /**
+     * 服务器地图
+     */
+    private String addr;
+    /**
+     * 图标
+     */
     private String favicon;
 
     @Data

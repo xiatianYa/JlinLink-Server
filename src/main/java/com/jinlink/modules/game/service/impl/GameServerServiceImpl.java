@@ -7,6 +7,9 @@ import com.ibasco.agql.protocols.valve.source.query.players.SourcePlayer;
 import com.jinlink.common.exception.JinLinkException;
 import com.jinlink.common.util.AgqlUtils;
 import com.jinlink.common.util.PageUtil;
+import com.jinlink.common.util.mcping.MinecraftPing;
+import com.jinlink.common.util.mcping.MinecraftPingOptions;
+import com.jinlink.common.util.mcping.MinecraftPingReply;
 import com.jinlink.core.config.redis.service.RedisService;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
@@ -54,7 +57,8 @@ public class GameServerServiceImpl extends ServiceImpl<GameServerMapper, GameSer
                 .eq("community_id", gameServerSearchDTO.getCommunityId())
                 .eq("mode_id", gameServerSearchDTO.getModeId())
                 .eq("game_id", gameServerSearchDTO.getGameId())
-                .orderBy("community_id", false));
+                .orderBy("community_id", false)
+                .orderBy("sort",true));
         List<GameServer> records = paginate.getRecords();
         List<GameServerVo> gameServerVos = BeanUtil.copyToList(records, GameServerVo.class);
         //查询所有社区
@@ -172,5 +176,28 @@ public class GameServerServiceImpl extends ServiceImpl<GameServerMapper, GameSer
             serverVos.add(build);
         }
         return JSONObject.toJSONString(serverVos);
+    }
+
+    /**
+     * 查询我的世界服务器(分页)
+     */
+    @Override
+    public RPage<MinecraftPingReply> getMinecraftPage(PageQuery pageQuery,GameServerSearchDTO gameServerSearchDTO) {
+        Page<GameServer> paginate = gameServerMapper.paginate(pageQuery.getCurrent(), pageQuery.getSize(),
+                new QueryWrapper()
+                        .eq("game_id", gameServerSearchDTO.getGameId()));
+        List<GameServer> records = paginate.getRecords();
+        List<MinecraftPingReply> minecraftPingReplies = new ArrayList<>();
+        records.forEach(gameServer -> {
+            try {
+                MinecraftPingReply minecraftPingReply = new MinecraftPing()
+                        .getPing(new MinecraftPingOptions().setHostname(gameServer.getIp()).setPort(Integer.parseInt(gameServer.getPort())));
+                minecraftPingReply.setAddr(gameServer.getIp()+":"+gameServer.getPort());
+                minecraftPingReplies.add(minecraftPingReply);
+            }catch (Exception e){
+                System.out.println("服务器信息获取失败!");
+            }
+        });
+        return RPage.build(new Page<>(minecraftPingReplies,paginate.getPageNumber(),paginate.getPageSize(),paginate.getTotalRow()));
     }
 }
