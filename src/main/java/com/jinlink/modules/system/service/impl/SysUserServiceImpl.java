@@ -449,7 +449,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         if(ObjectUtil.isNull(entryCode) | !code.equals(entryCode)){
             throw new JinLinkException("验证码错误!");
         }
-        MonLogsLogin monLogsLogin = initRegisterLog(registerFormDTO);
         try {
             //注册用户信息
             SysUser sysUser = SysUser.builder()
@@ -472,12 +471,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 sysUserRoleService.save(sysUserRole);
             }
         }catch (Exception e){
-            monLogsLogin.setStatus(StringPools.ZERO);
-            monLogsLoginService.save(monLogsLogin);
             throw new JinLinkException("用户注册失败");
-        }finally {
-            //新增注册日志
-            monLogsLoginService.save(monLogsLogin);
         }
         return true;
     }
@@ -545,7 +539,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         long loginIdAsLong = StpUtil.getLoginIdAsLong();
         SysUser sysUser = sysUserMapper.selectOneById(loginIdAsLong);
         if (ObjectUtil.isNull(sysUser)) throw new JinLinkException("用户不存在!");
-        if (ObjectUtil.isNotNull(sysUser.getIsReset()) && sysUser.getIsReset().equals("1")){
+        if (ObjectUtil.isNotNull(sysUser.getIsReset()) && sysUser.getIsReset().equals(StringPools.ONE)){
             throw new JinLinkException("你已重置过账户,无法再次重置!");
         }
         //校验用户是否注册
@@ -564,7 +558,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         //重置用户信息
         sysUser.setUserName(sysUserResetDTO.getUserName());
         sysUser.setPassword(DigestUtils.sha256Hex(sysUserResetDTO.getPassword() + sysUser.getSalt()));
-        sysUser.setIsReset("1");
+        sysUser.setIsReset(StringPools.ONE);
         return updateById(sysUser);
     }
 
@@ -578,24 +572,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         String ip = JakartaServletUtil.getClientIP(ServletHolderUtil.getRequest());
         return MonLogsLogin.builder()
                 .userName(loginFormDTO.getOpenId())
-                .status(StringPools.ONE)
-                .userAgent(ServletHolderUtil.getRequest().getHeader(RequestConstant.USER_AGENT))
-                .ip(ip)
-                .ipAddr(IPUtils.getIpAddr(ip))
-                .message("注册成功")
-                .build();
-    }
-
-    /**
-     * 初始化注册日志(账号密码)
-     *
-     * @param registerFormDTO 用户对象
-     * @return {@linkplain MonLogsLogin} 登录日志对象
-     */
-    private MonLogsLogin initRegisterLog(RegisterFormDTO registerFormDTO) {
-        String ip = JakartaServletUtil.getClientIP(ServletHolderUtil.getRequest());
-        return MonLogsLogin.builder()
-                .userName(registerFormDTO.getUserName())
                 .status(StringPools.ONE)
                 .userAgent(ServletHolderUtil.getRequest().getHeader(RequestConstant.USER_AGENT))
                 .ip(ip)

@@ -15,6 +15,9 @@ import com.jinlink.modules.monitor.entity.MonLogsLogin;
  */
 public interface MonLogsLoginService extends IService<MonLogsLogin> {
 
+    /**
+     * 分页查询登陆日志。
+     */
     Page<MonLogsLoginVo> listMonLogsLoginPage(PageQuery query, MonLogsLoginSearchDTO monLogsLoginSearchDTO);
 
     /**

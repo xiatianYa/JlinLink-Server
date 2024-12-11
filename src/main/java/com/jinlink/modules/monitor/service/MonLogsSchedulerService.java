@@ -15,6 +15,9 @@ import com.jinlink.modules.monitor.entity.MonLogsScheduler;
  */
 public interface MonLogsSchedulerService extends IService<MonLogsScheduler> {
 
+    /**
+     * 分页查询调度日志。
+     */
     Page<MonLogsSchedulerVo> listMonLogsSchedulerPage(PageQuery query, MonLogsSchedulerSearchDTO monLogsSchedulerSearchDTO);
 
 

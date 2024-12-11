@@ -6,6 +6,7 @@ import com.jinlink.modules.game.entity.dto.GameMapOrderAddDTO;
 import com.jinlink.modules.game.entity.vo.GameMapOrderVo;
 import com.mybatisflex.core.service.IService;
 import com.jinlink.modules.game.entity.GameMapOrder;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -34,5 +35,6 @@ public interface GameMapOrderService extends IService<GameMapOrder> {
     /**
      * 添加地图订阅表。
      */
+    @Transactional
     Boolean saveGameMapOrder(GameMapOrderAddDTO gameMapOrderAddDTO);
 }
