@@ -229,7 +229,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             throw new JinLinkException("用户已存在!");
         }else{
             sysUserMapper.insert(sysUser);
-            //添加用户权限
             //用户权限列表
             List<String> userRoles = sysUser.getUserRoles();
             userRoles.forEach(item->{
@@ -276,7 +275,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             URL url = new URL("https://graph.qq.com/user/get_user_info?oauth_consumer_key=102129326&access_token="+loginFormDTO.getAccessToken()+"&openid="+loginFormDTO.getOpenId());
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
-            // 读取响应
             // 读取响应，并指定InputStreamReader使用UTF-8编码
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
                 StringBuilder response = new StringBuilder();
@@ -284,8 +282,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 while ((line = reader.readLine()) != null) {
                     response.append(line);
                 }
-                // 假设QQBo是一个可以通过JSON字符串构造的对象
-                // 注意：这里应该处理整个响应字符串，而不是每一行单独解析
                 qqBo = JSONObject.parseObject(response.toString(), QQBo.class);
             }
             // 关闭连接
@@ -440,7 +436,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             throw new JinLinkException("两次密码不一致!");
         }
         //校验密码长度
-        if (registerFormDTO.getPassword().length() <= 6){
+        if (registerFormDTO.getPassword().length() < 6 || registerFormDTO.getPassword().length() > 18){
             throw new JinLinkException("密码过短");
         }
         //校验验证是否正确
@@ -548,8 +544,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             throw new JinLinkException("用户名已被注册!");
         }
         //校验密码长度
-        if (ObjectUtil.isNull(sysUserResetDTO.getPassword()) || sysUserResetDTO.getPassword().length() <= 6 || ObjectUtil.isNull(sysUserResetDTO.getUserName())){
-            throw new JinLinkException("参数非法 | 密码长度过短");
+        if (ObjectUtil.isNull(sysUserResetDTO.getPassword()) || sysUserResetDTO.getPassword().length() < 6 || sysUserResetDTO.getPassword().length() > 18 || ObjectUtil.isNull(sysUserResetDTO.getUserName())){
+            throw new JinLinkException("参数非法 | 密码长度过短 | 密码长度过长");
         }
         //校验用户名称是否过短
         if (sysUserResetDTO.getUserName().length() < 2){
