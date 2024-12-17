@@ -71,7 +71,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    @Operation(operationId = "6",summary = "用户注册")
+    @Operation(operationId = "7",summary = "用户注册")
     public Result<Boolean> userRegister(@RequestBody RegisterFormDTO registerFormDTO){
         return Result.success("请求成功",authenticationFacade.userRegister(registerFormDTO));
     }

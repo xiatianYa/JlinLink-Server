@@ -111,7 +111,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             loginLogs.setMessage(e.getMessage());
             throw new JinLinkException(e.getMessage());
         }finally {
-            monLogsLoginService.save(loginLogs);
+            try {
+                monLogsLoginService.save(loginLogs);
+            }catch (Exception e){
+                log.error("登录日志记录失败：{}", e.getMessage());
+            }
         }
         return Map.of("token", StpUtil.getTokenValue(),"refreshToken", StpUtil.getTokenValue());
     }
@@ -297,7 +301,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         if (ObjectUtil.isNotNull(one) && StringPools.ZERO.equals(one.getStatus())) {
             throw new JinLinkException("当前用户 %s 已被禁止登录".formatted(one.getUserName()));
         }
-        MonLogsLogin loginLogs = initRegisterOauthLog(loginFormDTO);;
         try {
             //用户不存在 则进行注册
             if (ObjectUtil.isNull(one)) {
@@ -325,24 +328,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 }
                 // saToken 进行登录
                 StpUtil.login(sysUser.getId());
-                // 操作用户登录日志
-                loginLogs.setUserId(sysUser.getId());
                 saveUserToSession(sysUser, false);
                 return Map.of("token", StpUtil.getTokenValue(),"refreshToken", StpUtil.getTokenValue());
             }
             //当前用户存在 则返回token
             StpUtil.login(one.getId());
-            // 操作用户登录日志
-            loginLogs.setUserId(one.getId());
             //保存用户信息
             saveUserToSession(one, false);
             return Map.of("token", StpUtil.getTokenValue(),"refreshToken", StpUtil.getTokenValue());
         }catch (Exception e){
-            loginLogs.setStatus(StringPools.ZERO);
-            loginLogs.setMessage(e.getMessage());
             throw new JinLinkException("登录失败"+e.getMessage());
-        }finally {
-            monLogsLoginService.save(loginLogs);
         }
     }
 
@@ -367,6 +362,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         sysUserInfoVo.setUserGender(sysUser.getUserGender());
         sysUserInfoVo.setAvatar(sysUser.getAvatar());
 
+        //获取用户角色
         List<String> userRoles = sysUserRoleService.getUserRoleCodes(sysUser.getId());
         sysUserInfoVo.setRoles(userRoles);
         //用户拥有角色的按钮权限
@@ -437,7 +433,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
         //校验密码长度
         if (registerFormDTO.getPassword().length() < 6 || registerFormDTO.getPassword().length() > 18){
-            throw new JinLinkException("密码过短");
+            throw new JinLinkException("密码过短 | 密码过长");
         }
         //校验验证是否正确
         String code = registerFormDTO.getCode();
@@ -518,8 +514,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         if (sysUserPasswordDTO.getOldPassword().equals(sysUserPasswordDTO.getNewPassword()))
             throw new JinLinkException("旧密码不能和新密码一致!");
         //校验密码长度
-        if (sysUserPasswordDTO.getNewPassword().length() <= 6){
-            throw new JinLinkException("密码长度过短!");
+        if (sysUserPasswordDTO.getNewPassword().length() < 6 || sysUserPasswordDTO.getNewPassword().length() > 18){
+            throw new JinLinkException("密码过短 | 密码过长");
         }
         String oldPassword = DigestUtils.sha256Hex(sysUserPasswordDTO.getOldPassword() + sysUser.getSalt());
         //校验 新老密码是否一致
@@ -530,6 +526,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         return updateById(sysUser);
     }
 
+    /**
+     * 用户账号信息重置
+     */
     @Override
     public Boolean reset(SysUserResetDTO sysUserResetDTO) {
         long loginIdAsLong = StpUtil.getLoginIdAsLong();
@@ -556,24 +555,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         sysUser.setPassword(DigestUtils.sha256Hex(sysUserResetDTO.getPassword() + sysUser.getSalt()));
         sysUser.setIsReset(StringPools.ONE);
         return updateById(sysUser);
-    }
-
-    /**
-     * 初始化注册日志(第三方)
-     *
-     * @param loginFormDTO 用户对象
-     * @return {@linkplain MonLogsLogin} 登录日志对象
-     */
-    private MonLogsLogin initRegisterOauthLog(oAuthLoginDTO loginFormDTO) {
-        String ip = JakartaServletUtil.getClientIP(ServletHolderUtil.getRequest());
-        return MonLogsLogin.builder()
-                .userName(loginFormDTO.getOpenId())
-                .status(StringPools.ONE)
-                .userAgent(ServletHolderUtil.getRequest().getHeader(RequestConstant.USER_AGENT))
-                .ip(ip)
-                .ipAddr(IPUtils.getIpAddr(ip))
-                .message("注册成功")
-                .build();
     }
 
     /**
