@@ -171,7 +171,7 @@ public class SeverWebsocket {
     /**
      * 服务器推送地图数据给客户端
      */
-    @Scheduled(fixedRate = 30000)
+    @Scheduled(fixedRate = 60000)
     public void sendServerMessage(){
         List<SourceServerVo> serverVos = redisService.getCacheList(Constants.SERVER_VO_KEY);
         webSocketMap.forEach((k,v)->{
@@ -195,7 +195,7 @@ public class SeverWebsocket {
     /**
      * 服务器推送在线用户给客户端
      */
-    @Scheduled(fixedRate = 30000)
+    @Scheduled(fixedRate = 60000)
     public void sendOnlineUserMessage(){
         List<OnLineUser> onlineUsers = new ArrayList<>();
         webSocketMap.forEach((k,v)->{
