@@ -63,7 +63,7 @@ public class GameLiveController {
         if (ObjectUtil.isNotNull(gameLiveService.getOne(new QueryWrapper().eq("create_user_id", loginIdAsLong)))){
             throw new JinLinkException("你已经入驻过了,不能再次入驻!");
         }
-        return Result.success("请求成功",gameLiveService.save(gameLive));
+        return Result.success("请求成功",gameLiveService.saveLive(gameLive));
     }
 
     /**
