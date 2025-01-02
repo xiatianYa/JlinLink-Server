@@ -29,10 +29,15 @@ import net.jodah.expiringmap.ExpiringMap;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.GZIPOutputStream;
 
 
 /**
@@ -90,12 +95,13 @@ public class SeverWebsocket {
         //用户登录
         System.out.println("用户:"+this.loginUser.getNickName()+"连接成功");
         //给自己发登录成功的消息
-        MessageVo messageVo = MessageVo.builder()
+        MessageVo build = MessageVo.builder()
                 .sendUser(this.loginUser)
                 .msg("登录成功")
                 .code("200")
                 .build();
-        this.session.getAsyncRemote().sendText(JSON.toJSONString(messageVo));
+        byte[] compressedData = compress(JSON.toJSONString(build));
+        this.session.getAsyncRemote().sendBinary(ByteBuffer.wrap(compressedData));
     }
 
     /**
@@ -138,7 +144,8 @@ public class SeverWebsocket {
                         .status(false)
                         .code("205")
                         .build();
-                session.getAsyncRemote().sendText(JSON.toJSONString(build));
+                byte[] compressedData = compress(JSON.toJSONString(build));
+                session.getAsyncRemote().sendBinary(ByteBuffer.wrap(compressedData));
                 return;
             }
             JoinServerVo build = JoinServerVo.builder()
@@ -149,13 +156,15 @@ public class SeverWebsocket {
                     .status(serverSearchDto.getMinPlayers() >= responseData[0])
                     .code("201")
                     .build();
-            session.getAsyncRemote().sendText(JSONObject.toJSONString(build));
+            byte[] compressedData = compress(JSON.toJSONString(build));
+            session.getAsyncRemote().sendBinary(ByteBuffer.wrap(compressedData));
         }catch (Exception e) {
             JoinServerVo build = JoinServerVo.builder()
                     .status(false)
                     .code("205")
                     .build();
-            session.getAsyncRemote().sendText(JSON.toJSONString(build));
+            byte[] compressedData = compress(JSON.toJSONString(build));
+            session.getAsyncRemote().sendBinary(ByteBuffer.wrap(compressedData));
         }
     }
 
@@ -171,7 +180,7 @@ public class SeverWebsocket {
     /**
      * 服务器推送地图数据给客户端
      */
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 10000)
     public void sendServerMessage(){
         List<SourceServerVo> serverVos = redisService.getCacheList(Constants.SERVER_VO_KEY);
         webSocketMap.forEach((k,v)->{
@@ -181,13 +190,15 @@ public class SeverWebsocket {
                         .data(serverVos)
                         .code("202")
                         .build();
-                v.session.getAsyncRemote().sendText(JSON.toJSONString(build));
+                byte[] compressedData = compress(JSON.toJSONString(build));
+                v.session.getAsyncRemote().sendBinary(ByteBuffer.wrap(compressedData));
             } catch (Exception e) {
                 MessageVo build = MessageVo.builder()
                         .msg("服务器信息获取失败!")
                         .code("205")
                         .build();
-                v.session.getAsyncRemote().sendText(JSON.toJSONString(build));
+                byte[] compressedData = compress(JSON.toJSONString(build));
+                v.session.getAsyncRemote().sendBinary(ByteBuffer.wrap(compressedData));
             }
         });
     }
@@ -196,7 +207,7 @@ public class SeverWebsocket {
      * 服务器推送在线用户给客户端
      */
     @Scheduled(fixedRate = 60000)
-    public void sendOnlineUserMessage(){
+    public void sendOnlineUserMessage() {
         List<OnLineUser> onlineUsers = new ArrayList<>();
         webSocketMap.forEach((k,v)->{
             if (ObjectUtil.isNotNull(v.loginUser)) onlineUsers.add(BeanUtil.copyProperties(v.loginUser,OnLineUser.class));
@@ -207,8 +218,29 @@ public class SeverWebsocket {
                 .data(onlineUsers)
                 .build();
         webSocketMap.forEach((k,v)->{
-            v.session.getAsyncRemote().sendText(JSON.toJSONString(build));
+            byte[] compressedData = compress(JSON.toJSONString(build));
+            // 发送二进制数据
+            try {
+                v.session.getBasicRemote().sendBinary(ByteBuffer.wrap(compressedData));
+            } catch (IOException e) {
+                System.out.println("在线用户列表消息推送失败!");
+            }
         });
+    }
+
+
+    // 压缩字符串的方法
+    private byte[] compress(String str){
+        if (str == null || str.isEmpty()) {
+            return new byte[0];
+        }
+        ByteArrayOutputStream obj = new ByteArrayOutputStream();
+        try (GZIPOutputStream gzip = new GZIPOutputStream(obj)) {
+            gzip.write(str.getBytes(StandardCharsets.UTF_8));
+        }catch (Exception e){
+            return new byte[0];
+        }
+        return obj.toByteArray();
     }
 }
 

@@ -59,10 +59,6 @@ public class GameLiveController {
     @Operation(operationId = "1",summary = "新增游戏直播")
     @SaCheckPermission("game:gameLive:save")
     public Result<Boolean> save(@Parameter(description = "游戏直播对象", required = true)@RequestBody GameLive gameLive) {
-        Long loginIdAsLong = StpUtil.getLoginIdAsLong();
-        if (ObjectUtil.isNotNull(gameLiveService.getOne(new QueryWrapper().eq("create_user_id", loginIdAsLong)))){
-            throw new JinLinkException("你已经入驻过了,不能再次入驻!");
-        }
         return Result.success("请求成功",gameLiveService.saveLive(gameLive));
     }
 

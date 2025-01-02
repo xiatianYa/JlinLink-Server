@@ -1,6 +1,8 @@
 package com.jinlink.modules.game.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson2.JSONObject;
 import com.jinlink.common.exception.JinLinkException;
 import com.jinlink.common.util.BiliUtils;
@@ -52,20 +54,18 @@ public class GameLiveServiceImpl extends ServiceImpl<GameLiveMapper, GameLive> i
     }
 
     /**
-     * 查询所有入驻主播。
-     */
-    @Override
-    public List<GameLiveVo> listAll() {
-        //返回列表
-        List<GameLiveVo> biliUserDataVos = new ArrayList<>();
-        return List.of();
-    }
-
-    /**
      * 添加主播入驻
      */
     @Override
     public Boolean saveLive(GameLive gameLive) {
+        Long loginIdAsLong = StpUtil.getLoginIdAsLong();
+        String uid = gameLive.getUid();
+        if (ObjectUtil.isNotNull(gameLiveMapper.selectOneByQuery(new QueryWrapper().eq("create_user_id", loginIdAsLong)))){
+            throw new JinLinkException("你已经入驻过了,不能再次入驻!");
+        }
+        if (ObjectUtil.isNotNull(gameLiveMapper.selectOneByQuery(new QueryWrapper().eq("uid", uid)))){
+            throw new JinLinkException("当前主播已入驻,禁止重复添加!");
+        }
         //获取主播B站信息
         String bgPath = null;
         try {

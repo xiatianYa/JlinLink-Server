@@ -24,11 +24,6 @@ public interface GameLiveService extends IService<GameLive> {
     RPage<GameLiveVo> listGameLiveVoPage(PageQuery pageQuery, GameLiveSearchDTO gameLiveSearchDTO);
 
     /**
-     * 查询所有入驻主播。
-     */
-    List<GameLiveVo> listAll();
-
-    /**
      * 添加主播入驻
      */
     @Transactional
