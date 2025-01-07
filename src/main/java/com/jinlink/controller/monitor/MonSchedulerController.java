@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import com.jinlink.modules.monitor.entity.MonScheduler;
 import com.jinlink.modules.monitor.service.MonSchedulerService;
 import org.springframework.web.bind.annotation.RestController;
 import java.io.Serializable;
@@ -46,7 +45,6 @@ public class MonSchedulerController {
     /**
      * 添加调度管理。
      *
-     * @param monScheduler 调度管理
      * @return {@code true} 添加成功，{@code false} 添加失败
      */
     @PostMapping("save")

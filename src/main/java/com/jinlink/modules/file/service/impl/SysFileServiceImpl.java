@@ -50,6 +50,19 @@ public class SysFileServiceImpl implements SysFileService {
         }
     }
 
+    @Override
+    public String uploadModelFile(MultipartFile file) {
+        String fielUrl = "";
+        try {
+            fielUrl = FileUploadUtils.uploadModelFile(localFilePath, file);
+            initFileLog(file,domain + localFilePrefix + fielUrl,null);
+            return domain + localFilePrefix + fielUrl;
+        }catch (Exception e){
+            initFileLog(file,domain + localFilePrefix + fielUrl,e);
+            throw new JinLinkException("文件上传失败"+e.getMessage());
+        }
+    }
+
     private void initFileLog(MultipartFile file,String fileUrl,Exception e) {
         LoginUser loginUser = GlobalUserHolder.getUser();
         MonLogsFile monLogsFile;

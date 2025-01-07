@@ -54,8 +54,8 @@ public class GameServerServiceImpl extends ServiceImpl<GameServerMapper, GameSer
     @Override
     public RPage<GameServerVo> listGameServerVoPage(PageQuery pageQuery, GameServerSearchDTO gameServerSearchDTO) {
         Page<GameServer> paginate = gameServerMapper.paginate(pageQuery.getCurrent(), pageQuery.getSize(), new QueryWrapper()
-                .eq("community_id", gameServerSearchDTO.getCommunityId())
-                .eq("mode_id", gameServerSearchDTO.getModeId())
+                .in("community_id", gameServerSearchDTO.getCommunityIds())
+                .in("mode_id", gameServerSearchDTO.getModeIds())
                 .eq("game_id", gameServerSearchDTO.getGameId())
                 .orderBy("community_id", false)
                 .orderBy("sort",true));
@@ -100,17 +100,17 @@ public class GameServerServiceImpl extends ServiceImpl<GameServerMapper, GameSer
             // 直接从 JSONObject 解析为 SourceServerVo 对象
             SourceServerVo sourceServerVo = jsonObject.toJavaObject(SourceServerVo.class);
             // 筛选用户不要的社区
-            if (ObjectUtil.isNotNull(gameServerSearchDTO.getCommunityId())
-                    && !sourceServerVo.getGameCommunity().getId().equals(gameServerSearchDTO.getCommunityId())) continue;
+            if (ObjectUtil.isNotEmpty(gameServerSearchDTO.getCommunityIds())
+                    && !gameServerSearchDTO.getCommunityIds().contains(sourceServerVo.getGameCommunity().getId())) continue;
             // 筛选用户不要的游戏 | 模式
             List<SteamServerVo> gameServerVoList = sourceServerVo.getGameServerVoList();
             // 拷贝列表
             List<SteamServerVo> gameServerVoCpList = new ArrayList<>();
             for (SteamServerVo steamServerVo : gameServerVoList) {
                 //判断这个服务器是不是用户要的模式
-                if (ObjectUtil.isNull(steamServerVo.getModeId()) || ObjectUtil.isNotNull(gameServerSearchDTO.getModeId()) && !steamServerVo.getModeId().equals(gameServerSearchDTO.getModeId())) continue;
+                if (ObjectUtil.isNotEmpty(steamServerVo.getModeId()) && ObjectUtil.isNotEmpty(gameServerSearchDTO.getModeIds()) && !gameServerSearchDTO.getModeIds().contains(steamServerVo.getModeId())) continue;
                 //判断这个服务器是不是用户要的游戏
-                if (ObjectUtil.isNotNull(gameServerSearchDTO.getGameId()) && !steamServerVo.getGameId().equals(gameServerSearchDTO.getGameId())) continue;
+                if (ObjectUtil.isNotEmpty(gameServerSearchDTO.getGameId()) && !steamServerVo.getGameId().equals(gameServerSearchDTO.getGameId())) continue;
                 //都符合条件 则添加进列表
                 gameServerVoCpList.add(steamServerVo);
             }
@@ -191,7 +191,9 @@ public class GameServerServiceImpl extends ServiceImpl<GameServerMapper, GameSer
         records.forEach(gameServer -> {
             try {
                 MinecraftPingReply minecraftPingReply = new MinecraftPing()
-                        .getPing(new MinecraftPingOptions().setHostname(gameServer.getIp()).setPort(Integer.parseInt(gameServer.getPort())));
+                        .getPing(new MinecraftPingOptions()
+                                .setHostname(gameServer.getIp())
+                                .setPort(Integer.parseInt(gameServer.getPort())));
                 minecraftPingReply.setAddr(gameServer.getIp()+":"+gameServer.getPort());
                 minecraftPingReplies.add(minecraftPingReply);
             }catch (Exception e){

@@ -13,9 +13,9 @@ public class Codegen {
     public static void main(String[] args) {
         //配置数据源
         HikariDataSource dataSource = new HikariDataSource();
-        dataSource.setJdbcUrl("jdbc:mysql://47.113.197.48:3306/jinlink_boot?characterEncoding=utf-8");
+        dataSource.setJdbcUrl("jdbc:mysql://127.0.0.1:3306/jinlink_boot?characterEncoding=utf-8");
         dataSource.setUsername("root");
-        dataSource.setPassword("sr2539195984");
+        dataSource.setPassword("123456");
 
         //创建配置内容，两种风格都可以。
         GlobalConfig globalConfig = createGlobalConfigUseStyle1();
@@ -36,11 +36,11 @@ public class Codegen {
                 .setSince("1.0.0");
 
         //设置根包
-        globalConfig.setBasePackage("com.jinlink.modules.system");
+        globalConfig.setBasePackage("com.jinlink.modules.game");
 
         //设置表前缀和只生成哪些表
         globalConfig.setTablePrefix("tb_");
-        globalConfig.setGenerateTable("sys_feedback");
+        globalConfig.setGenerateTable("game_model");
 
         //设置生成 entity 并启用 Lombok
         globalConfig.setEntityGenerateEnable(true);
@@ -77,7 +77,7 @@ public class Codegen {
         ColumnConfig columnConfig = new ColumnConfig();
         columnConfig.setLarge(true);
         columnConfig.setVersion(true);
-        globalConfig.setColumnConfig("sys_feedback", columnConfig);
+        globalConfig.setColumnConfig("game_model", columnConfig);
 
         return globalConfig;
     }

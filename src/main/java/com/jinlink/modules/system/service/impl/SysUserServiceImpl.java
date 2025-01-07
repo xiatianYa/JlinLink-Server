@@ -96,7 +96,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             String password = userForUserName.getPassword();
             // 密码比对
             if (!s.equals(password)) {
-                throw new JinLinkException("登录失败，请核实用户名以及密码");
+                throw new JinLinkException("登录失败，请核实密码");
             }
             // saToken 进行登录
             StpUtil.login(userForUserName.getId());

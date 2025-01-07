@@ -36,7 +36,7 @@ public class FileUploadUtils {
      * @param file    上传的文件
      * @return 文件名称
      */
-    public static String upload(String baseDir, MultipartFile file) throws IOException {
+    public static String upload(String baseDir, MultipartFile file) {
         try {
             return upload(baseDir, file, MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION);
         } catch (Exception e) {
@@ -145,5 +145,45 @@ public class FileUploadUtils {
             }
         }
         return false;
+    }
+
+    /**
+     * 根据文件路径上传
+     *
+     * @param baseDir 相对应用的基目录
+     * @param file    上传的文件
+     * @return 文件名称
+     */
+    public static String uploadModelFile(String baseDir, MultipartFile file) {
+        try {
+            return uploadModel(baseDir, file, MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION);
+        } catch (Exception e) {
+            throw new JinLinkException("文件上传失败"+e.getMessage());
+        }
+    }
+
+    private static String uploadModel(String baseDir, MultipartFile file, String[] allowedExtension)
+            throws InvalidExtensionException, IOException {
+        int fileNameLength = Objects.requireNonNull(file.getOriginalFilename()).length();
+        if (fileNameLength > FileUploadUtils.DEFAULT_FILE_NAME_LENGTH) {
+            throw new FileNameLengthLimitExceededException(FileUploadUtils.DEFAULT_FILE_NAME_LENGTH);
+        }
+
+        assertAllowed(file, allowedExtension);
+
+        //不进行编名
+        String fileName = extractModelFilename(file);
+
+        String absPath = getAbsoluteFile(baseDir, fileName).getAbsolutePath();
+        file.transferTo(Paths.get(absPath));
+        return getPathFileName(fileName);
+    }
+
+    /**
+     * 编码文件名
+     */
+    public static String extractModelFilename(MultipartFile file) {
+        return StringUtils.format("{}/{}.{}", DateUtils.datePath(),
+                FilenameUtils.getBaseName(file.getOriginalFilename()), FileTypeUtils.getExtension(file));
     }
 }

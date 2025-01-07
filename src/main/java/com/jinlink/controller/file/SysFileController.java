@@ -9,8 +9,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,6 +37,21 @@ public class SysFileController {
     public Result<SysFile> upload(MultipartFile file) {
         // 上传并返回访问地址
         String url = sysFileService.uploadFile(file);
+        SysFile sysFile = new SysFile();
+        sysFile.setName(FileUtils.getName(url));
+        sysFile.setUrl(url);
+        return Result.success("请求成功",sysFile);
+    }
+
+    /**
+     * 模型上传请求
+     */
+    @PostMapping("/model/upload")
+    @Operation(operationId = "2", summary = "模型上传")
+    @SaCheckLogin
+    public Result<SysFile> uploadModel(MultipartFile file) {
+        // 上传并返回访问地址
+        String url = sysFileService.uploadModelFile(file);
         SysFile sysFile = new SysFile();
         sysFile.setName(FileUtils.getName(url));
         sysFile.setUrl(url);

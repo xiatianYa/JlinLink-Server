@@ -31,6 +31,9 @@ public class GameMapVo extends BaseVO {
     @Schema(description = "图片路径")
     private String mapUrl;
 
+    @Schema(description = "地图模型路径")
+    private String mapModeUrl;
+
     @Schema(description = "模式ID")
     private String modeId;
 

@@ -6,7 +6,6 @@ import com.jinlink.common.api.Result;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
 import com.jinlink.modules.file.entity.dto.MonLogsFileSearchDTO;
-import com.jinlink.modules.monitor.entity.MonLogsLogin;
 import com.jinlink.modules.monitor.entity.vo.MonLogsFileVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

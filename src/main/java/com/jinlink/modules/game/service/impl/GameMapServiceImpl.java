@@ -137,4 +137,21 @@ public class GameMapServiceImpl extends ServiceImpl<GameMapMapper, GameMap> impl
                         .build())
                 .toList();
     }
+
+    /**
+     * 查询全部地图模型配置项。
+     */
+    @Override
+    public List<Options<String>> allMapModes() {
+        QueryWrapper queryWrapper = new QueryWrapper()
+                .isNotNull("map_mode_url")
+                .ne("map_mode_url","");
+        List<GameMap> gameMapList = gameMapMapper.selectListByQuery(queryWrapper);
+        return gameMapList.stream()
+                .map(item -> Options.<String>builder()
+                        .label(item.getMapLabel()+"("+item.getMapName()+")")
+                        .value(item.getMapModeUrl())
+                        .build())
+                .toList();
+    }
 }

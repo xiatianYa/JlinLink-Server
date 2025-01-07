@@ -7,7 +7,6 @@ import com.mybatisflex.annotation.Table;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +16,7 @@ import lombok.experimental.SuperBuilder;
 import java.io.Serial;
 
 /**
- * 游戏地图表 实体类。
+ * 游戏模型表 实体类。
  *
  * @author Summer
  * @since 1.0.0
@@ -26,47 +25,35 @@ import java.io.Serial;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(value = "game_map")
-public class GameMap extends BaseEntity {
+@Table(value = "game_model")
+public class GameModel extends BaseEntity {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     /**
-     * 地图名称
+     * 主键ID
      */
-    private String mapName;
+    @Id(keyType = KeyType.Auto)
+    private Long id;
 
     /**
-     * 译名
+     * 模型名称
      */
-    private String mapLabel;
+    private String modelName;
 
     /**
-     * 图片路径
+     * 模型类型
      */
-    private String mapUrl;
+    private String modelType;
 
     /**
-     * 地图模型路径
+     * 模型图片
      */
-    private String mapModeUrl;
+    private String modelUrl;
 
     /**
-     * 模式ID
+     * 模型地址
      */
-    private Long modeId;
-
-    /**
-     * 地图难度
-     */
-    private Integer type;
-
-    /**
-     * 地图标签
-     */
-    private String tag;
-
-    /**
-     * 地图神器
-     */
-    private String artifact;
-
+    private String modelModeUrl;
 }

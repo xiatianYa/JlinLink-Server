@@ -141,4 +141,13 @@ public class GameMapController {
     public Result<List<Options<String>>> allMapNames() {
         return Result.success("请求成功",gameMapService.allMapNames());
     }
+
+    /**
+     * 查询全部地图模型配置项。
+     */
+    @GetMapping("allMapModes")
+    @Operation(operationId = "9",summary = "查询全部地图模型配置项(有模型)")
+    public Result<List<Options<String>>> allMapModes() {
+        return Result.success("请求成功",gameMapService.allMapModes());
+    }
 }

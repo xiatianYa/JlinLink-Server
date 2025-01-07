@@ -46,4 +46,8 @@ public interface GameMapService extends IService<GameMap> {
      * 查询全部地图配置项。
      */
     List<Options<String>> allMapNames();
+    /**
+     * 查询全部地图模型配置项。
+     */
+    List<Options<String>> allMapModes();
 }

@@ -35,7 +35,10 @@ public class MimeTypeUtils {
             //音乐
             "mp3",
             // pdf
-            "pdf"};
+            "pdf",
+            // 模型
+            "glb","gltf","obj","dae","fbx"
+    };
 
     public static String getExtension(String prefix) {
         switch (prefix) {
