@@ -16,6 +16,9 @@ public class SysUserOneSelfDTO {
     @Schema(description = "用户昵称")
     private String userName;
 
+    @Schema(description = "用户头像")
+    private String avatar;
+
     @Schema(description = "用户手机号")
     private String userPhone;
 

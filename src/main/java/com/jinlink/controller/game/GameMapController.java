@@ -6,6 +6,7 @@ import com.jinlink.common.api.Result;
 import com.jinlink.common.domain.Options;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
+import com.jinlink.modules.game.entity.GameMap;
 import com.jinlink.modules.game.entity.dto.GameMapAddDTO;
 import com.jinlink.modules.game.entity.dto.GameMapSearchDTO;
 import com.jinlink.modules.game.entity.dto.GameMapUpdateDTO;
@@ -16,15 +17,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import com.jinlink.modules.game.service.GameMapService;
-import org.springframework.web.bind.annotation.RestController;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -89,9 +84,9 @@ public class GameMapController {
      */
     @GetMapping("list")
     @Operation(operationId = "4",summary = "获取游戏地图列表")
-    @SaCheckPermission("game:gameMap:list")
-    public Result<List<GameMapVo>> list() {
-        return Result.data(BeanUtil.copyToList(gameMapService.list(), GameMapVo.class));
+    @CrossOrigin(origins = "*")
+    public Result<List<GameMap>> list() {
+        return Result.data(gameMapService.list());
     }
 
     /**

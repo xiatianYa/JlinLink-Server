@@ -480,6 +480,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         if (ObjectUtil.isNotNull(sysUserOneSelfDTO.getUserName())){
             sysUser.setNickName(sysUserOneSelfDTO.getUserName());
         }
+        //设置用户头像
+        if (ObjectUtil.isNotNull(sysUserOneSelfDTO.getAvatar())){
+            sysUser.setAvatar(sysUserOneSelfDTO.getAvatar());
+        }
         //设置用户邮箱
         if (ObjectUtil.isNotNull(sysUserOneSelfDTO.getUserEmail())){
             sysUser.setUserEmail(sysUserOneSelfDTO.getUserEmail());
