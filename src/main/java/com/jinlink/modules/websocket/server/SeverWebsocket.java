@@ -12,9 +12,8 @@ import com.jinlink.common.util.udp.GameServerUtil;
 import com.jinlink.core.config.redis.service.RedisService;
 import com.jinlink.core.holder.GlobalUserHolder;
 import com.jinlink.modules.game.entity.vo.SourceServerVo;
-import com.jinlink.modules.websocket.entity.JoinServerVo;
-import com.jinlink.modules.websocket.entity.MessageVo;
-import com.jinlink.modules.websocket.entity.OnLineUser;
+import com.jinlink.modules.game.entity.vo.SteamServerVo;
+import com.jinlink.modules.websocket.entity.*;
 import com.jinlink.modules.websocket.entity.dto.ServerSearchDto;
 import jakarta.annotation.Resource;
 import jakarta.websocket.OnClose;
@@ -125,39 +124,58 @@ public class SeverWebsocket {
     @OnMessage
     public void onMessage(String message, Session session) {
         try {
-            //Json实例化对象
-            ServerSearchDto serverSearchDto = JSONObject.parseObject(message, ServerSearchDto.class);
-            Integer[] responseData = expireCacheMap.get(serverSearchDto.getIp()+":"+serverSearchDto.getPort());
-            if(ObjectUtil.isNull(responseData)){
-                responseData= GameServerUtil.sendAndReceiveUDP(serverSearchDto.getIp(), serverSearchDto.getPort());
-                // 缓存50ms
-               if (responseData != null && responseData.length > 0) {
-                   expireCacheMap.put(serverSearchDto.getIp()+":"+serverSearchDto.getPort(),responseData,200,TimeUnit.MILLISECONDS);
-               }else{
-                   responseData = new Integer[]{serverSearchDto.getMaxPlayers(),serverSearchDto.getMaxPlayers()};
-                   expireCacheMap.put(serverSearchDto.getIp()+":"+serverSearchDto.getPort(),responseData,3000,TimeUnit.MILLISECONDS);
-               }
+            ReceiveMessage receiveMessage = JSON.parseObject(message,ReceiveMessage.class);
+            switch (receiveMessage.getType()) {
+                case 0:
+                    //Json实例化对象
+                    ServerSearchDto serverSearchDto = JSONObject.parseObject(receiveMessage.getData(), ServerSearchDto.class);
+                    Integer[] responseData = expireCacheMap.get(serverSearchDto.getIp()+":"+serverSearchDto.getPort());
+                    if(ObjectUtil.isNull(responseData)){
+                        responseData= GameServerUtil.sendAndReceiveUDP(serverSearchDto.getIp(), serverSearchDto.getPort());
+                        // 缓存50ms
+                        if (responseData != null && responseData.length > 0) {
+                            expireCacheMap.put(serverSearchDto.getIp()+":"+serverSearchDto.getPort(),responseData,200,TimeUnit.MILLISECONDS);
+                        }else{
+                            responseData = new Integer[]{serverSearchDto.getMaxPlayers(),serverSearchDto.getMaxPlayers()};
+                            expireCacheMap.put(serverSearchDto.getIp()+":"+serverSearchDto.getPort(),responseData,3000,TimeUnit.MILLISECONDS);
+                        }
+                    }
+                    //返回数据为null 获取失败
+                    if (ObjectUtil.isNull(responseData)){
+                        JoinServerVo build = JoinServerVo.builder()
+                                .status(false)
+                                .code("205")
+                                .build();
+                        byte[] compressedData = compress(JSON.toJSONString(build));
+                        session.getAsyncRemote().sendBinary(ByteBuffer.wrap(compressedData));
+                        return;
+                    }
+                    JoinServerVo build = JoinServerVo.builder()
+                            .ip(serverSearchDto.getIp())
+                            .port(serverSearchDto.getPort())
+                            .players(responseData[0])
+                            .maxPlayers(responseData[1])
+                            .status(serverSearchDto.getMinPlayers() >= responseData[0])
+                            .code("201")
+                            .build();
+                    byte[] compressedJoinData = compress(JSON.toJSONString(build));
+                    session.getAsyncRemote().sendBinary(ByteBuffer.wrap(compressedJoinData));
+                    break;
+                case 1:
+                    //将消息推送给所有在线用户
+                    SteamServerPushVo steamServerPushVo = JSON.parseObject(receiveMessage.getData(), SteamServerPushVo.class);
+                    steamServerPushVo.setPushUserName(this.loginUser.getNickName());
+                    webSocketMap.forEach((k,v)->{
+                        MessageVo messageVo = MessageVo.builder()
+                                .code("206")
+                                .data(steamServerPushVo)
+                                .build();
+                        byte[] compressedPushData = compress(JSON.toJSONString(messageVo));
+                        v.session.getAsyncRemote().sendBinary(ByteBuffer.wrap(compressedPushData));
+                    });
+                    break;
+
             }
-            //返回数据为null 获取失败
-            if (ObjectUtil.isNull(responseData)){
-                JoinServerVo build = JoinServerVo.builder()
-                        .status(false)
-                        .code("205")
-                        .build();
-                byte[] compressedData = compress(JSON.toJSONString(build));
-                session.getAsyncRemote().sendBinary(ByteBuffer.wrap(compressedData));
-                return;
-            }
-            JoinServerVo build = JoinServerVo.builder()
-                    .ip(serverSearchDto.getIp())
-                    .port(serverSearchDto.getPort())
-                    .players(responseData[0])
-                    .maxPlayers(responseData[1])
-                    .status(serverSearchDto.getMinPlayers() >= responseData[0])
-                    .code("201")
-                    .build();
-            byte[] compressedData = compress(JSON.toJSONString(build));
-            session.getAsyncRemote().sendBinary(ByteBuffer.wrap(compressedData));
         }catch (Exception e) {
             JoinServerVo build = JoinServerVo.builder()
                     .status(false)

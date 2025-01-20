@@ -140,6 +140,6 @@ logging:
 
 # 本地文件上传
 file:
-  domain: https://www.bluearchive.top
+  domain: http://127.0.0.1:8080
   path: D:/jinLink/uploadPath
   prefix: /statics
