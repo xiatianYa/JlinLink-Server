@@ -2,11 +2,14 @@ package com.jinlink.modules.game.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.alibaba.fastjson2.JSON;
+import com.jinlink.common.domain.BTPairs;
 import com.jinlink.common.domain.Options;
 import com.jinlink.common.exception.JinLinkException;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
 import com.jinlink.modules.game.entity.GameServer;
+import com.jinlink.modules.game.entity.vo.CommunityBindOptionsVo;
 import com.jinlink.modules.game.entity.vo.GameCommunityVo;
 import com.jinlink.modules.game.mapper.GameServerMapper;
 import com.mybatisflex.core.paginate.Page;
@@ -19,6 +22,7 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -78,5 +82,23 @@ public class GameCommunityServiceImpl extends ServiceImpl<GameCommunityMapper, G
     public List<String> getCommunityNames() {
         List<GameCommunity> gameCommunities = gameCommunityMapper.selectAll();
         return gameCommunities.stream().map(GameCommunity::getCommunityName).map(String::toLowerCase).toList();
+    }
+
+    /**
+     * 查询全部社区绑键配置项。
+     */
+    @Override
+    public List<CommunityBindOptionsVo> getCommunityBindOptions() {
+        List<GameCommunity> gameCommunities = gameCommunityMapper.selectAll();
+        List<CommunityBindOptionsVo> communityBindOptionVos = new ArrayList<>();
+        gameCommunities.forEach(item -> {
+            CommunityBindOptionsVo build = CommunityBindOptionsVo.builder()
+                    .communityId(item.getId())
+                    .communityName(item.getCommunityName())
+                    .options(JSON.parseArray(item.getBind(), BTPairs.class))
+                    .build();
+            communityBindOptionVos.add(build);
+        });
+        return communityBindOptionVos;
     }
 }

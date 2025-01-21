@@ -27,4 +27,7 @@ public class GameCommunityVo extends BaseVO {
 
     @Schema(description = "网站")
     private String website;
+
+    @Schema(description = "按键列表")
+    private String bind;
 }

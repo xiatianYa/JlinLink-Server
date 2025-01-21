@@ -3,6 +3,7 @@ package com.jinlink.modules.game.service;
 import com.jinlink.common.domain.Options;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
+import com.jinlink.modules.game.entity.vo.CommunityBindOptionsVo;
 import com.jinlink.modules.game.entity.vo.GameCommunityVo;
 import com.mybatisflex.core.service.IService;
 import com.jinlink.modules.game.entity.GameCommunity;
@@ -39,4 +40,9 @@ public interface GameCommunityService extends IService<GameCommunity> {
      * 查询全部社区名称。
      */
     List<String> getCommunityNames();
+
+    /**
+     * 查询全部社区绑键配置项。
+     */
+    List<CommunityBindOptionsVo> getCommunityBindOptions();
 }

@@ -36,5 +36,10 @@ public class GameCommunity extends BaseEntity {
      */
     private String website;
 
+    /**
+     * 按键列表
+     */
+    private String bind;
+
 
 }

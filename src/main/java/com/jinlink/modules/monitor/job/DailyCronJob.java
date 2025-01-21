@@ -71,9 +71,7 @@ public class DailyCronJob implements Job {
             LocalDateTime now = LocalDateTime.now();
             LocalDateTime twentyFourHoursAgo = now.minusHours(24);
             queryWrapper.lt("create_time", twentyFourHoursAgo);
-            LogicDeleteManager.execWithoutLogicDelete(()->
-                    gameOnlineStatisticsService.remove(queryWrapper)
-            );
+            gameOnlineStatisticsService.remove(queryWrapper);
         }catch (Exception e){
             throw new JinLinkException("删除过期在线用户数据失败");
         }

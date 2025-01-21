@@ -6,6 +6,7 @@ import com.jinlink.common.api.Result;
 import com.jinlink.common.domain.Options;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
+import com.jinlink.modules.game.entity.vo.CommunityBindOptionsVo;
 import com.jinlink.modules.game.entity.vo.GameCommunityVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -136,5 +137,14 @@ public class GameCommunityController {
     @Operation(operationId = "8",summary = "查询全部社区名称")
     public Result<List<String>> getCommunityNames() {
         return Result.success("请求成功",gameCommunityService.getCommunityNames());
+    }
+
+    /**
+     * 查询全部社区绑键配置项。
+     */
+    @GetMapping("getCommunityBindOptions")
+    @Operation(operationId = "9",summary = "查询全部社区绑键配置项")
+    public Result<List<CommunityBindOptionsVo>> getCommunityBindOptions() {
+        return Result.success("请求成功",gameCommunityService.getCommunityBindOptions());
     }
 }
