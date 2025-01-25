@@ -19,33 +19,30 @@ public class SysFileServiceImpl implements SysFileService {
     @Resource
     private MonLogsFileService monLogsFileService;
 
-    /**
-     * 资源映射路径 前缀
-     */
-    @Value("${file.prefix}")
-    public String localFilePrefix;
+    @Value("${qiniu.domain}")
+    private String domain;
 
-    /**
-     * 域名或本机访问地址
-     */
-    @Value("${file.domain}")
-    public String domain;
+    @Value("${qiniu.basePath}")
+    private String basePath;
 
-    /**
-     * 上传文件存储在本地的根路径
-     */
-    @Value("${file.path}")
-    private String localFilePath;
+    @Value("${qiniu.accessKey}")
+    private String accessKey;
+
+    @Value("${qiniu.secretKey}")
+    private String secretKey;
+
+    @Value("${qiniu.bucket}")
+    private String bucket;
 
     @Override
     public String uploadFile(MultipartFile file) {
         String fielUrl = "";
         try {
-            fielUrl = FileUploadUtils.upload(localFilePath, file);
-            initFileLog(file,domain + localFilePrefix + fielUrl,null);
-            return domain + localFilePrefix + fielUrl;
+            fielUrl = FileUploadUtils.upload(domain,basePath,accessKey,secretKey,bucket,file);
+            initFileLog(file,fielUrl,null);
+            return fielUrl;
         }catch (Exception e){
-            initFileLog(file,domain + localFilePrefix + fielUrl,e);
+            initFileLog(file,fielUrl,e);
             throw new JinLinkException("文件上传失败"+e.getMessage());
         }
     }
@@ -54,11 +51,11 @@ public class SysFileServiceImpl implements SysFileService {
     public String uploadModelFile(MultipartFile file) {
         String fielUrl = "";
         try {
-            fielUrl = FileUploadUtils.uploadModelFile(localFilePath, file);
-            initFileLog(file,domain + localFilePrefix + fielUrl,null);
-            return domain + localFilePrefix + fielUrl;
+            fielUrl = FileUploadUtils.uploadModelFile(domain,basePath,accessKey,secretKey,bucket,file);
+            initFileLog(file,fielUrl,null);
+            return fielUrl;
         }catch (Exception e){
-            initFileLog(file,domain + localFilePrefix + fielUrl,e);
+            initFileLog(file,fielUrl,e);
             throw new JinLinkException("文件上传失败"+e.getMessage());
         }
     }
