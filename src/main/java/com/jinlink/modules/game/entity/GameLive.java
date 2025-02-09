@@ -7,6 +7,7 @@ import com.mybatisflex.annotation.Table;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -42,5 +43,10 @@ public class GameLive extends BaseEntity {
      * 背景地址
      */
     private String bgUrl;
+
+    /**
+     * OBS配置
+     */
+    private String obsOptions;
 
 }

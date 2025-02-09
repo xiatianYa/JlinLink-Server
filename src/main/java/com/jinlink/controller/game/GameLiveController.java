@@ -1,5 +1,6 @@
 package com.jinlink.controller.game;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson2.JSONObject;
@@ -9,22 +10,17 @@ import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
 import com.jinlink.modules.game.entity.dto.GameLiveSearchDTO;
 import com.jinlink.modules.game.entity.vo.GameLiveVo;
+import com.jinlink.modules.websocket.entity.vo.UserOnlineInfoVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import com.jinlink.modules.game.entity.GameLive;
 import com.jinlink.modules.game.service.GameLiveService;
-import org.springframework.web.bind.annotation.RestController;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -78,7 +74,7 @@ public class GameLiveController {
      * @return {@code true} 更新成功，{@code false} 更新失败
      */
     @PutMapping("update")
-    @Operation(operationId = "3",summary = "修改游戏地图")
+    @Operation(operationId = "3",summary = "修改游戏直播")
     @SaCheckPermission("game:gameLive:update")
     public Result<Boolean> update(@Parameter(description = "游戏直播对象", required = true)@RequestBody GameLive gameLive) {
         return Result.success("请求成功",gameLiveService.updateById(gameLive));
@@ -151,5 +147,24 @@ public class GameLiveController {
             }
         });
         return Result.data(gameLiveVos);
+    }
+
+    /**
+     * 修改用户OBS配置
+     */
+    @PutMapping("updateObsOptions")
+    @Operation(operationId = "7",summary = "修改用户OBS配置")
+    @SaCheckLogin
+    public Result<Boolean> updateObsOptions(@RequestBody String options){
+        return Result.success("请求成功",gameLiveService.updateObsOptions(options));
+    }
+
+    /**
+     * 获取用户OBS配置
+     */
+    @GetMapping("getUserObsOptions")
+    @Operation(operationId = "8",summary = "获取用户OBS配置")
+    public Result<String> getUserObsOptions(@RequestParam(name = "id") Long id) {
+        return Result.success("获取成功",gameLiveService.getUserObsOptions(id));
     }
 }

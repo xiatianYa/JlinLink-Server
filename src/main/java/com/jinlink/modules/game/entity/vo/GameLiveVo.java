@@ -32,6 +32,9 @@ public class GameLiveVo extends BaseVO {
     @Schema(description = "背景地址")
     private String bgUrl;
 
+    @Schema(description = "OBS配置")
+    private String obsOptions;
+
     @Schema(description = "主播Bili对象")
     private BiliVo biliVo;
 

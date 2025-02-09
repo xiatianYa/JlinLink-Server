@@ -30,4 +30,7 @@ public class GameCommunityVo extends BaseVO {
 
     @Schema(description = "按键列表")
     private String bind;
+
+    @Schema(description = "是否缓存")
+    private String isCache;
 }

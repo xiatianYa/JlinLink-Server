@@ -135,11 +135,6 @@ public class Constants {
     public static final Long[] USER_DEFAULT_ROLE_LIST = {2L};
 
     /**
-     * 用户默认头像
-     */
-    public static final String USER_DEFAULT_AVATAR = "https://www.bluearchive.top/statics/system/defaultAvata.jpg";
-
-    /**
      * 服务器数据key
      */
     public static final String SERVER_VO_KEY = "serverVo";

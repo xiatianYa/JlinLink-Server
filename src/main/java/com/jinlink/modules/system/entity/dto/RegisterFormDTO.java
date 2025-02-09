@@ -29,6 +29,10 @@ public class RegisterFormDTO implements Serializable {
     private String nickName;
 
     @NotBlank
+    @Schema(description = "用户头像")
+    private String avatar;
+
+    @NotBlank
     @Schema(description = "用户密码")
     private String password;
 

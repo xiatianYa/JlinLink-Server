@@ -1,4 +1,4 @@
-package com.jinlink.modules.websocket.entity;
+package com.jinlink.modules.websocket.entity.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

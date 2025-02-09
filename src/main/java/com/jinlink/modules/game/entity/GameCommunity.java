@@ -41,5 +41,10 @@ public class GameCommunity extends BaseEntity {
      */
     private String bind;
 
+    /**
+     * 是否缓存
+     */
+    private String isCache;
+
 
 }

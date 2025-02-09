@@ -33,7 +33,6 @@ public class SysFileController {
      */
     @PostMapping("upload")
     @Operation(operationId = "1", summary = "文件上传")
-    @SaCheckLogin
     public Result<SysFile> upload(MultipartFile file) {
         // 上传并返回访问地址
         String url = sysFileService.uploadFile(file);

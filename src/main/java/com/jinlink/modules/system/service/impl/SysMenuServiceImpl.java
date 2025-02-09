@@ -310,7 +310,7 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
         routes.add(loginRoute);
         // 类似地，添加403, 404, 500路由...
         // 添加403、404、500路由
-        for (String statusCode : new String[]{"403", "404", "500"}) {
+        for (String statusCode : new String[]{"403", "404", "500","obs"}) {
             Map<String, Object> route = new HashMap<>();
             route.put("name", statusCode);
             route.put("path", "/" + statusCode);

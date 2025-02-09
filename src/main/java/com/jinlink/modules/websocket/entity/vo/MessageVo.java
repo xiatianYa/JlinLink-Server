@@ -1,4 +1,4 @@
-package com.jinlink.modules.websocket.entity;
+package com.jinlink.modules.websocket.entity.vo;
 
 import com.jinlink.common.domain.LoginUser;
 import com.jinlink.core.domain.BaseVO;

@@ -7,7 +7,6 @@ import com.jinlink.common.exception.file.InvalidExtensionException;
 import com.jinlink.common.util.DateUtils;
 import com.jinlink.core.util.SeqUtils;
 import com.jinlink.common.util.StringUtils;
-import com.qiniu.util.Auth;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,17 +32,13 @@ public class FileUploadUtils {
     /**
      * 根据文件路径上传
      *
-     * @param domain 访问基础地址
-     * @param basePath 基础路径
-     * @param accessKey 七牛云key
-     * @param secretKey 七牛云sKey
-     * @param bucket 七牛云Bucket
+     * @param baseDir 相对应用的基目录
      * @param file    上传的文件
      * @return 文件名称
      */
-    public static String upload(String domain,String basePath,String accessKey,String secretKey,String bucket, MultipartFile file) {
+    public static String upload(String baseDir, MultipartFile file) {
         try {
-            return upload(domain,basePath,accessKey,secretKey,bucket, file, MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION);
+            return upload(baseDir, file, MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION);
         } catch (Exception e) {
             throw new JinLinkException("文件上传失败"+e.getMessage());
         }
@@ -52,20 +47,17 @@ public class FileUploadUtils {
     /**
      * 文件上传
      *
-     * @param domain 访问基础地址
-     * @param basePath 基础路径
-     * @param accessKey 七牛云key
-     * @param secretKey 七牛云sKey
-     * @param bucket 七牛云Bucket
+     * @param baseDir          相对应用的基目录
      * @param file             上传的文件
      * @param allowedExtension 上传文件类型
      * @return 返回上传成功的文件名
      * @throws FileSizeLimitExceededException       如果超出最大大小
      * @throws FileNameLengthLimitExceededException 文件名太长
+     * @throws IOException                          比如读写文件出错时
      * @throws InvalidExtensionException            文件校验异常
      */
-    public static String upload(String domain,String basePath,String accessKey,String secretKey,String bucket, MultipartFile file, String[] allowedExtension)
-            throws FileSizeLimitExceededException, FileNameLengthLimitExceededException,
+    public static String upload(String baseDir, MultipartFile file, String[] allowedExtension)
+            throws FileSizeLimitExceededException, IOException, FileNameLengthLimitExceededException,
             InvalidExtensionException {
         int fileNameLength = Objects.requireNonNull(file.getOriginalFilename()).length();
         if (fileNameLength > FileUploadUtils.DEFAULT_FILE_NAME_LENGTH) {
@@ -74,50 +66,19 @@ public class FileUploadUtils {
 
         assertAllowed(file, allowedExtension);
 
-        String fileName = basePath + extractFilename(file);
+        String fileName = extractFilename(file);
 
-        String filePath = QiniuUtils.uploadFile(fileName,accessKey, secretKey, bucket, file);
-
-        return domain + filePath;
-    }
-
-    /**
-     * 模型文件上传
-     *
-     * @param domain 访问基础地址
-     * @param basePath 基础路径
-     * @param accessKey 七牛云key
-     * @param secretKey 七牛云sKey
-     * @param bucket 七牛云Bucket
-     * @param file             上传的文件
-     * @param allowedExtension 上传文件类型
-     * @return 返回上传成功的文件名
-     * @throws FileSizeLimitExceededException       如果超出最大大小
-     * @throws FileNameLengthLimitExceededException 文件名太长
-     * @throws InvalidExtensionException            文件校验异常
-     */
-    private static String uploadModel(String domain,String basePath,String accessKey,String secretKey,String bucket, MultipartFile file, String[] allowedExtension)
-            throws InvalidExtensionException {
-        int fileNameLength = Objects.requireNonNull(file.getOriginalFilename()).length();
-        if (fileNameLength > FileUploadUtils.DEFAULT_FILE_NAME_LENGTH) {
-            throw new FileNameLengthLimitExceededException(FileUploadUtils.DEFAULT_FILE_NAME_LENGTH);
-        }
-
-        assertAllowed(file, allowedExtension);
-
-        String fileName = basePath + extractFilename(file);
-
-        String filePath = QiniuUtils.uploadFile(fileName,accessKey, secretKey, bucket, file);
-
-        return domain + filePath;
+        String absPath = getAbsoluteFile(baseDir, fileName).getAbsolutePath();
+        file.transferTo(Paths.get(absPath));
+        return getPathFileName(fileName);
     }
 
     /**
      * 编码文件名
      */
     public static String extractFilename(MultipartFile file) {
-        return StringUtils.format("{}/{}.{}", DateUtils.datePath(),
-                FilenameUtils.getBaseName(file.getOriginalFilename()), FileTypeUtils.getExtension(file));
+        return StringUtils.format("{}/{}_{}.{}", DateUtils.datePath(),
+                FilenameUtils.getBaseName(file.getOriginalFilename()), SeqUtils.getId(SeqUtils.uploadSeqType), FileTypeUtils.getExtension(file));
     }
 
     private static File getAbsoluteFile(String uploadDir, String fileName) throws IOException {
@@ -189,20 +150,33 @@ public class FileUploadUtils {
     /**
      * 根据文件路径上传
      *
-     * @param domain 访问基础地址
-     * @param basePath 基础路径
-     * @param accessKey 七牛云key
-     * @param secretKey 七牛云sKey
-     * @param bucket 七牛云Bucket
+     * @param baseDir 相对应用的基目录
      * @param file    上传的文件
      * @return 文件名称
      */
-    public static String uploadModelFile(String domain,String basePath,String accessKey,String secretKey,String bucket,MultipartFile file) {
+    public static String uploadModelFile(String baseDir, MultipartFile file) {
         try {
-            return uploadModel(domain,basePath,accessKey,secretKey,bucket, file, MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION);
+            return uploadModel(baseDir, file, MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION);
         } catch (Exception e) {
             throw new JinLinkException("文件上传失败"+e.getMessage());
         }
+    }
+
+    private static String uploadModel(String baseDir, MultipartFile file, String[] allowedExtension)
+            throws InvalidExtensionException, IOException {
+        int fileNameLength = Objects.requireNonNull(file.getOriginalFilename()).length();
+        if (fileNameLength > FileUploadUtils.DEFAULT_FILE_NAME_LENGTH) {
+            throw new FileNameLengthLimitExceededException(FileUploadUtils.DEFAULT_FILE_NAME_LENGTH);
+        }
+
+        assertAllowed(file, allowedExtension);
+
+        //不进行编名
+        String fileName = extractModelFilename(file);
+
+        String absPath = getAbsoluteFile(baseDir, fileName).getAbsolutePath();
+        file.transferTo(Paths.get(absPath));
+        return getPathFileName(fileName);
     }
 
     /**

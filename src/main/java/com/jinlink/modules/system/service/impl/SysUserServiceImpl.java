@@ -417,10 +417,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         //参数校验
         if (ObjectUtil.isEmpty(registerFormDTO.getUserName())
                 | ObjectUtil.isEmpty(registerFormDTO.getNickName())
+                | ObjectUtil.isEmpty(registerFormDTO.getAvatar())
                 | ObjectUtil.isEmpty(registerFormDTO.getPassword())
                 | ObjectUtil.isEmpty(registerFormDTO.getPassword())
                 | ObjectUtil.isEmpty(registerFormDTO.getConfirmPassword())){
-            throw new JinLinkException("非法参数!");
+            throw new JinLinkException("请检查注册参数!");
         }
         //校验用户是否注册
         SysUser one = sysUserMapper.selectOneByQuery(new QueryWrapper().eq("user_name", registerFormDTO.getUserName()));
@@ -449,7 +450,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                     .userGender("1")
                     .salt("VECaJx")
                     .status("1")
-                    .avatar(Constants.USER_DEFAULT_AVATAR)
+                    .avatar(registerFormDTO.getAvatar())
                     .password(DigestUtils.sha256Hex(registerFormDTO.getPassword() + "VECaJx"))
                     .lastLoginTime(LocalDateTime.now())
                     .build();

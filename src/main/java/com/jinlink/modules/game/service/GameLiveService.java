@@ -28,4 +28,15 @@ public interface GameLiveService extends IService<GameLive> {
      */
     @Transactional
     Boolean saveLive(GameLive gameLive);
+
+    /**
+     * 修改用户OBS配置
+     */
+    @Transactional
+    Boolean updateObsOptions(String options);
+
+    /**
+     * 获取用户OBS配置
+     */
+    String getUserObsOptions(Long id);
 }

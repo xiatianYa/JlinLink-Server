@@ -21,7 +21,6 @@ import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,20 +34,11 @@ public class GameLiveServiceImpl extends ServiceImpl<GameLiveMapper, GameLive> i
     @Resource
     private GameLiveMapper gameLiveMapper;
 
-    @Value("${qiniu.domain}")
-    private String domain;
-
-    @Value("${qiniu.basePath}")
-    private String basePath;
-
-    @Value("${qiniu.accessKey}")
-    private String accessKey;
-
-    @Value("${qiniu.secretKey}")
-    private String secretKey;
-
-    @Value("${qiniu.bucket}")
-    private String bucket;
+    /**
+     * 上传文件存储在本地的根路径
+     */
+    @Value("${file.path}")
+    private String localFilePath;
 
     /**
      * 分页查询游戏直播表。
@@ -88,13 +78,36 @@ public class GameLiveServiceImpl extends ServiceImpl<GameLiveMapper, GameLive> i
         }
         String avatarPath = BiliUtils.getBiliLiveUserInfoApi(gameLive.getUid());
         //获取背景
-        String bgFilePath = basePath + uid +"bg.jpg";
-        String bgUrl = domain + ImageUtils.downloadImageAsResource(bgFilePath,accessKey,secretKey,bucket,bgPath);
+        String bgUrl = ImageUtils.downloadImageAsResource(bgPath,localFilePath+"/live/", gameLive.getUid()+"bg.jpg");
         //获取头像
-        String avatarFilePath = basePath + uid +".jpg";
-        String avatarUrl = domain + ImageUtils.downloadImageAsResource(avatarFilePath,accessKey,secretKey,bucket,avatarPath);
+        String avatarUrl = ImageUtils.downloadImageAsResource(avatarPath,localFilePath+"/live/", gameLive.getUid()+".jpg");
         gameLive.setBgUrl(bgUrl);
         gameLive.setAvatar(avatarUrl);
         return save(gameLive);
     }
+
+    /**
+     * 修改用户OBS配置
+     */
+    @Override
+    public Boolean updateObsOptions(String options) {
+        //获取当前用户ID
+        Long uid = StpUtil.getLoginIdAsLong();
+        //获取直播对象
+        GameLive gameLive = gameLiveMapper.selectOneByQuery(new QueryWrapper().eq("create_user_id", uid));
+        if(ObjectUtil.isNull(gameLive)) throw new JinLinkException("未查询到该用户入驻记录,请先入驻直播!");
+        gameLive.setObsOptions(options);
+        return updateById(gameLive);
+    }
+
+    /**
+     * 获取用户OBS配置
+     */
+    @Override
+    public String getUserObsOptions(Long id) {
+        GameLive gameLive = gameLiveMapper.selectOneByQuery(new QueryWrapper().eq("create_user_id",id));
+        if(ObjectUtil.isNull(gameLive)) return null;
+        return gameLive.getObsOptions();
+    }
 }
+

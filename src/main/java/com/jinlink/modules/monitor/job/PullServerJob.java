@@ -13,6 +13,7 @@ import com.jinlink.modules.game.service.GameCommunityService;
 import com.jinlink.modules.game.service.GameMapService;
 import com.jinlink.modules.game.service.GameOnlineStatisticsService;
 import com.jinlink.modules.game.service.GameServerService;
+import com.mybatisflex.core.query.QueryWrapper;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
@@ -43,42 +44,41 @@ public class PullServerJob implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) {
-        //查询所有社区
-        List<GameCommunity> gameCommunityList = gameCommunityService.list();
-        //查询所有的服务器
-        List<GameServer> gameServers = gameServerService.list();
-        //查询所有地图
-        List<GameMap> gameMapList = gameMapService.list();
-        // 创建一个固定大小的线程池
-        ExecutorService executor = Executors.newFixedThreadPool(4);
-        // 存储Future对象的列表，以便稍后获取结果
-        List<Future<SourceServerVo>> futures = new ArrayList<>();
-        //遍历社区列表 获取服务器数据
-        for (GameCommunity gameCommunity : gameCommunityList) {
-            //获取服务器列表
-            List<GameServer> serverList = gameServers.stream().filter(item -> item.getCommunityId().equals(gameCommunity.getId()))
-                    .sorted(Comparator.comparingInt(GameServer::getSort)).toList();
-            Callable<SourceServerVo> callable = () -> AgqlUtils.getSourceServerVoList(gameCommunity,serverList,gameMapList);
-            Future<SourceServerVo> future = executor.submit(callable);
-            futures.add(future);
-        }
-        // 等待所有任务完成并收集结果
-        List<SourceServerVo> serverVos = new ArrayList<>();
-        for (Future<SourceServerVo> future : futures) {
-            SourceServerVo serverVo;
-            try {
-                serverVo = future.get();
+        try {
+            //查询所有社区
+            List<GameCommunity> gameCommunityList = gameCommunityService.list(new QueryWrapper()
+                    .eq("is_cache","1"));
+            //查询所有的服务器
+            List<GameServer> gameServers = gameServerService.list();
+            //查询所有地图
+            List<GameMap> gameMapList = gameMapService.list();
+            // 创建一个固定大小的线程池
+            ExecutorService executor = Executors.newFixedThreadPool(6);
+            // 存储Future对象的列表，以便稍后获取结果
+            List<Future<SourceServerVo>> futures = new ArrayList<>();
+            //遍历社区列表 获取服务器数据
+            for (GameCommunity gameCommunity : gameCommunityList) {
+                //获取服务器列表
+                List<GameServer> serverList = gameServers.stream().filter(item -> item.getCommunityId().equals(gameCommunity.getId()))
+                        .sorted(Comparator.comparingInt(GameServer::getSort)).toList();
+                Callable<SourceServerVo> callable = () -> AgqlUtils.getSourceServerVoList(gameCommunity,serverList,gameMapList);
+                Future<SourceServerVo> future = executor.submit(callable);
+                futures.add(future);
+            }
+            // 等待所有任务完成并收集结果
+            List<SourceServerVo> serverVos = new ArrayList<>();
+            for (Future<SourceServerVo> future : futures) {
+                SourceServerVo serverVo;
+                serverVo = future.get(30L,TimeUnit.SECONDS);
                 saveOnlineStatistics(serverVo);
                 serverVos.add(serverVo);
-            } catch (InterruptedException | ExecutionException e) {
-                System.out.println("社区数据获取失败!");
-                return;
             }
+            //将数据存储进Redis中
+            redisService.deleteObject(Constants.SERVER_VO_KEY);
+            if(ObjectUtil.isNotNull(serverVos) && ObjectUtil.isNotEmpty(serverVos)) redisService.setCacheList(Constants.SERVER_VO_KEY,serverVos);
+        }catch (Exception e){
+            System.out.println("服务器信息获取失败");
         }
-        //将数据存储进Redis中
-        redisService.deleteObject(Constants.SERVER_VO_KEY);
-        if(ObjectUtil.isNotNull(serverVos) && ObjectUtil.isNotEmpty(serverVos)) redisService.setCacheList(Constants.SERVER_VO_KEY,serverVos);
-        System.out.println("服务器信息获取成功!");
     }
 
     /**

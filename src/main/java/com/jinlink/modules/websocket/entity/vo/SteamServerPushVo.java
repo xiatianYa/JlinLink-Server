@@ -1,8 +1,7 @@
-package com.jinlink.modules.websocket.entity;
+package com.jinlink.modules.websocket.entity.vo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ibasco.agql.protocols.valve.source.query.players.SourcePlayer;
-import com.jinlink.common.domain.LoginUser;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

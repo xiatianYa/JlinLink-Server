@@ -31,20 +31,11 @@ public class DailyCronJob implements Job {
     @Resource
     private GameOnlineStatisticsService gameOnlineStatisticsService;
 
-    @Value("${qiniu.domain}")
-    private String domain;
-
-    @Value("${qiniu.basePath}")
-    private String basePath;
-
-    @Value("${qiniu.accessKey}")
-    private String accessKey;
-
-    @Value("${qiniu.secretKey}")
-    private String secretKey;
-
-    @Value("${qiniu.bucket}")
-    private String bucket;
+    /**
+     * 上传文件存储在本地的根路径
+     */
+    @Value("${file.path}")
+    private String localFilePath;
 
     @Override
     @Transactional
@@ -60,11 +51,9 @@ public class DailyCronJob implements Job {
                         .getString("cover");
                 String avatarPath = BiliUtils.getBiliLiveUserInfoApi(gameLive.getUid());
                 //获取背景
-                String bgFilePath = basePath + gameLive.getUid() +"bg.jpg";
-                String bgUrl = domain + ImageUtils.downloadImageAsResource(bgFilePath,accessKey,secretKey,bucket,bgPath);
+                String bgUrl = ImageUtils.downloadImageAsResource(bgPath,localFilePath+"/live/", gameLive.getUid()+"bg.jpg");
                 //获取头像
-                String avatarFilePath = basePath + gameLive.getUid() +".jpg";
-                String avatarUrl = domain + ImageUtils.downloadImageAsResource(avatarFilePath,accessKey,secretKey,bucket,avatarPath);
+                String avatarUrl = ImageUtils.downloadImageAsResource(avatarPath,localFilePath+"/live/", gameLive.getUid()+".jpg");
                 gameLive.setBgUrl(bgUrl);
                 gameLive.setAvatar(avatarUrl);
                 gameLiveService.updateById(gameLive);
