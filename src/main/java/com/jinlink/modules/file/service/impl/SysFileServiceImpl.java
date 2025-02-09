@@ -74,6 +74,14 @@ public class SysFileServiceImpl implements SysFileService {
                     .fileUrl(fileUrl)
                     .status("1")
                     .build();
+        }if (ObjectUtil.isNull(loginUser)){
+            monLogsFile = MonLogsFile.builder()
+                    .userId(-1)
+                    .userName("unregistered")
+                    .fileSize(FileUtils.getFileSizeInMB(file))
+                    .fileUrl(fileUrl)
+                    .status("0")
+                    .build();
         }else{
             monLogsFile = MonLogsFile.builder()
                     .userId(loginUser.getId())
