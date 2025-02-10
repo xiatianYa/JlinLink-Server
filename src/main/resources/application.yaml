@@ -11,7 +11,7 @@ spring:
   datasource:
     url: jdbc:mysql://127.0.0.1:3306/jinlink_boot?socketTimeout=60000&connectTimeout=30000&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
     username: root
-    password: 123456
+    password: sr2539195984.
     hikari:
       max-lifetime: 300000
   data:
@@ -23,7 +23,7 @@ spring:
       # Redis服务器连接端口
       port: 6379
       # Redis服务器连接密码（默认为空）
-      password: 123456
+      password: sr2539195984.
       # 连接超时时间
       timeout: 5s
       lettuce:
@@ -140,6 +140,6 @@ logging:
 
 # 本地文件上传
 file:
-  domain: http://127.0.0.1:8080
+  domain: https://www.bluearchive.top
   path: D:/jinLink/uploadPath
   prefix: /statics

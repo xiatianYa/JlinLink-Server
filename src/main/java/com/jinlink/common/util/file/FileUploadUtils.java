@@ -10,6 +10,9 @@ import com.jinlink.common.util.StringUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -69,7 +72,16 @@ public class FileUploadUtils {
         String fileName = extractFilename(file);
 
         String absPath = getAbsoluteFile(baseDir, fileName).getAbsolutePath();
-        file.transferTo(Paths.get(absPath));
+
+        // 检查文件是否为图片且大小大于 50KB
+        if (isImageFile(file) && file.getSize() > 50 * 1024) {
+            // 压缩图片
+            compressImage(file, absPath);
+        } else {
+            // 直接上传文件
+            file.transferTo(Paths.get(absPath));
+        }
+
         return getPathFileName(fileName);
     }
 
@@ -185,5 +197,39 @@ public class FileUploadUtils {
     public static String extractModelFilename(MultipartFile file) {
         return StringUtils.format("{}/{}.{}", DateUtils.datePath(),
                 FilenameUtils.getBaseName(file.getOriginalFilename()), FileTypeUtils.getExtension(file));
+    }
+
+    /**
+     * 检查文件是否为图片
+     *
+     * @param file 上传的文件
+     * @return 是否为图片
+     */
+    private static boolean isImageFile(MultipartFile file) {
+        String fileName = file.getOriginalFilename();
+        if (fileName != null) {
+            String extension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+            return extension.matches("(?i)jpg|jpeg|png|gif");
+        }
+        return false;
+    }
+    /**
+     * 压缩图片
+     *
+     * @param file    上传的文件
+     * @param absPath 保存的绝对路径
+     * @throws IOException 读写文件出错时抛出
+     */
+    private static void compressImage(MultipartFile file, String absPath) throws IOException {
+        BufferedImage originalImage = ImageIO.read(file.getInputStream());
+        int width = 555;
+        int height = 312;
+        BufferedImage resizedImage = new BufferedImage(width, height, originalImage.getType());
+        Graphics2D g2d = resizedImage.createGraphics();
+        g2d.drawImage(originalImage, 0, 0, width, height, null);
+        g2d.dispose();
+        String fileExtension = absPath.substring(absPath.lastIndexOf(".") + 1);
+        File outputFile = new File(absPath);
+        ImageIO.write(resizedImage, fileExtension, outputFile);
     }
 }

@@ -66,18 +66,27 @@ public class SysFileServiceImpl implements SysFileService {
     private void initFileLog(MultipartFile file,String fileUrl,Exception e) {
         LoginUser loginUser = GlobalUserHolder.getUser();
         MonLogsFile monLogsFile;
+        Long userId;
+        String userName;
+        if (ObjectUtil.isNull(loginUser)) {
+            userId = null; // 可以根据实际情况给 userId 赋一个合适的值，这里设为 null
+            userName = "系统用户";
+        } else {
+            userId = loginUser.getId();
+            userName = loginUser.getUserName();
+        }
         if (ObjectUtil.isNull(e)){
             monLogsFile = MonLogsFile.builder()
-                    .userId(loginUser.getId())
-                    .userName(loginUser.getUserName())
+                    .userId(userId)
+                    .userName(userName)
                     .fileSize(FileUtils.getFileSizeInMB(file))
                     .fileUrl(fileUrl)
                     .status("1")
                     .build();
         }else{
             monLogsFile = MonLogsFile.builder()
-                    .userId(loginUser.getId())
-                    .userName(loginUser.getUserName())
+                    .userId(userId)
+                    .userName(userName)
                     .fileSize(FileUtils.getFileSizeInMB(file))
                     .fileUrl(fileUrl)
                     .status("0")
