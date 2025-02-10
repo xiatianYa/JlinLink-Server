@@ -52,7 +52,7 @@ public class AgqlUtils {
             return JSON.parseArray(forObject, ExgMapDTO.class);
         }catch (Exception e){
             System.out.println("地图CD信息获取失败!");
-            return null;
+            return new ArrayList<>();
         }
     }
 
