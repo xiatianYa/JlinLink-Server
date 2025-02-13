@@ -24,4 +24,6 @@ public class ExgMapDTO {
     private String deadline;
     // 是否可预定
     private Boolean isOrder;
+    // 称号
+    private String Achievement10;
 }

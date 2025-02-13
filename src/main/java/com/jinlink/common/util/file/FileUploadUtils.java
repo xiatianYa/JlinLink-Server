@@ -89,8 +89,8 @@ public class FileUploadUtils {
      * 编码文件名
      */
     public static String extractFilename(MultipartFile file) {
-        return StringUtils.format("{}/{}_{}.{}", DateUtils.datePath(),
-                FilenameUtils.getBaseName(file.getOriginalFilename()), SeqUtils.getId(SeqUtils.uploadSeqType), FileTypeUtils.getExtension(file));
+        return StringUtils.format("{}/{}.{}", DateUtils.datePath(),
+                FilenameUtils.getBaseName(file.getOriginalFilename()), FileTypeUtils.getExtension(file));
     }
 
     private static File getAbsoluteFile(String uploadDir, String fileName) throws IOException {
