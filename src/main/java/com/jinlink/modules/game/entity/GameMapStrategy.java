@@ -1,16 +1,15 @@
-package com.jinlink.modules.system.entity;
+package com.jinlink.modules.game.entity;
 
 import com.jinlink.core.domain.BaseEntity;
 import com.mybatisflex.annotation.Table;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 /**
- * 意见反馈表 实体类。
+ * 地图攻略表 实体类。
  *
  * @author Summer
  * @since 1.0.0
@@ -19,31 +18,31 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(value = "sys_feedback")
-public class SysFeedback extends BaseEntity{
+@Table(value = "game_map_strategy")
+public class GameMapStrategy extends BaseEntity {
 
     /**
-     * 意见反馈
+     * 攻略名称
+     */
+    private String title;
+
+    /**
+     * 地图名称
+     */
+    private Long mapId;
+
+    /**
+     * 攻略内容
      */
     private String content;
 
     /**
-     * 反馈内容
+     * 攻略视频路径
      */
-    private String feedback;
+    private String videoUrl;
 
     /**
-     * 反馈图片
-     */
-    private String image;
-
-    /**
-     * 反馈类型
-     */
-    private Integer type;
-
-    /**
-     * 处理状态
+     * 审核状态
      */
     private Integer status;
 

@@ -40,7 +40,7 @@ public class Codegen {
 
         //设置表前缀和只生成哪些表
         globalConfig.setTablePrefix("tb_");
-        globalConfig.setGenerateTable("game_bind");
+        globalConfig.setGenerateTable("game_map_strategy");
 
         //设置生成 entity 并启用 Lombok
         globalConfig.setEntityGenerateEnable(true);
@@ -77,7 +77,7 @@ public class Codegen {
         ColumnConfig columnConfig = new ColumnConfig();
         columnConfig.setLarge(true);
         columnConfig.setVersion(true);
-        globalConfig.setColumnConfig("game_bind", columnConfig);
+        globalConfig.setColumnConfig("game_map_strategy", columnConfig);
 
         return globalConfig;
     }

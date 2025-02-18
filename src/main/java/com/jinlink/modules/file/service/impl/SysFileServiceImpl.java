@@ -65,6 +65,7 @@ public class SysFileServiceImpl implements SysFileService {
 
     private void initFileLog(MultipartFile file,String fileUrl,Exception e) {
         LoginUser loginUser = GlobalUserHolder.getUser();
+        if (ObjectUtil.isNull(loginUser)) return;
         MonLogsFile monLogsFile;
         Long userId;
         String userName;

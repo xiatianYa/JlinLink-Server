@@ -23,6 +23,9 @@ public class SysFeedbackAddDTO implements Serializable {
     @Schema(description = "意见反馈")
     private String content;
 
+    @Schema(description = "反馈内容")
+    private String feedback;
+
     @Schema(description = "反馈图片")
     private String image;
 
