@@ -2,6 +2,7 @@ package com.jinlink.modules.game.service;
 
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
+import com.jinlink.modules.game.entity.dto.GameMapStrategyAddDTO;
 import com.jinlink.modules.game.entity.vo.GameMapStrategyVo;
 import com.mybatisflex.core.service.IService;
 import com.jinlink.modules.game.entity.GameMapStrategy;
@@ -18,4 +19,9 @@ public interface GameMapStrategyService extends IService<GameMapStrategy> {
      * 分页查询地图攻略表。
      */
     RPage<GameMapStrategyVo> listGameMapStrategyVoPage(PageQuery pageQuery);
+
+    /**
+     * 添加地图攻略表。
+     */
+    Boolean saveMapStrategy(GameMapStrategyAddDTO gameMapStrategyAddDTO);
 }

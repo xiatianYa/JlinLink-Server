@@ -5,6 +5,7 @@ import cn.hutool.core.bean.BeanUtil;
 import com.jinlink.common.api.Result;
 import com.jinlink.core.page.PageQuery;
 import com.jinlink.core.page.RPage;
+import com.jinlink.modules.game.entity.dto.GameMapStrategyAddDTO;
 import com.jinlink.modules.game.entity.vo.GameMapStrategyVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -37,14 +38,14 @@ public class GameMapStrategyController {
     /**
      * 添加地图攻略表。
      *
-     * @param gameMapStrategy 地图攻略表
+     * @param gameMapStrategyAddDTO 地图攻略表
      * @return {@code true} 添加成功，{@code false} 添加失败
      */
     @PostMapping("save")
     @Operation(operationId = "1",summary = "新增地图攻略")
     @SaCheckPermission("game:gameMapStrategy:save")
-    public Result<Boolean> save(@Parameter(description = "游戏地图攻略对象", required = true)@RequestBody GameMapStrategy gameMapStrategy) {
-        return Result.success("请求成功",gameMapStrategyService.save(gameMapStrategy));
+    public Result<Boolean> save(@Parameter(description = "游戏地图攻略对象", required = true)@RequestBody GameMapStrategyAddDTO gameMapStrategyAddDTO) {
+        return Result.success("请求成功",gameMapStrategyService.saveMapStrategy(gameMapStrategyAddDTO));
     }
 
     /**

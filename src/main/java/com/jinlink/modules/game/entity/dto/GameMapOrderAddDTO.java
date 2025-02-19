@@ -1,9 +1,5 @@
 package com.jinlink.modules.game.entity.dto;
 
-/**
- * 地图订阅 新增 DTO 对象
- */
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
