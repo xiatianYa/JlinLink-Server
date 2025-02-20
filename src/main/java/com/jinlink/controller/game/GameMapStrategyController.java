@@ -1,6 +1,7 @@
 package com.jinlink.controller.game;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.hutool.core.bean.BeanUtil;
 import com.jinlink.common.api.Result;
 import com.jinlink.core.page.PageQuery;
@@ -58,7 +59,7 @@ public class GameMapStrategyController {
     @Operation(operationId = "2",summary = "删除地图攻略")
     @SaCheckPermission("game:gameMapStrategy:delete")
     public Result<Boolean> remove(@PathVariable Serializable id) {
-        return Result.success("请求成功",gameMapStrategyService.removeById(id));
+        return Result.success("请求成功",gameMapStrategyService.removeMapStrategyById(id));
     }
 
     /**
@@ -71,7 +72,7 @@ public class GameMapStrategyController {
     @Operation(operationId = "3",summary = "修改游戏地图攻略")
     @SaCheckPermission("game:gameMapStrategy:update")
     public Result<Boolean> update(@Parameter(description = "游戏地图攻略", required = true)@RequestBody GameMapStrategy gameMapStrategy) {
-        return Result.success("请求成功",gameMapStrategyService.updateById(gameMapStrategy));
+        return Result.success("请求成功",gameMapStrategyService.updateMapStrategyById(gameMapStrategy));
     }
 
     /**
@@ -97,8 +98,7 @@ public class GameMapStrategyController {
     @Operation(operationId = "5",summary = "获取游戏地图攻略详细")
     @SaCheckPermission("game:gameMapStrategy:info")
     public Result<GameMapStrategyVo> getInfo(@PathVariable Serializable id) {
-        GameMapStrategyVo gameMapStrategyVo = BeanUtil.copyProperties(gameMapStrategyService.getById(id), GameMapStrategyVo.class);
-        return Result.success("请求成功",gameMapStrategyVo);
+        return Result.success("请求成功",gameMapStrategyService.getMapStrategyInfoById(id));
     }
 
     /**
@@ -114,4 +114,26 @@ public class GameMapStrategyController {
         return Result.success("请求成功",gameMapStrategyService.listGameMapStrategyVoPage(pageQuery));
     }
 
+    /**
+     * 发布游戏地图攻略。
+     *
+     * @param gameMapStrategy 地图攻略表
+     * @return {@code true} 更新成功，{@code false} 更新失败
+     */
+    @PutMapping("publish")
+    @Operation(operationId = "7",summary = "发布游戏地图攻略")
+    @SaCheckPermission("game:gameMapStrategy:update")
+    public Result pushMapStrategyById(@Parameter(description = "游戏地图攻略", required = true)@RequestBody GameMapStrategy gameMapStrategy) {
+        return Result.success("请求成功",gameMapStrategyService.pushMapStrategyById(gameMapStrategy));
+    }
+
+    /**
+     * 游戏攻略审核
+     */
+    @PutMapping("examine")
+    @Operation(operationId = "8",summary = "游戏攻略审核")
+    @SaCheckPermission("game:gameMapStrategy:examine")
+    public Result<Boolean> examineMapStrategyById(@RequestParam(name = "id") Long id,@RequestParam(name="type") String type) {
+        return Result.success("请求成功",gameMapStrategyService.examineMapStrategyById(id,type));
+    }
 }
