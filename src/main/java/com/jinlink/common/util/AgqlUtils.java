@@ -5,6 +5,8 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.ibasco.agql.protocols.valve.source.query.SourceQueryClient;
+import com.ibasco.agql.protocols.valve.source.query.info.SourceQueryInfoResponse;
+import com.ibasco.agql.protocols.valve.source.query.info.SourceServer;
 import com.ibasco.agql.protocols.valve.source.query.players.SourcePlayer;
 import com.ibasco.agql.protocols.valve.source.query.players.SourceQueryPlayerResponse;
 import com.jinlink.modules.game.entity.GameCommunity;
@@ -22,6 +24,8 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 public class AgqlUtils {
 
@@ -101,6 +105,44 @@ public class AgqlUtils {
                         .build();
                 sourceServerVo.setOnLineUserNumber(sourceServerVo.getOnLineUserNumber() + gameEntityVo.getPlayers());
                 sourceServerVo.getGameServerVoList().add(serverVo);
+            }
+        }
+        //查询那些服务器没有数据 走源服务器
+        List<SteamServerVo> gameServerVoList = sourceServerVo.getGameServerVoList();
+        for (GameServer gameServer : gameServers) {
+            //查询是否有这个服务器信息
+            Optional<SteamServerVo> isTrue = gameServerVoList.stream().filter(item -> (item.getIp() + ":" + item.getPort())
+                    .equals(gameServer.getIp() + ":" + gameServer.getPort())).findFirst();
+            if (isTrue.isEmpty()) {
+                // 走源服务器查询
+                try (SourceQueryClient client = new SourceQueryClient()) {
+                    InetSocketAddress address = new InetSocketAddress(gameServer.getIp(), Integer.parseInt(gameServer.getPort()));
+                    CompletableFuture<SourceQueryInfoResponse> info = client.getInfo(address);
+                    // 设置超时时间为 1 秒
+                    SourceQueryInfoResponse response = info.orTimeout(1, TimeUnit.SECONDS).join();
+                    SourceServer sourceServer = response.getResult();
+                    // 获取当前服务器的地图数据
+                    Optional<GameMap> mapOptional = gameMapList.stream().filter(item -> item.getMapName().equals(sourceServer.getMapName())).findFirst();
+                    SteamServerVo serverVo = SteamServerVo.builder()
+                            .serverName(sourceServer.getName())
+                            .addr(gameServer.getIp() + ":" + gameServer.getPort())
+                            .ip(gameServer.getIp())
+                            .port(gameServer.getPort())
+                            .modeId(gameServer.getModeId())
+                            .gameId(gameServer.getGameId())
+                            .mapName(sourceServer.getMapName())
+                            .mapLabel(mapOptional.map(GameMap::getMapLabel).orElse(null))
+                            .mapUrl(mapOptional.map(GameMap::getMapUrl).orElse(null))
+                            .type(String.valueOf(mapOptional.map(GameMap::getType).orElse(null)))
+                            .tag(JSON.parseArray(mapOptional.map(GameMap::getTag).orElse(""), String.class))
+                            .players(sourceServer.getNumOfPlayers())
+                            .maxPlayers(sourceServer.getMaxPlayers())
+                            .build();
+                    sourceServerVo.setOnLineUserNumber(sourceServerVo.getOnLineUserNumber() + sourceServer.getNumOfPlayers());
+                    sourceServerVo.getGameServerVoList().add(serverVo);
+                } catch (Exception e) {
+                    System.out.println(gameServer.getServerName() + "信息获取超时");
+                }
             }
         }
         return sourceServerVo;

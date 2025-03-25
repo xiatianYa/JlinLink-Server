@@ -13,7 +13,9 @@ import com.jinlink.core.config.redis.service.RedisService;
 import com.jinlink.core.holder.GlobalUserHolder;
 import com.jinlink.modules.game.entity.vo.SourceServerVo;
 import com.jinlink.modules.websocket.entity.*;
-import com.jinlink.modules.websocket.entity.dto.ServerSearchDto;
+import com.jinlink.modules.websocket.entity.dto.GroupMessageDTO;
+import com.jinlink.modules.websocket.entity.dto.ServerSearchDTO;
+import com.jinlink.modules.websocket.entity.vo.GroupMessageVo;
 import com.jinlink.modules.websocket.entity.vo.JoinServerVo;
 import com.jinlink.modules.websocket.entity.vo.MessageVo;
 import com.jinlink.modules.websocket.entity.vo.SteamServerPushVo;
@@ -140,7 +142,7 @@ public class SeverWebsocket {
             switch (receiveMessage.getType()) {
                 case 0:
                     //Json实例化对象
-                    ServerSearchDto serverSearchDto = JSONObject.parseObject(receiveMessage.getData(), ServerSearchDto.class);
+                    ServerSearchDTO serverSearchDto = JSONObject.parseObject(receiveMessage.getData(), ServerSearchDTO.class);
                     Integer[] responseData = expireCacheMap.get(serverSearchDto.getIp()+":"+serverSearchDto.getPort());
                     if(ObjectUtil.isNull(responseData)){
                         responseData= GameServerUtil.sendAndReceiveUDP(serverSearchDto.getIp(), serverSearchDto.getPort());
@@ -189,6 +191,25 @@ public class SeverWebsocket {
                 case 2:
                     //用户连接服务器
                     expireOnLineCacheMap.put(this.loginUser.getId(),receiveMessage.getData());
+                    break;
+                case 3:
+                    //公共聊天室消息
+                    GroupMessageDTO groupMessageDTO = JSONObject.parseObject(receiveMessage.getData(), GroupMessageDTO.class);
+                    GroupMessageVo groupMessageVo = GroupMessageVo.builder()
+                            .code("207")
+                            .content(groupMessageDTO.getContent())
+                            .type(groupMessageDTO.getType())
+                            .sendUser(this.loginUser)
+                            .build();
+                    webSocketMap.forEach((k,v)->{
+                        byte[] compressedData = compress(JSON.toJSONString(groupMessageVo));
+                        // 发送二进制数据
+                        try {
+                            v.session.getBasicRemote().sendBinary(ByteBuffer.wrap(compressedData));
+                        } catch (IOException e) {
+                            System.out.println("群消息发送失败!");
+                        }
+                    });
                     break;
             }
         }catch (Exception e) {

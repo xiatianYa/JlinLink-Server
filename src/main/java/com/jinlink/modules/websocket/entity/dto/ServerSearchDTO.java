@@ -16,7 +16,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(name = "ServerSearchDto", description = "服务器 查询  DTO 对象")
-public class ServerSearchDto extends BaseVO {
+public class ServerSearchDTO extends BaseVO {
     @Schema(description = "服务器IP")
     private String ip;
     @Schema(description = "服务器端口")
