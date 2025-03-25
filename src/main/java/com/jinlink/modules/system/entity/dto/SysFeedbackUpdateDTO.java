@@ -35,4 +35,7 @@ public class SysFeedbackUpdateDTO implements Serializable {
     @Schema(description = "处理状态")
     private Integer status;
 
+    @Schema(description = "回复内容")
+    private String feedback;
+
 }

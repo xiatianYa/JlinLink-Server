@@ -74,7 +74,7 @@ public class SysFileServiceImpl implements SysFileService {
             userName = "系统用户";
         } else {
             userId = loginUser.getId();
-            userName = loginUser.getUserName();
+            userName = loginUser.getNickName();
         }
         if (ObjectUtil.isNull(e)){
             monLogsFile = MonLogsFile.builder()

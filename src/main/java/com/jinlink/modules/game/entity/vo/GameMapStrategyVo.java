@@ -24,6 +24,9 @@ public class GameMapStrategyVo extends BaseVO {
     @Schema(description = "地图ID")
     private Integer mapId;
 
+    @Schema(description = "地图名称")
+    private String mapLabel;
+
     @Schema(description = "攻略内容")
     private String content;
 
@@ -32,4 +35,10 @@ public class GameMapStrategyVo extends BaseVO {
 
     @Schema(description = "审核状态")
     private Integer status;
+
+    @Schema(description = "发布人ID")
+    private String createUserId;
+
+    @Schema(description = "发布人名称")
+    private String createUserName;
 }

@@ -27,7 +27,7 @@ public class GameMapStrategy extends BaseEntity {
     private String title;
 
     /**
-     * 地图名称
+     * 地图ID
      */
     private Long mapId;
 
