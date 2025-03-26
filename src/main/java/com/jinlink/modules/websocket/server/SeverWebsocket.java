@@ -209,6 +209,10 @@ public class SeverWebsocket {
                 case 3:
                     //公共聊天室消息
                     GroupMessageDTO groupMessageDTO = JSONObject.parseObject(receiveMessage.getData(), GroupMessageDTO.class);
+                    //校验参数
+                    if (ObjectUtil.isNull(groupMessageDTO) || ObjectUtil.isNull(groupMessageDTO.getContent()) || groupMessageDTO.getContent().length() > 255 || ObjectUtil.isNull(groupMessageDTO.getType())) {
+                        return;
+                    }
                     //记录消息
                     GameChat gameChat = GameChat.builder()
                             .type(String.valueOf(groupMessageDTO.getType()))
@@ -224,10 +228,11 @@ public class SeverWebsocket {
                     GameChatRecordVo gameChatRecordVo = BeanUtil.copyProperties(gameChat, GameChatRecordVo.class);
                     gameChatRecordVo.setLoginUser(this.loginUser);
                     gameChatRecordVo.setFromId(this.loginUser.getId());
+
                     //查询isShowTime
                     GameChat one = gameChatService.getOne(new QueryWrapper().orderBy("create_time"));
                     Duration duration = Duration.between(one.getCreateTime(), gameChatRecordVo.getCreateTime());
-                    gameChatRecordVo.setIsShowTime(duration.toMinutes() >= 5);
+                    gameChatRecordVo.setIsShowTime(duration.toMinutes() >= 5 || ObjectUtil.isNull(one));
                     GroupMessageVo groupMessageVo = GroupMessageVo.builder()
                             .code("207")
                             .data(gameChatRecordVo)

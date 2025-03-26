@@ -1,5 +1,6 @@
 package com.jinlink.modules.game.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.jinlink.common.domain.LoginUser;
 import com.jinlink.core.holder.GlobalUserHolder;
 import com.jinlink.modules.game.entity.vo.GameChatRecordVo;
@@ -56,6 +57,8 @@ public class GameChatServiceImpl extends ServiceImpl<GameChatMapper, GameChat> i
                 GameChatRecordVo prevRecord = recordVos.get(i - 1);
                 Duration duration = Duration.between(prevRecord.getCreateTime(), gameChatRecordVo.getCreateTime());
                 gameChatRecordVo.setIsShowTime(duration.toMinutes() >= 5);
+            }else{
+                gameChatRecordVo.setIsShowTime(true);
             }
 
             recordVos.add(gameChatRecordVo);
