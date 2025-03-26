@@ -136,7 +136,7 @@ public class SysMenuController {
     @Operation(operationId = "8",summary = "获取所有菜单")
     @SaCheckPermission("sys:menu:getAllPages")
     public Result<List<String>> getAllPages() {
-        return Result.success("请求成功",sysMenuService.getAllPages());
+         return Result.success("请求成功",sysMenuService.getAllPages());
     }
 
     /**

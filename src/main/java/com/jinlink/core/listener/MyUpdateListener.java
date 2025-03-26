@@ -1,6 +1,7 @@
 package com.jinlink.core.listener;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.jinlink.core.domain.BaseEntity;
 import com.mybatisflex.annotation.UpdateListener;
 
@@ -15,7 +16,9 @@ public class MyUpdateListener implements UpdateListener {
         BaseEntity baseEntity = (BaseEntity) entity;
         baseEntity.setUpdateTime(LocalDateTime.now());
         try {
-            baseEntity.setUpdateUserId(StpUtil.getLoginIdAsLong());
+            if (ObjectUtil.isNull(baseEntity.getUpdateUserId())){
+                baseEntity.setUpdateUserId(StpUtil.getLoginIdAsLong());
+            }
         }catch (Exception e){
             baseEntity.setUpdateUserId(0L);
         }

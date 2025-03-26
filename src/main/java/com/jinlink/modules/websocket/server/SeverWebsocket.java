@@ -11,7 +11,10 @@ import com.jinlink.common.exception.JinLinkException;
 import com.jinlink.common.util.udp.GameServerUtil;
 import com.jinlink.core.config.redis.service.RedisService;
 import com.jinlink.core.holder.GlobalUserHolder;
+import com.jinlink.modules.game.entity.GameChat;
+import com.jinlink.modules.game.entity.vo.GameChatRecordVo;
 import com.jinlink.modules.game.entity.vo.SourceServerVo;
+import com.jinlink.modules.game.service.GameChatService;
 import com.jinlink.modules.websocket.entity.*;
 import com.jinlink.modules.websocket.entity.dto.GroupMessageDTO;
 import com.jinlink.modules.websocket.entity.dto.ServerSearchDTO;
@@ -19,6 +22,7 @@ import com.jinlink.modules.websocket.entity.vo.GroupMessageVo;
 import com.jinlink.modules.websocket.entity.vo.JoinServerVo;
 import com.jinlink.modules.websocket.entity.vo.MessageVo;
 import com.jinlink.modules.websocket.entity.vo.SteamServerPushVo;
+import com.mybatisflex.core.query.QueryWrapper;
 import jakarta.annotation.Resource;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnMessage;
@@ -36,7 +40,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -77,9 +83,17 @@ public class SeverWebsocket {
     /**RedisService*/
     private static RedisService redisService;
 
+    /**RedisService*/
+    private static GameChatService gameChatService;
+
     @Resource
     public void setRedisService(RedisService redisService) {
         SeverWebsocket.redisService = redisService;
+    }
+
+    @Resource
+    public void setGameChatService(GameChatService gameChatService) {
+        SeverWebsocket.gameChatService = gameChatService;
     }
 
     /**
@@ -195,12 +209,30 @@ public class SeverWebsocket {
                 case 3:
                     //公共聊天室消息
                     GroupMessageDTO groupMessageDTO = JSONObject.parseObject(receiveMessage.getData(), GroupMessageDTO.class);
+                    //记录消息
+                    GameChat gameChat = GameChat.builder()
+                            .type(String.valueOf(groupMessageDTO.getType()))
+                            .content(groupMessageDTO.getContent())
+                            .source("group")
+                            .toId(1L)
+                            .createUserId(this.loginUser.getId())
+                            .updateUserId(this.loginUser.getId())
+                            .build();
+                    //保存记录
+                    gameChatService.save(gameChat);
+
+                    GameChatRecordVo gameChatRecordVo = BeanUtil.copyProperties(gameChat, GameChatRecordVo.class);
+                    gameChatRecordVo.setLoginUser(this.loginUser);
+                    gameChatRecordVo.setFromId(this.loginUser.getId());
+                    //查询isShowTime
+                    GameChat one = gameChatService.getOne(new QueryWrapper().orderBy("create_time"));
+                    Duration duration = Duration.between(one.getCreateTime(), gameChatRecordVo.getCreateTime());
+                    gameChatRecordVo.setIsShowTime(duration.toMinutes() >= 5);
                     GroupMessageVo groupMessageVo = GroupMessageVo.builder()
                             .code("207")
-                            .content(groupMessageDTO.getContent())
-                            .type(groupMessageDTO.getType())
-                            .sendUser(this.loginUser)
+                            .data(gameChatRecordVo)
                             .build();
+
                     webSocketMap.forEach((k,v)->{
                         byte[] compressedData = compress(JSON.toJSONString(groupMessageVo));
                         // 发送二进制数据

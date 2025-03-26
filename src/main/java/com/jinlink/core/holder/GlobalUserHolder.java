@@ -55,15 +55,6 @@ public class GlobalUserHolder {
     }
 
     /**
-     * 获取登录用户名称
-     *
-     * @return {@link String} 登录用户名称
-     */
-    public static String getUserName() {
-        return getUser().getUserName();
-    }
-
-    /**
      * 获取登录用户真实名称
      *
      * @return {@link String} 登录用户真实名称

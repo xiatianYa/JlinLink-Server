@@ -29,11 +29,6 @@ public class LoginUser implements Serializable {
     private Long id;
 
     /**
-     * 账号
-     */
-    private String userName;
-
-    /**
      * 昵称
      */
     private String nickName;
@@ -42,21 +37,6 @@ public class LoginUser implements Serializable {
      * 头像
      */
     private String avatar;
-
-    /**
-     * 邮箱
-     */
-    private String userEmail;
-
-    /**
-     * 手机
-     */
-    private String userPhone;
-
-    /**
-     * 性别 0保密 1男 2女
-     */
-    private String userGender;
 
     /**
      * 角色IDs

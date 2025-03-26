@@ -1,6 +1,7 @@
 package com.jinlink.core.listener;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.jinlink.core.domain.BaseEntity;
 import com.mybatisflex.annotation.InsertListener;
 
@@ -16,8 +17,12 @@ public class MyInsertListener implements InsertListener {
         baseEntity.setCreateTime(LocalDateTime.now());
         baseEntity.setUpdateTime(LocalDateTime.now());
         try {
-            baseEntity.setUpdateUserId(StpUtil.getLoginIdAsLong());
-            baseEntity.setCreateUserId(StpUtil.getLoginIdAsLong());
+            if (ObjectUtil.isNull(baseEntity.getCreateUserId())){
+                baseEntity.setCreateUserId(StpUtil.getLoginIdAsLong());
+            }
+            if (ObjectUtil.isNull(baseEntity.getUpdateUserId())){
+                baseEntity.setUpdateUserId(StpUtil.getLoginIdAsLong());
+            }
         }catch (Exception e){
             baseEntity.setUpdateUserId(0L);
             baseEntity.setCreateUserId(0L);
