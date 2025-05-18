@@ -35,4 +35,7 @@ public class GameServerAddDTO implements Serializable {
 
     @Schema(description = "排序值")
     private Integer sort;
+
+    @Schema(description = "排序值")
+    private Integer isStatistics;
 }

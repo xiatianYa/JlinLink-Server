@@ -60,6 +60,12 @@ public class SteamServerVo {
     @Schema(description = "服务器最大玩家数")
     private Integer maxPlayers;
 
+    @Schema(description = "是否统计")
+    private Integer isStatistics;
+
+    @Schema(description = "连接指令")
+    private String connectStr;
+
     @Schema(description = "服务器在线玩家信息列表")
     private List<SourcePlayer> sourcePlayers;
 

@@ -9,6 +9,7 @@ import com.ibasco.agql.protocols.valve.source.query.info.SourceQueryInfoResponse
 import com.ibasco.agql.protocols.valve.source.query.info.SourceServer;
 import com.ibasco.agql.protocols.valve.source.query.players.SourcePlayer;
 import com.ibasco.agql.protocols.valve.source.query.players.SourceQueryPlayerResponse;
+import com.jinlink.common.constants.Constants;
 import com.jinlink.modules.game.entity.GameCommunity;
 import com.jinlink.modules.game.entity.GameMap;
 import com.jinlink.modules.game.entity.GameServer;
@@ -103,7 +104,13 @@ public class AgqlUtils {
                         .players(gameEntityVo.getPlayers())
                         .maxPlayers(gameEntityVo.getMax_players())
                         .build();
-                sourceServerVo.setOnLineUserNumber(sourceServerVo.getOnLineUserNumber() + gameEntityVo.getPlayers());
+                //当前服务器不被统计
+                if (serverOptional.isPresent()) {
+                    GameServer gameServer = serverOptional.get();
+                    if (gameServer.getIsStatistics().equals(1)){
+                        sourceServerVo.setOnLineUserNumber(sourceServerVo.getOnLineUserNumber() + gameEntityVo.getPlayers());
+                    }
+                }
                 sourceServerVo.getGameServerVoList().add(serverVo);
             }
         }
@@ -119,7 +126,7 @@ public class AgqlUtils {
                     InetSocketAddress address = new InetSocketAddress(gameServer.getIp(), Integer.parseInt(gameServer.getPort()));
                     CompletableFuture<SourceQueryInfoResponse> info = client.getInfo(address);
                     // 设置超时时间为 1 秒
-                    SourceQueryInfoResponse response = info.orTimeout(1, TimeUnit.SECONDS).join();
+                    SourceQueryInfoResponse response = info.orTimeout(300, TimeUnit.MILLISECONDS).join();
                     SourceServer sourceServer = response.getResult();
                     // 获取当前服务器的地图数据
                     Optional<GameMap> mapOptional = gameMapList.stream().filter(item -> item.getMapName().equals(sourceServer.getMapName())).findFirst();
@@ -137,6 +144,7 @@ public class AgqlUtils {
                             .tag(JSON.parseArray(mapOptional.map(GameMap::getTag).orElse(""), String.class))
                             .players(sourceServer.getNumOfPlayers())
                             .maxPlayers(sourceServer.getMaxPlayers())
+                            .isStatistics(gameServer.getIsStatistics())
                             .build();
                     sourceServerVo.setOnLineUserNumber(sourceServerVo.getOnLineUserNumber() + sourceServer.getNumOfPlayers());
                     sourceServerVo.getGameServerVoList().add(serverVo);

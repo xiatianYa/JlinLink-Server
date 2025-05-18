@@ -30,4 +30,7 @@ public class GameServerUpdateDTO extends BaseVO {
 
     @Schema(description = "排序值")
     private Integer sort;
+
+    @Schema(description = "排序值")
+    private Integer isStatistics;
 }

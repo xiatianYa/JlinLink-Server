@@ -1,5 +1,6 @@
 package com.jinlink.controller.game;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import com.jinlink.common.api.Result;
 import com.jinlink.modules.game.entity.vo.GameChatRecordVo;
 import com.mybatisflex.core.paginate.Page;
@@ -35,6 +36,7 @@ public class GameChatController {
      * 查询聊天记录record。
      */
     @GetMapping("record")
+    @SaCheckLogin
     public Result<List<GameChatRecordVo>> record(Integer index, Integer num) {
         return Result.success("请求成功",gameChatService.record(index,num));
     }

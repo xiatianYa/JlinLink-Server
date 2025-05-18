@@ -47,4 +47,10 @@ public class GameServerVo extends BaseVO {
 
     @Schema(description = "排序值")
     private Integer sort;
+
+    @Schema(description = "是否统计")
+    private String isStatistics;
+
+    @Schema(description = "连接指令")
+    private String connectStr;
 }

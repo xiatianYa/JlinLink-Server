@@ -55,4 +55,14 @@ public class GameServer extends BaseEntity {
      * 排序值
      */
     private Integer sort;
+
+    /**
+     * 是否统计
+     */
+    private Integer isStatistics;
+
+    /**
+     * 连接指令
+     */
+    private String connectStr;
 }
