@@ -138,7 +138,7 @@ public class GameServerServiceImpl extends ServiceImpl<GameServerMapper, GameSer
             List<SteamServerVo> gameServerVoList = sourceServerVo.getGameServerVoList();
             for (SteamServerVo steamServerVo : gameServerVoList) {
                 //判断这个服务器是不是用户要的游戏
-                if (ObjectUtil.isNotNull(gameServerSearchDTO.getGameId()) && !steamServerVo.getGameId().equals(gameServerSearchDTO.getGameId())) continue;
+                if (ObjectUtil.isNotNull(gameServerSearchDTO.getGameId()) && ObjectUtil.isNotNull(steamServerVo.getGameId()) && !steamServerVo.getGameId().equals(gameServerSearchDTO.getGameId())) continue;
                 //都符合条件 则添加进列表
                 steamServerVos.add(steamServerVo);
             }

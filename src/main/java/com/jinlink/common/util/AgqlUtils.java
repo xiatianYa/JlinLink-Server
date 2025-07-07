@@ -1,34 +1,135 @@
 package com.jinlink.common.util;
 
-import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONArray;
-import com.alibaba.fastjson2.JSONObject;
 import com.ibasco.agql.protocols.valve.source.query.SourceQueryClient;
 import com.ibasco.agql.protocols.valve.source.query.info.SourceQueryInfoResponse;
 import com.ibasco.agql.protocols.valve.source.query.info.SourceServer;
 import com.ibasco.agql.protocols.valve.source.query.players.SourcePlayer;
 import com.ibasco.agql.protocols.valve.source.query.players.SourceQueryPlayerResponse;
-import com.jinlink.common.constants.Constants;
 import com.jinlink.modules.game.entity.GameCommunity;
 import com.jinlink.modules.game.entity.GameMap;
 import com.jinlink.modules.game.entity.GameServer;
 import com.jinlink.modules.game.entity.dto.ExgMapDTO;
 import com.jinlink.modules.game.entity.vo.SourceServerVo;
 import com.jinlink.modules.game.entity.vo.SteamServerVo;
-import com.jinlink.modules.monitor.entity.vo.GameEntityVo;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.InetSocketAddress;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
 
 public class AgqlUtils {
+
+    private final SourceQueryClient queryClient;
+    private final ExecutorService executor;
+    private final int maxRetryAttempts;
+    private final long retryDelayMillis;
+
+    /**
+     * 构造函数
+     * @param queryClient SourceQuery客户端实例
+     * @param threadPoolSize 线程池大小
+     * @param maxRetryAttempts 最大重试次数
+     * @param retryDelayMillis 重试延迟时间（毫秒）
+     */
+    public AgqlUtils(SourceQueryClient queryClient, int threadPoolSize, int maxRetryAttempts, long retryDelayMillis) {
+        this.queryClient = queryClient;
+        this.executor = Executors.newFixedThreadPool(threadPoolSize);
+        this.maxRetryAttempts = maxRetryAttempts;
+        this.retryDelayMillis = retryDelayMillis;
+    }
+
+    /**
+     * 批量获取多个服务器的INFO信息
+     * @param addresses 服务器地址列表
+     * @param progressListener 进度监听器（可为null）
+     * @return 包含服务器INFO信息的结果映射
+     */
+    public Map<InetSocketAddress, ServerInfoResult> fetchServerInfo(List<InetSocketAddress> addresses, BiConsumer<Integer, Integer> progressListener) {
+        Map<InetSocketAddress, ServerInfoResult> results = new ConcurrentHashMap<>();
+        AtomicInteger completedCount = new AtomicInteger(0);
+        int totalCount = addresses.size();
+
+        // 创建所有查询任务
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+        for (InetSocketAddress address : addresses) {
+            CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+                try {
+                    // 执行带重试机制的查询
+                    SourceQueryInfoResponse infoResponse = retryableQuery(address);
+                    ServerInfoResult result = new ServerInfoResult(infoResponse.getResult(), null);
+                    results.put(address, result);
+                } catch (Exception e) {
+                    results.put(address, new ServerInfoResult(null, e));
+                } finally {
+                    int count = completedCount.incrementAndGet();
+                    if (progressListener != null) {
+                        progressListener.accept(count, totalCount);
+                    }
+                }
+            }, executor);
+            futures.add(future);
+        }
+
+        // 等待所有任务完成
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
+        // 关闭线程池
+        executor.shutdown();
+        return results;
+    }
+
+    /**
+     * 执行带重试机制的INFO查询
+     * @param address 服务器地址
+     * @return 查询响应
+     * @throws Exception 查询失败且超过最大重试次数
+     */
+    private SourceQueryInfoResponse retryableQuery(InetSocketAddress address) throws Exception {
+        Exception lastException = null;
+        for (int attempt = 1; attempt <= maxRetryAttempts; attempt++) {
+            try {
+                return queryClient.getInfo(address).get();
+            } catch (Exception e) {
+                lastException = e;
+                if (attempt < maxRetryAttempts) {
+                    Thread.sleep(retryDelayMillis * attempt); // 指数退避策略
+                }
+            }
+        }
+        throw new CompletionException("查询失败，已达到最大重试次数: " + maxRetryAttempts, lastException);
+    }
+
+    /**
+     * 服务器INFO查询结果类
+     */
+    public static class ServerInfoResult {
+        private final SourceServer serverInfo;
+        private final Throwable error;
+
+        public ServerInfoResult(SourceServer serverInfo, Throwable error) {
+            this.serverInfo = serverInfo;
+            this.error = error;
+        }
+
+        public boolean isSuccess() {
+            return serverInfo != null && error == null;
+        }
+
+        public SourceServer getServerInfo() {
+            return serverInfo;
+        }
+
+        public Throwable getError() {
+            return error;
+        }
+    }
 
     /**
      * 基于SteamWebApi获取服务器信息
@@ -37,13 +138,58 @@ public class AgqlUtils {
      * @param gameMapList 地图列表
      * @return 服务器源对象
      */
-    public static SourceServerVo getSourceServerVoList(GameCommunity gameCommunity, List<GameServer> gameServers, List<GameMap> gameMapList) throws URISyntaxException {
-        RestTemplate restTemplate = new RestTemplate();
-        StringBuilder paths= new StringBuilder();
-        for (GameServer gameServer : gameServers) {
-            paths.append("paths=").append(gameServer.getIp()).append(":").append(gameServer.getPort()).append("&");
+    public static SourceServerVo getSourceServerVoList(AgqlUtils agqlUtils,GameCommunity gameCommunity, List<GameServer> gameServers, List<GameMap> gameMapList) {
+        //构建返回对象
+        SourceServerVo sourceServerVo = SourceServerVo.builder()
+                .gameCommunity(gameCommunity)
+                .gameServerVoList(new ArrayList<>())
+                .onLineUserNumber(0L)
+                .build();
+
+        List<InetSocketAddress> addresses = new ArrayList<>();
+        gameServers.forEach(item->{
+            addresses.add(new InetSocketAddress(item.getIp(), Integer.parseInt(item.getPort())));
+        });
+        // 执行查询
+        Map<InetSocketAddress, ServerInfoResult> results = agqlUtils.fetchServerInfo(addresses,
+                (completed, total) -> System.out.printf("进度: %d/%d (%.2f%%)\n", completed, total, (completed * 100.0) / total));
+        // 处理结果
+        for (Map.Entry<InetSocketAddress, ServerInfoResult> entry : results.entrySet()) {
+            InetSocketAddress address = entry.getKey();
+            ServerInfoResult result = entry.getValue();
+
+            if (result.isSuccess()) {
+                SourceServer serverInfo = result.getServerInfo();
+                String hostString = serverInfo.getAddress().getHostString();
+                int hostPort = serverInfo.getAddress().getPort();
+                //获取当前服务器的地图数据
+                Optional<GameMap> mapOptional = gameMapList.stream().filter(item -> item.getMapName().equals(serverInfo.getMapName())).findFirst();
+                //获取当前服务器的模式数据
+                Optional<GameServer> serverOptional = gameServers.stream().filter(item -> (item.getIp()+":"+item.getPort()).equals(hostString+":"+hostPort)).findFirst();
+                SteamServerVo serverVo = SteamServerVo.builder()
+                        .serverName(serverInfo.getName())
+                        .addr(hostString+":"+hostPort)
+                        .ip(hostString)
+                        .port(String.valueOf(hostPort))
+                        .modeId(serverOptional.map(GameServer::getModeId).orElse(null))
+                        .gameId(serverOptional.map(GameServer::getGameId).orElse(null))
+                        .mapName(serverInfo.getMapName())
+                        .mapLabel(mapOptional.map(GameMap::getMapLabel).orElse(null))
+                        .mapUrl(mapOptional.map(GameMap::getMapUrl).orElse(null))
+                        .type(String.valueOf(mapOptional.map(GameMap::getType).orElse(null)))
+                        .tag(JSON.parseArray(mapOptional.map(GameMap::getTag).orElse(""), String.class))
+                        .players(serverInfo.getNumOfPlayers())
+                        .maxPlayers(serverInfo.getMaxPlayers())
+                        .build();
+                sourceServerVo.getGameServerVoList().add(serverVo);
+            } else {
+                System.out.printf("地址: %s:%d | 查询失败: %s\n",
+                        address.getHostString(),
+                        address.getPort(),
+                        result.getError().getMessage());
+            }
         }
-        return analysisJsonForObject(gameCommunity,gameServers,restTemplate.getForObject(new URI("https://inadvertently.top/steamApi/?" + paths), String.class),gameMapList);
+        return sourceServerVo;
     }
 
     /**
@@ -59,101 +205,6 @@ public class AgqlUtils {
             System.out.println("地图CD信息获取失败!");
             return new ArrayList<>();
         }
-    }
-
-    /**
-     * 将返回的json字符串转为java对象
-     */
-    private static SourceServerVo analysisJsonForObject(GameCommunity gameCommunity,List<GameServer> gameServers,String forObject,List<GameMap> gameMapList) {
-        if (ObjectUtil.isNull(forObject)){
-            return null;
-        }
-        //构建返回对象
-        SourceServerVo sourceServerVo = SourceServerVo.builder()
-                .gameCommunity(gameCommunity)
-                .gameServerVoList(new ArrayList<>())
-                .onLineUserNumber(0L)
-                .build();
-        //构建JSONArray
-        JSONArray serverJsonArray = JSON.parseArray(forObject);
-        for (Object obj : serverJsonArray) {
-            JSONObject jsonObject = (JSONObject) obj;
-            JSONArray servers = jsonObject.getJSONObject("response").getJSONArray("servers");
-            //如果json为空 则返回循环
-            if (StringUtils.isNull(servers)) continue;
-            for (Object server : servers) {
-                //获取回来的服务器对象
-                GameEntityVo gameEntityVo = JSONObject.parseObject(server.toString(), GameEntityVo.class);
-                String[] addr = gameEntityVo.getAddr().split(":");
-                //获取当前服务器的地图数据
-                Optional<GameMap> mapOptional = gameMapList.stream().filter(item -> item.getMapName().equals(gameEntityVo.getMap())).findFirst();
-                //获取当前服务器的模式数据
-                Optional<GameServer> serverOptional = gameServers.stream().filter(item -> (item.getIp()+":"+item.getPort()).equals(gameEntityVo.getAddr())).findFirst();
-                SteamServerVo serverVo = SteamServerVo.builder()
-                        .serverName(gameEntityVo.getName())
-                        .addr(gameEntityVo.getAddr())
-                        .ip(addr[0])
-                        .port(addr[1])
-                        .modeId(serverOptional.map(GameServer::getModeId).orElse(null))
-                        .gameId(serverOptional.map(GameServer::getGameId).orElse(null))
-                        .mapName(gameEntityVo.getMap())
-                        .mapLabel(mapOptional.map(GameMap::getMapLabel).orElse(null))
-                        .mapUrl(mapOptional.map(GameMap::getMapUrl).orElse(null))
-                        .type(String.valueOf(mapOptional.map(GameMap::getType).orElse(null)))
-                        .tag(JSON.parseArray(mapOptional.map(GameMap::getTag).orElse(""), String.class))
-                        .players(gameEntityVo.getPlayers())
-                        .maxPlayers(gameEntityVo.getMax_players())
-                        .build();
-                //当前服务器不被统计
-                if (serverOptional.isPresent()) {
-                    GameServer gameServer = serverOptional.get();
-                    if (gameServer.getIsStatistics().equals(1)){
-                        sourceServerVo.setOnLineUserNumber(sourceServerVo.getOnLineUserNumber() + gameEntityVo.getPlayers());
-                    }
-                }
-                sourceServerVo.getGameServerVoList().add(serverVo);
-            }
-        }
-        //查询那些服务器没有数据 走源服务器
-        List<SteamServerVo> gameServerVoList = sourceServerVo.getGameServerVoList();
-        for (GameServer gameServer : gameServers) {
-            //查询是否有这个服务器信息
-            Optional<SteamServerVo> isTrue = gameServerVoList.stream().filter(item -> (item.getIp() + ":" + item.getPort())
-                    .equals(gameServer.getIp() + ":" + gameServer.getPort())).findFirst();
-            if (isTrue.isEmpty()) {
-                // 走源服务器查询
-                try (SourceQueryClient client = new SourceQueryClient()) {
-                    InetSocketAddress address = new InetSocketAddress(gameServer.getIp(), Integer.parseInt(gameServer.getPort()));
-                    CompletableFuture<SourceQueryInfoResponse> info = client.getInfo(address);
-                    // 设置超时时间为 1 秒
-                    SourceQueryInfoResponse response = info.orTimeout(300, TimeUnit.MILLISECONDS).join();
-                    SourceServer sourceServer = response.getResult();
-                    // 获取当前服务器的地图数据
-                    Optional<GameMap> mapOptional = gameMapList.stream().filter(item -> item.getMapName().equals(sourceServer.getMapName())).findFirst();
-                    SteamServerVo serverVo = SteamServerVo.builder()
-                            .serverName(sourceServer.getName())
-                            .addr(gameServer.getIp() + ":" + gameServer.getPort())
-                            .ip(gameServer.getIp())
-                            .port(gameServer.getPort())
-                            .modeId(gameServer.getModeId())
-                            .gameId(gameServer.getGameId())
-                            .mapName(sourceServer.getMapName())
-                            .mapLabel(mapOptional.map(GameMap::getMapLabel).orElse(null))
-                            .mapUrl(mapOptional.map(GameMap::getMapUrl).orElse(null))
-                            .type(String.valueOf(mapOptional.map(GameMap::getType).orElse(null)))
-                            .tag(JSON.parseArray(mapOptional.map(GameMap::getTag).orElse(""), String.class))
-                            .players(sourceServer.getNumOfPlayers())
-                            .maxPlayers(sourceServer.getMaxPlayers())
-                            .isStatistics(gameServer.getIsStatistics())
-                            .build();
-                    sourceServerVo.setOnLineUserNumber(sourceServerVo.getOnLineUserNumber() + sourceServer.getNumOfPlayers());
-                    sourceServerVo.getGameServerVoList().add(serverVo);
-                } catch (Exception e) {
-                    System.out.println(gameServer.getServerName() + "信息获取超时");
-                }
-            }
-        }
-        return sourceServerVo;
     }
 
     /**

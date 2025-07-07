@@ -55,6 +55,8 @@ spring:
           jobStore:
             class: org.springframework.scheduling.quartz.LocalDataSourceJobStore
             driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+            #触发job时是否需要锁
+            acquireTriggersWithinLock: true
             # 表前缀
             tablePrefix: mon_qrtz_
             # 是否开启集群

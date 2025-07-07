@@ -38,4 +38,7 @@ public class GameServerAddDTO implements Serializable {
 
     @Schema(description = "排序值")
     private Integer isStatistics;
+
+    @Schema(description = "连接指令")
+    private String connectStr;
 }

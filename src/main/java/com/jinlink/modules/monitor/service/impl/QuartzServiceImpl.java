@@ -31,6 +31,7 @@ public class QuartzServiceImpl implements QuartzService {
 
             // 构建 Job
             JobDetail job = JobBuilder.newJob(getClass(monScheduler.getJobClassName()).getClass())
+                    .storeDurably()
                     .withIdentity(jobKey).build();
 
             // cron表达式定时构造器
