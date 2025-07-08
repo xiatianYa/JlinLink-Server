@@ -135,7 +135,7 @@ public class SysUserController {
      * 查询全部用户名称。
      */
     @GetMapping("allUserNames")
-    @Operation(operationId = "8",summary = "查询全部调度任务名称")
+    @Operation(operationId = "8",summary = "查询全部用户名称")
     @SaCheckPermission("sys:user:allUserNames")
     public Result<List<Options<String>>> allUserNames() {
         return Result.success("请求成功",sysUserService.getAllUserNames());

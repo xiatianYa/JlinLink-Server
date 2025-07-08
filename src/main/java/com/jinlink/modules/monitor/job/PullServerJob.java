@@ -75,7 +75,7 @@ public class PullServerJob implements Job {
             }
             for (Future<SourceServerVo> future : futures) {
                 SourceServerVo serverVo;
-                serverVo = future.get(120L, TimeUnit.SECONDS);
+                serverVo = future.get();
                 saveOnlineStatistics(serverVo);
                 serverVos.add(serverVo);
             }

@@ -16,10 +16,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.InetSocketAddress;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
@@ -157,7 +154,6 @@ public class AgqlUtils {
         for (Map.Entry<InetSocketAddress, ServerInfoResult> entry : results.entrySet()) {
             InetSocketAddress address = entry.getKey();
             ServerInfoResult result = entry.getValue();
-
             if (result.isSuccess()) {
                 SourceServer serverInfo = result.getServerInfo();
                 String hostString = serverInfo.getAddress().getHostString();
@@ -173,6 +169,7 @@ public class AgqlUtils {
                         .port(String.valueOf(hostPort))
                         .modeId(serverOptional.map(GameServer::getModeId).orElse(null))
                         .gameId(serverOptional.map(GameServer::getGameId).orElse(null))
+                        .sort(serverOptional.map(GameServer::getSort).orElse(null))
                         .mapName(serverInfo.getMapName())
                         .mapLabel(mapOptional.map(GameMap::getMapLabel).orElse(null))
                         .mapUrl(mapOptional.map(GameMap::getMapUrl).orElse(null))
@@ -180,7 +177,16 @@ public class AgqlUtils {
                         .tag(JSON.parseArray(mapOptional.map(GameMap::getTag).orElse(""), String.class))
                         .players(serverInfo.getNumOfPlayers())
                         .maxPlayers(serverInfo.getMaxPlayers())
+                        .isStatistics(serverOptional.map(GameServer::getIsStatistics).orElse(null))
+                        .connectStr(hostString+":"+hostPort)
                         .build();
+                //当前服务器不被统计
+                if (serverOptional.isPresent()) {
+                    GameServer gameServer = serverOptional.get();
+                    if (gameServer.getIsStatistics().equals(1)){
+                        sourceServerVo.setOnLineUserNumber(sourceServerVo.getOnLineUserNumber() + serverInfo.getNumOfPlayers());
+                    }
+                }
                 sourceServerVo.getGameServerVoList().add(serverVo);
             } else {
                 System.out.printf("地址: %s:%d | 查询失败: %s\n",
@@ -189,6 +195,8 @@ public class AgqlUtils {
                         result.getError().getMessage());
             }
         }
+        //对服务器进行排序
+        sourceServerVo.getGameServerVoList().sort(Comparator.comparingInt(SteamServerVo::getSort));
         return sourceServerVo;
     }
 

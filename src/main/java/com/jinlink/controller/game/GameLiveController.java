@@ -139,12 +139,9 @@ public class GameLiveController {
             gameLiveVo.setBiliVo(biliVo);
             gameLiveVos.add(gameLiveVo);
         }
-        gameLiveVos.sort(new Comparator<>() {
-            @Override
-            public int compare(GameLiveVo o1, GameLiveVo o2) {
-                // 假设你想要升序排序
-                return o2.getBiliVo().getOnline().compareTo(o1.getBiliVo().getOnline());
-            }
+        gameLiveVos.sort((o1, o2) -> {
+            // 假设你想要升序排序
+            return o2.getBiliVo().getOnline().compareTo(o1.getBiliVo().getOnline());
         });
         return Result.data(gameLiveVos);
     }

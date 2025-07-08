@@ -54,6 +54,9 @@ public class SteamServerVo {
     @Schema(description = "地图标签")
     private List<String> tag;
 
+    @Schema(description = "排序值")
+    private Integer sort;
+
     @Schema(description = "服务器在线玩家数")
     private Integer players;
 
